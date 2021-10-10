@@ -1,0 +1,21 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern":
+    [
+        "c c",
+        "ccc",
+        " c "
+    ],
+    "key":
+    {
+        "c":
+        {
+        	"item": "betteranimalsplus:bear_skin_kermode"
+        }
+    },
+    "result":
+    {
+        "item": "betteranimalsplus:bear_cape_kermode",
+        "count": 1
+    }
+}
