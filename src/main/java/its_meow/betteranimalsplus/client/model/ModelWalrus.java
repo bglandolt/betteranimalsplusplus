@@ -226,7 +226,7 @@ public class ModelWalrus extends ModelBase {
             this.head.rotateAngleX = (float) Math.toRadians(ModelBetterAnimals.getHeadPitch(walrus)) + 0.6981317007977318F;
             this.neck2.rotateAngleY = (float) MathHelper.clamp(Math.toRadians(ModelBetterAnimals.getHeadYaw(walrus)), Math.toRadians(-35F), Math.toRadians(35F));
         //}
-        if (!entity.isInWater())
+        if (!entity.isOverWater())
         {
 
 //        	this.body.rotateAngleX = -MathHelper.cos(limbSwing * 0.45F) * 0.20F * limbSwingAmount;
@@ -237,7 +237,7 @@ public class ModelWalrus extends ModelBase {
         	
         	float motion = 0.016F*(MathHelper.abs(walrus.leaping)-9);//-(float)MathHelper.clamp(MathHelper.abs((float)entity.motionY),0.0D,0.26D);
 
-        	this.neck.rotateAngleX = -motion - 0.7155849933176751F; 			// (bigger)
+        	this.neck.rotateAngleX = -motion - 0.7155849933176751F + ( ( MathHelper.sin(limbSwing * 1.8F) * limbSwingAmount ) / 2.8F );			// (bigger)
         	//this.neck2.rotateAngleX = motion + 0.17F; 			// (smaller)
         	this.body.rotateAngleX = motion * 1.5F; 			// 12 13 /12
         	this.body2.rotateAngleX = motion - 0.1F; 	// 11 12 10
@@ -251,10 +251,10 @@ public class ModelWalrus extends ModelBase {
 
         	this.lLeg1.rotateAngleX = 0.5759586531581287F * 1.75F;
             this.rLeg1.rotateAngleX = 0.5759586531581287F * 1.75F;
-            this.lLeg1.rotateAngleY = (float) Math.sin(limbSwing * 1.5F) * limbSwingAmount * 1.75F + 1.7453292519943295F - 0.6F;
-            this.rLeg1.rotateAngleY = (float) Math.cos(limbSwing * 1.5F) * limbSwingAmount * 1.75F - 1.7453292519943295F + 0.6F;
-            this.lFlipper2.rotateAngleX = (float) Math.cos(limbSwing * 1.5F) * limbSwingAmount * 1.75F - 0.5759586531581287F / 3F;
-            this.rFlipper2.rotateAngleX = (float) Math.sin(limbSwing * 1.5F) * limbSwingAmount * 1.75F - 0.5759586531581287F / 3F;
+            this.lLeg1.rotateAngleY = MathHelper.sin(limbSwing * 1.5F) * limbSwingAmount * 1.75F + 1.7453292519943295F - 0.6F;
+            this.rLeg1.rotateAngleY = MathHelper.cos(limbSwing * 1.5F) * limbSwingAmount * 1.75F - 1.7453292519943295F + 0.6F;
+            this.lFlipper2.rotateAngleX = MathHelper.cos(limbSwing * 1.5F) * limbSwingAmount * 1.75F - 0.5759586531581287F / 3F;
+            this.rFlipper2.rotateAngleX = MathHelper.sin(limbSwing * 1.5F) * limbSwingAmount * 1.75F - 0.5759586531581287F / 3F;
         }
         else
         {

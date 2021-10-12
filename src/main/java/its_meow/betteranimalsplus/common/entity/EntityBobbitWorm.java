@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import its_meow.betteranimalsplus.common.entity.ai.AIHelper;
 import its_meow.betteranimalsplus.common.entity.miniboss.hirschgeist.EntityHirschgeist;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
@@ -29,6 +30,8 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityBobbitWorm extends EntityAnimalWithTypes {
 
@@ -39,10 +42,26 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
 
     public EntityBobbitWorm(World world) {
         super(world);
-        this.setSize(1F, 1F);
-        this.setPathPriority(PathNodeType.WATER, 10F);
+        this.setSize(0.9F, 0.9F);
+        this.setPathPriority(PathNodeType.WATER, 10.0F);
     }
 
+    public int grabTargetAnimation = 0;
+    
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void handleStatusUpdate(byte id)
+    {
+		if (id == 28)
+		{
+			this.grabTargetAnimation = 30;
+		}
+		else
+		{
+			super.handleStatusUpdate(id);
+		}
+    }
+    
     @Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAIWatchClosest(this, EntityLivingBase.class, 10.0F));
@@ -70,12 +89,13 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
     }
 
     @Override
-    protected void applyEntityAttributes() {
+    protected void applyEntityAttributes()
+    {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(15D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(15.0D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4D);
-        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(10D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(10.0D);
     }
 
     @Override
@@ -134,64 +154,114 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
     }
 
     @Override
-    public void onUpdate() {
+    public void onUpdate()
+    {
         super.onUpdate();
-        if(!this.inWater) {
+        if (!this.inWater)
+        {
             this.motionX *= 0.2F;
             this.motionZ *= 0.2F;
-            if(!this.hasNoGravity()) {
+            if(!this.hasNoGravity())
+            {
                 this.motionY -= 0.08D;
             }
-            this.motionY *= 0.9800000190734863D;
-        } else if(!world.isRemote) {
-            if(this.targetPosition != null) {
+            this.motionY *= 0.98;
+        }
+        else if (!world.isRemote)
+        {
+            if(this.targetPosition != null)
+            {
                 this.motionX = (this.targetPosition.x - this.posX) * 0.05F;
                 this.motionY = (this.targetPosition.y - this.posY) * 0.05F;
                 this.motionZ = (this.targetPosition.z - this.posZ) * 0.05F;
             }
-            if(targetPosition != null && Math.sqrt(this.getPosition().distanceSq(this.targetPosition.x, this.targetPosition.y, this.targetPosition.z)) < 1) {
+            
+            if (targetPosition != null && Math.sqrt(this.getPosition().distanceSq(this.targetPosition.x, this.targetPosition.y, this.targetPosition.z)) < 1)
+            {
                 this.motionX *= 0.2F;
                 this.motionZ *= 0.2F;
             }
         }
-        if(world.isRemote) { // shut up client stop MOVING you stupid idiot
+        
+        if ( world.isRemote )
+        {
             this.motionX *= 0.2F;
             this.motionZ *= 0.2F;
             this.motionY *= 0.2F;
         }
+        
         boolean goodPos = this.isGoodBurrowingPosition(this.getPosition());
-        if(this.targetPosition == null && !goodPos) {
+        
+        if (this.targetPosition == null && !goodPos)
+        {
             Vec3d pos = this.getNewTargetPosition();
-            if(pos != null) {
+            if (pos != null)
+            {
                 this.targetPosition = pos;
             }
         }
-        if(targetPosition != null && Math.sqrt(this.getPosition().distanceSq(this.targetPosition.x, this.targetPosition.y, this.targetPosition.z)) < 1 && !goodPos) {
+        
+        if (targetPosition != null && Math.sqrt(this.getPosition().distanceSq(this.targetPosition.x, this.targetPosition.y, this.targetPosition.z)) < 1 && !goodPos)
+        {
             this.targetPosition = null;
         }
-        if(this.getAttackState() > 0) {
+        
+        if(this.getAttackState() > 0)
+        {
             this.setAttackState(this.getAttackState() - 1);
         }
-        if(!this.world.isRemote && this.getAttackTarget() != null && !this.getAttackTarget().isDead && !this.isDead) {
-            if(this.getPassengers().contains(this.getAttackTarget())) {
-                float time = 30F;
-                if(this.lastAttack + (time - 20) < this.ticksExisted) {
-                    this.setAttackState(20);
-                }
-                if(this.lastAttack + time < this.ticksExisted) {
-                    this.attackEntityAsMob(this.getAttackTarget());
-                    this.lastAttack = this.ticksExisted;
-                }
-            } else if(lastGrab + 60F < this.ticksExisted && this.getDistanceSq(this.getAttackTarget()) < 5) {
-                if(!this.getAttackTarget().getIsInvulnerable() && this.getAttackTarget().width < 2.5 && this.getAttackTarget().height < 2.5) {
-                    this.getAttackTarget().startRiding(this, false);
-                } else if(!this.getAttackTarget().getIsInvulnerable()) {
-                    this.attackEntityAsMob(this.getAttackTarget());
-                }
-                lastGrab = this.ticksExisted;
-            }
+        
+        if ( this.grabTargetAnimation > 0 )
+        {
+        	this.grabTargetAnimation--;
+        }
+        
+        if ( this.getAttackTarget() != null && !this.getAttackTarget().isDead && !this.isDead )
+        {
+	    	AIHelper.faceEntitySmart(this, this.getAttackTarget());
+	    	this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
+	    	
+	        if (!this.world.isRemote)
+	        {
+	            if(this.getPassengers().contains(this.getAttackTarget()))
+	            {
+	                float time = 30F;
+	                if(this.lastAttack + (time - 20) < this.ticksExisted)
+	                {
+	                    this.setAttackState(20);
+	                }
+	                if(this.lastAttack + time < this.ticksExisted)
+	                {
+	                    this.attackEntityAsMob(this.getAttackTarget());
+	                    this.lastAttack = this.ticksExisted;
+	                }
+	            }
+	            else if ( lastGrab + 60.0F < this.ticksExisted && this.getDistanceSq(this.getAttackTarget()) <= (this.grabTargetAnimation>0?6:5) )
+	            {            	
+	            	if ( this.grabTargetAnimation > 10 && this.grabTargetAnimation <= 15 )
+	            	{
+		                if (!this.getAttackTarget().getIsInvulnerable() && this.getAttackTarget().width < 2.5 && this.getAttackTarget().height < 2.5)
+		                {
+		                    this.getAttackTarget().startRiding(this, false);
+		                    this.grabTargetAnimation = 10;
+		                }
+		                else if (!this.getAttackTarget().getIsInvulnerable())
+		                {
+		                    this.attackEntityAsMob(this.getAttackTarget());
+		                }
+		                lastGrab = this.ticksExisted;
+	            	}
+	            	else if ( this.grabTargetAnimation <= 0 )
+	            	{
+	            		this.world.setEntityState(this, (byte)28);
+	                 	this.grabTargetAnimation = 30;
+	            	}
+	            }
+	        }
         }
     }
+    
+    
 
     @Override
     public boolean canBePushed() {

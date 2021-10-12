@@ -456,6 +456,8 @@ public class ModelDeer extends ModelBase {
             this.body.rotateAngleZ = MathHelper.cos(f * 0.6662F) * 0.15F * f1;
         }
         
+        this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.13F * limbSwingAmount;
+        this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.12F * limbSwingAmount;
 
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entity);
     }

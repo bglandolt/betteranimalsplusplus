@@ -12,13 +12,15 @@ import net.minecraft.util.ResourceLocation;
 
 public class RenderBear extends RenderLiving<EntityBear> {
 
-    public RenderBear(RenderManager rendermanagerIn) {
-        super(rendermanagerIn, new ModelBear(), 1F);
+    public RenderBear(RenderManager rendermanagerIn)
+    {
+        super(rendermanagerIn, new ModelBear(), 1.25F);
     }
 
     @Override
     @Nonnull
-    protected ResourceLocation getEntityTexture(@Nonnull EntityBear entity) {
+    protected ResourceLocation getEntityTexture(@Nonnull EntityBear entity)
+    {
         return ModTextures.bear_brown;
     }
 
@@ -27,7 +29,8 @@ public class RenderBear extends RenderLiving<EntityBear> {
      * rendered.
      */
     @Override
-    protected void preRenderCallback(EntityBear bear, float partialTickTime) {
+    protected void preRenderCallback(EntityBear bear, float partialTickTime)
+    {
         float scale = 1.5F;
         GlStateManager.scale(scale, scale, scale);
         super.preRenderCallback(bear, partialTickTime);

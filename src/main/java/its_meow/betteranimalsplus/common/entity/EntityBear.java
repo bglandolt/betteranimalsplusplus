@@ -11,6 +11,7 @@ import its_meow.betteranimalsplus.init.ModLootTables;
 import its_meow.betteranimalsplus.util.HeadTypes;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -98,6 +99,12 @@ public class EntityBear extends EntityMob
             
             this.cannotReachTimer += 30;
             
+            if ( this.fleeTimer > 0 && ( source.getTrueSource() != null && this.getDistance(source.getTrueSource()) < 4 ) )
+            {
+                this.cannotReachTimer = 0;
+                this.fleeTimer = 0;
+            }
+            
             return super.attackEntityFrom(source, amount);
         }
     }
@@ -127,10 +134,13 @@ public class EntityBear extends EntityMob
 //    		}
     	}
     	
-		if ( this.knockBackAttack )
+		if ( !this.world.isRemote && this.knockBackAttack && this.getDistance(entityIn) < 4 )
 		{
-			this.knockBack(entityIn, 1.0F, 1, 1);
-		}
+			Vec3d velocityVector = new Vec3d(entityIn.posX-this.posX, 0, entityIn.posZ-this.posZ);
+			double push = 0.5D;
+			entityIn.addVelocity(velocityVector.x*push, -0.02D, velocityVector.z*push);
+			entityIn.velocityChanged = true;
+        }
 		
 		this.knockBackAttack = false;
 		
@@ -271,8 +281,13 @@ public class EntityBear extends EntityMob
         @Override
         protected double getAttackReachSqr(EntityLivingBase attackTarget)
         {
-            return 14.0D + attackTarget.width;
+            return attackReachModifier() + attackTarget.width;
         }
+    }
+    
+    protected double attackReachModifier()
+    {
+    	return 14.0D;
     }
     
     public int attackAnimationTimer = -1;
@@ -311,14 +326,16 @@ public class EntityBear extends EntityMob
         	this.cannotReachTimer++;
         	if ( this.cannotReachTimer > 120 && ( Math.abs(this.posY-this.getAttackTarget().posY) > 1 || this.getDistance(this.getAttackTarget()) > 4 ) )
         	{
-        		this.fleeTimer = 120 + rand.nextInt(120);
+        		this.fleeTimer = 80 + rand.nextInt(80);
         		this.cannotReachTimer = 0;
         	}
             
     		if ( this.isRiding() )
     		{
-    			this.rotationYaw = -this.getAttackTarget().rotationYaw;
-	    		this.prevRotationYaw = -this.getAttackTarget().prevRotationYaw;
+//    			this.rotationYaw = -this.getAttackTarget().rotationYaw;
+//	    		this.prevRotationYaw = -this.getAttackTarget().prevRotationYaw;
+	    		this.rotationYaw = 0;
+	    		this.prevRotationYaw = 0;
     		}
     		else if ( this.fleeTimer > 0 )
     		{
@@ -363,8 +380,10 @@ public class EntityBear extends EntityMob
     	{
     		if ( this.isRiding() )
     		{
-    			this.rotationYaw = -this.getAttackTarget().rotationYaw;
-	    		this.prevRotationYaw = -this.getAttackTarget().prevRotationYaw;
+//    			this.rotationYaw = -this.getAttackTarget().rotationYaw;
+//	    		this.prevRotationYaw = -this.getAttackTarget().prevRotationYaw;
+    			this.rotationYaw = 0;
+	    		this.prevRotationYaw = 0;
     		}
     		else if ( this.fleeTimer > 0 )
     		{
@@ -394,6 +413,7 @@ public class EntityBear extends EntityMob
                  {
                      this.attackEntityAsMob(this.getAttackTarget());
                      this.spawnSweepParticles();
+         			 if ( rand.nextBoolean() ) this.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, 1.2F, 0.8F + rand.nextFloat()/5.0F);
                  }
 
             	 if ( this.motionY > 0 )
@@ -514,21 +534,18 @@ public class EntityBear extends EntityMob
     	this.world.setEntityState(this, (byte)27);
     	this.latchSnapshot = this.ticksExisted;
     	
-    	if ( this.world.isRemote )
-    	{
+        if ( this.world.isRemote && entity instanceof EntityPlayerSP )
+        {
 			this.oldCameraMode = Minecraft.getMinecraft().gameSettings.thirdPersonView;
 			Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
-    	}
-		
-        //if(!world.isRemote)
+        }
+        
+        if ( !this.isRiding() )
         {
-            if ( !this.isRiding() )
+            this.startRiding(entity, true);
+            if ( !world.isRemote && entity instanceof EntityPlayerMP)
             {
-                this.startRiding(entity, true);
-                if ( !world.isRemote && entity instanceof EntityPlayerMP)
-                {
-                    ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
-                }
+                ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
             }
         }
         
@@ -537,14 +554,9 @@ public class EntityBear extends EntityMob
 
     public void dismountZotz()
     {
-		if ( this.world.isRemote && this.oldCameraMode != -1 )
-		{
-			Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
-			this.oldCameraMode = -1;
-		}
-
-    	this.latchTimer = 120 + this.rand.nextInt(9)*10;
+    	this.latchTimer = 100 + this.rand.nextInt(6)*10;
     	Entity mount = this.getRidingEntity();
+    	
     	if ( mount != null )
     	{
             this.dismountRidingEntity();
@@ -552,12 +564,16 @@ public class EntityBear extends EntityMob
 
             if ( !world.isRemote ) // SERVER
             {
-                if(mount instanceof EntityPlayerMP)
+                if ( mount instanceof EntityPlayerMP )
                 {
                     ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
                 }
             }
-            
+            else if ( this.oldCameraMode != -1 && mount instanceof EntityPlayerMP )
+    		{
+    			Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
+    			this.oldCameraMode = -1;
+    		}
     	}
     }
 
@@ -582,7 +598,11 @@ public class EntityBear extends EntityMob
     @Override
     public double getYOffset()
     {
-        return -1.0D;
+    	if ( this.getRidingEntity() != null )
+    	{
+    		return -this.getRidingEntity().height+0.5;
+    	}
+        return 0.5D;
     }
 
     @Override

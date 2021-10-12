@@ -3,6 +3,7 @@ package its_meow.betteranimalsplus.common.entity;
 import javax.annotation.Nullable;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -492,60 +493,126 @@ public class EntityZotzpyre extends EntityMobWithTypes {
         return false;
     }
 
-    public void grabTarget(EntityLivingBase entity)
+    
+    
+    
+    
+    
+    
+    public boolean grabTarget(EntityLivingBase entity)
     {
+    	//this.fleeTimer = 0;
     	
-    	if ( this.world.isRemote )
+    	if ( !entity.isPotionApplicable(new PotionEffect(MobEffects.SLOWNESS)) ) // || !entity.isPotionActive(MobEffects.SLOWNESS) )
     	{
-			this.oldCameraMode = Minecraft.getMinecraft().gameSettings.thirdPersonView;
-			Minecraft.getMinecraft().gameSettings.thirdPersonView = 1;
+    		return false;
     	}
-		
-        //if(!world.isRemote)
+    	
+    	// this.world.setEntityState(this, (byte)27);
+    	// this.latchSnapshot = this.ticksExisted;
+    	
+        if ( this.world.isRemote && entity instanceof EntityPlayerSP )
         {
-            if ( !this.isRiding() )
+			this.oldCameraMode = Minecraft.getMinecraft().gameSettings.thirdPersonView;
+			Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
+        }
+        
+        if ( !this.isRiding() )
+        {
+            this.startRiding(entity, true);
+            if ( !world.isRemote && entity instanceof EntityPlayerMP)
             {
-                this.startRiding(entity, true);
-                if ( !world.isRemote && entity instanceof EntityPlayerMP)
-                {
-                    ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
-                }
+                ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
             }
         }
+        
+        return true;
     }
 
     public void dismountZotz()
     {
-		if ( this.world.isRemote && this.oldCameraMode != -1 )
-		{
-			Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
-			this.oldCameraMode = -1;
-		}
-
-    	this.latchTimer = 100 + this.rand.nextInt(7)*10;
+    	this.latchTimer = 80 + this.rand.nextInt(6)*10;
     	Entity mount = this.getRidingEntity();
+    	
     	if ( mount != null )
     	{
-            // this.isFromZotz = true;
             this.dismountRidingEntity();
-            // this.isFromZotz  = false;
             this.dismountEntity(mount);
-            
-//        	if ( mount instanceof EntityLivingBase )
-//        	{
-//            	((EntityLivingBase) mount).removeActivePotionEffect(Potion.getPotionFromResourceLocation("slowness"));
-//        	}
 
-            if ( !world.isRemote )
+            if ( !world.isRemote ) // SERVER
             {
-                if(mount instanceof EntityPlayerMP)
+                if ( mount instanceof EntityPlayerMP )
                 {
                     ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
                 }
             }
-            
+            else if ( this.oldCameraMode != -1 && mount instanceof EntityPlayerMP )
+    		{
+    			Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
+    			this.oldCameraMode = -1;
+    		}
     	}
     }
+    
+    
+    
+//    public void grabTarget(EntityLivingBase entity)
+//    {
+//    	
+//    	if ( this.world.isRemote )
+//    	{
+//			this.oldCameraMode = Minecraft.getMinecraft().gameSettings.thirdPersonView;
+//			Minecraft.getMinecraft().gameSettings.thirdPersonView = 1;
+//    	}
+//		
+//        //if(!world.isRemote)
+//        {
+//            if ( !this.isRiding() )
+//            {
+//                this.startRiding(entity, true);
+//                if ( !world.isRemote && entity instanceof EntityPlayerMP)
+//                {
+//                    ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
+//                }
+//            }
+//        }
+//    }
+//
+//    public void dismountZotz()
+//    {
+//		if ( this.world.isRemote && this.oldCameraMode != -1 )
+//		{
+//			Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
+//			this.oldCameraMode = -1;
+//		}
+//
+//    	this.latchTimer = 100 + this.rand.nextInt(7)*10;
+//    	Entity mount = this.getRidingEntity();
+//    	if ( mount != null )
+//    	{
+//            // this.isFromZotz = true;
+//            this.dismountRidingEntity();
+//            // this.isFromZotz  = false;
+//            this.dismountEntity(mount);
+//            
+////        	if ( mount instanceof EntityLivingBase )
+////        	{
+////            	((EntityLivingBase) mount).removeActivePotionEffect(Potion.getPotionFromResourceLocation("slowness"));
+////        	}
+//
+//            if ( !world.isRemote )
+//            {
+//                if(mount instanceof EntityPlayerMP)
+//                {
+//                    ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
+//                }
+//            }
+//            
+//    	}
+//    }
+    
+    
+    
 
     @Override
     public void dismountRidingEntity()

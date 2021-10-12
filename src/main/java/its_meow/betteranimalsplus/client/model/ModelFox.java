@@ -372,6 +372,37 @@ public class ModelFox extends ModelBetterAnimals {
                 this.setRotateAngle(this.lForepaw, 0, 0, 0);
                 this.setRotateAngle(this.rForepaw, 0, 0, 0);
                 this.body.setRotationPoint(0F, 12.8F, -0.8F);
+                
+                if ( fox.motionY > 0.02D )
+                {
+                    this.lowerJawA.rotateAngleX = MathHelper.clamp((float)(fox.motionY*2.0D), 0.0F, 0.4F) + 0.4F; //  - 0.9
+                    
+                	this.body.rotateAngleX = -MathHelper.clamp((float)(fox.motionY), -0.3F, 0.3F);
+                	this.rear.rotateAngleX = MathHelper.clamp((float)(fox.motionY), -0.4F, 0.4F);
+                    
+                	float legs = MathHelper.clamp((float)(fox.motionY), -0.4F, 0.4F) + 0.3F;
+                	
+                	this.lHindLeg01.rotateAngleX = legs;
+                    this.rHindLeg01.rotateAngleX = legs;
+                    this.lArm01.rotateAngleX = legs;
+                    this.rArm01.rotateAngleX = legs;
+                	
+                    //fox.leaping--;
+                }
+                else
+                {
+                	this.rear.rotateAngleX = 0.0F;
+                    this.lowerJawA.rotateAngleX = 0.0F;
+                    this.body.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * -0.1F * limbSwingAmount - 0.22759093446006054F;
+                    
+                    this.lHindLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount - 0.22759093446006054F;
+                    this.rHindLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * swingModifier * limbSwingAmount  - 0.22759093446006054F;
+                    this.lArm01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F) * swingModifier * limbSwingAmount + 0.22759093446006054F;
+                    this.rArm01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount + 0.22759093446006054F;
+                }
+                
+                this.rear.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.10F * limbSwingAmount;
+                this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.09F * limbSwingAmount;
             }
         }
 

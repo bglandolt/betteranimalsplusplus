@@ -69,7 +69,7 @@ public class EntityLammergeier extends EntityTameableFlying implements IVariantT
 
     public EntityLammergeier(World worldIn) {
         super(worldIn);
-        this.setSize(1F, 1F);
+        this.setSize(0.8F, 0.8F);
         // this.moveHelper = new EntityFlyHelper(this);
         this.moveHelper = new LammerMoveHelper(this);
     }
@@ -91,7 +91,7 @@ public class EntityLammergeier extends EntityTameableFlying implements IVariantT
 
     @Override
     public int getMaxSpawnedInChunk() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -379,7 +379,7 @@ public class EntityLammergeier extends EntityTameableFlying implements IVariantT
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(50.0D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(2.0D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(1.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(5.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(4.0D);
     }
 
     public boolean getFlying() {

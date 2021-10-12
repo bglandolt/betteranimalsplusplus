@@ -42,7 +42,7 @@ public class BlockHandOfFate extends Block {
         super(Material.IRON);
         this.translucent = true;
         this.fullBlock = false;
-        //this.setTranslationKey("betteranimalsplus.handoffate");
+        this.setUnlocalizedName("betteranimalsplus.handoffate");
         this.setRegistryName("handoffate");
         this.setCreativeTab(BetterAnimalsPlusMod.tab);
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));

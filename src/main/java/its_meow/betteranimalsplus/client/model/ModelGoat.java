@@ -364,19 +364,22 @@ public class ModelGoat extends ModelBetterAnimals {
 
 	@Override
 	public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
-		float swingModifier = 1.5F;
+		float swingModifier = 0.6F;
 		this.lLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount - 0.2792526803190927F;
 		this.rLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * swingModifier * limbSwingAmount - 0.2792526803190927F;
 		this.lArm01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F) * swingModifier * limbSwingAmount + 0.08726646259971647F;
 		this.rArm01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount + 0.08726646259971647F;
 
-		if (entityIn instanceof EntityGoat) {
+		if (entityIn instanceof EntityGoat)
+		{
 			EntityGoat goat = (EntityGoat) entityIn;
 			this.neck.rotateAngleX = goat.getHeadPitch(); // Ram attack
 			this.neck.rotateAngleY = ModelBetterAnimals.getHeadYaw((EntityLiving) entityIn) * 0.017453292F * 0.5F;
-			if(!goat.isAttackingFromServer()) {
+			if(!goat.isAttackingFromServer())
+			{
 				float eatTime = goat.getEatTime();
-				if(eatTime > 0) {
+				if(eatTime > 0)
+				{
 					this.chest.rotateAngleX = (float) Math.toRadians(55F) - 0.6829473363053812F;
 					this.neck.rotateAngleX = (float) Math.toRadians(60F) - 0.31869712141416456F;
 					this.head.rotateAngleX = -0.31869712141416456F - (float) Math.toRadians(45F);
@@ -388,6 +391,9 @@ public class ModelGoat extends ModelBetterAnimals {
 		this.chest.rotateAngleX = -0.05235987755982988F;
 		this.head.rotateAngleX = -0.7853981633974483F;
 		this.lowerJaw.rotateAngleX = 0F;
+		
+		this.stomach.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.13F * limbSwingAmount;
+        this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.12F * limbSwingAmount;
 
 		super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
 	}

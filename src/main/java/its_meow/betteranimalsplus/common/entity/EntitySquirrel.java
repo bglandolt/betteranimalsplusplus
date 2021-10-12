@@ -4,7 +4,9 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import its_meow.betteranimalsplus.common.entity.ai.AIHelper;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -14,17 +16,22 @@ import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
+import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.MobEffects;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateClimber;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 import net.minecraftforge.common.BiomeDictionary;
@@ -41,6 +48,83 @@ public class EntitySquirrel extends EntityAnimalWithSelectiveTypes {
         this.setSize(0.5F, 0.5F);
 
     }
+    
+    @Override
+    public void onLivingUpdate()
+    {
+//    	if ( this.getAttackTarget() != null )
+//    	{
+//        	this.cannotReachTimer++;
+//        	if ( this.cannotReachTimer > 120 && ( Math.abs(this.posY-this.getAttackTarget().posY) > 1 || this.getDistance(this.getAttackTarget()) > 4 ) )
+//        	{
+//        		this.fleeTimer = 80 + rand.nextInt(80);
+//        		this.cannotReachTimer = 0;
+//        	}
+//            
+//    		if ( this.isRiding() )
+//    		{
+////    			this.rotationYaw = -this.getAttackTarget().rotationYaw;
+////	    		this.prevRotationYaw = -this.getAttackTarget().prevRotationYaw;
+//	    		this.rotationYaw = 0;
+//	    		this.prevRotationYaw = 0;
+//    		}
+//    		else if ( this.fleeTimer > 0 )
+//    		{
+//				if ( this.getNavigator().noPath() )
+//				{
+//					Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, this.getAttackTarget().getPositionVector());
+//					
+//	                if ( vec3d != null )
+//	                {
+//	                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0);
+//	                }
+//	                else
+//	                {
+//	                	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, this.getAttackTarget().getPositionVector());
+//						
+//		                if ( vec3d != null )
+//		                {
+//		                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0);
+//		                }
+//		                else
+//		                {
+//		                	this.fleeTimer -= 20;
+//		                }
+//	                }
+//				}
+//				AIHelper.faceMovingDirection(this);
+//    		}
+//    		else
+//    		{
+//	    		this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
+//	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+//    		}
+//    	}
+//    	else
+//    	{
+//    		this.cannotReachTimer = 0;
+//    	}
+    	
+		AIHelper.faceMovingDirection(this);
+
+    	super.onLivingUpdate();
+    	
+		AIHelper.faceMovingDirection(this);
+
+//    	if ( this.getAttackTarget() != null )
+//    	{
+//    		else if ( this.fleeTimer > 0 )
+//    		{
+//				AIHelper.faceMovingDirection(this);
+//    		}
+//    		else
+//    		{
+//	    		this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
+//	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+//	    	}
+//    	}
+    }
+    
 
     @Override
     protected void initEntityAI() {
@@ -179,13 +263,26 @@ public class EntitySquirrel extends EntityAnimalWithSelectiveTypes {
     }
     
     @Override
-    protected int[] getTypesFor(Set<BiomeDictionary.Type> types) {
-        if(types.contains(Type.FOREST) && !types.contains(Type.CONIFEROUS)) {
+    protected int[] getTypesFor(Set<BiomeDictionary.Type> types)
+    {
+        if (types.contains(Type.FOREST) && !types.contains(Type.CONIFEROUS))
+        {
             return new int[] {1, 3};
-        } else if(types.contains(Type.CONIFEROUS) && !types.contains(Type.SNOWY)) {
+        }
+        else if(types.contains(Type.CONIFEROUS) && !types.contains(Type.SNOWY))
+        {
             return new int[] {2};
-        } else {
-            return new int[] {1, 2, 3};
+        }
+        else
+        {
+        	if ( this.world.canSnowAt(this.getPosition(), false) || types.contains(Type.SNOWY) )
+            {
+        		return new int[] {3};
+            }
+        	else
+        	{
+                return new int[] {1, 2};
+        	}
         }
     }
 

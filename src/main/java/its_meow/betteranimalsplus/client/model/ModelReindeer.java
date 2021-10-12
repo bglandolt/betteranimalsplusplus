@@ -586,6 +586,10 @@ public class ModelReindeer extends ModelBase {
         this.rHindLeg01.rotateAngleX = f12 + f10 * 0.5F * limbSwingAmount * f7;
         this.lForeleg01.rotateAngleX = f14;
         this.rForeleg01.rotateAngleX = f15;
+        
+        this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.14F * limbSwingAmount;
+        this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.13F * limbSwingAmount;
+
 
 //        boolean flag1 = entityreindeer.isHorseSaddled();
 //        boolean flag2 = entityreindeer.isBeingRidden();

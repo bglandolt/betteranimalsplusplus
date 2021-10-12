@@ -353,13 +353,13 @@ public class ModelBoar extends ModelBase {
             {
             	if ( boar.headRam > 7 )
             	{
-            		this.head.rotateAngleX = (-(float)(20-boar.headRam) * 0.04F + 1.165F) * 0.6F;
+            		this.head.rotateAngleX = (-(float)(20-boar.headRam) * 0.04F + 1.165F) * 0.6F + this.headDownAmount;
                     this.neck.rotateAngleX = (-(float)(20-boar.headRam) * 0.04F + 0.7F) * 0.6F + ModelBetterAnimals.getHeadPitch((EntityLiving) entityIn) * 0.017453292F;
 	                	this.head.rotateAngleZ = ((float)(8-boar.headRam) * 0.012F + 0.144F)*1.2F*this.ii;
             	}
             	else
             	{
-            		this.head.rotateAngleX = (-(float)(boar.headRam-7) * 0.0266F - 0.16F + 0.525F) * 0.6F;
+            		this.head.rotateAngleX = (-(float)(boar.headRam-7) * 0.0266F - 0.16F + 0.525F) * 0.6F + this.headDownAmount;
                     this.neck.rotateAngleX = (-(float)(boar.headRam-7) * 0.0166F - 0.1F) * 0.75F + ModelBetterAnimals.getHeadPitch((EntityLiving) entityIn) * 0.017453292F;
                 		this.head.rotateAngleZ = ((float)(boar.headRam-7) * 0.020571F + 0.144F)*1.2F;
             	}
@@ -372,13 +372,15 @@ public class ModelBoar extends ModelBase {
         	}
         }
         
-        this.ass.rotateAngleZ = MathHelper.cos(f * 0.45F) * 0.18F * f1;
-        this.body.rotateAngleZ = MathHelper.cos(f * 0.5F) * 0.18F * f1;
+        this.ass.rotateAngleZ = MathHelper.cos(f * 0.5F) * 0.16F * f1;
+        this.body.rotateAngleZ = MathHelper.cos(f * 0.6F) * 0.14F * f1;
         
-        this.head.rotateAngleX = MathHelper.cos(f * 0.7F) * 0.12F * f1;
+        this.head.rotateAngleX = MathHelper.cos(f * 0.7F) * 0.12F * f1 + this.headDownAmount;
 
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
     }
+    
+    private float headDownAmount = 0.5F;
 
     /**
      * This is a helper function from Tabula to set the rotation of model parts

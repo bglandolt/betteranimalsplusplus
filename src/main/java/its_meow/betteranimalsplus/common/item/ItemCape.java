@@ -1,6 +1,7 @@
 package its_meow.betteranimalsplus.common.item;
 
 import its_meow.betteranimalsplus.BetterAnimalsPlusMod;
+import its_meow.betteranimalsplus.Ref;
 import net.minecraft.client.model.ModelBiped;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -16,9 +17,9 @@ public abstract class ItemCape extends ItemModeledArmor {
     public final Item repairItem;
 
     public ItemCape(String name, String variant, Item repairItem) {
-        super(EnumHelper.addArmorMaterial(name + variant, "betteranimalsplus:" + name + variant, 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F), EntityEquipmentSlot.CHEST, true);
+        super(EnumHelper.addArmorMaterial(name + variant, Ref.MOD_ID + name + variant, 5, new int[]{1, 2, 3, 1}, 15, SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, 0.0F), EntityEquipmentSlot.CHEST, true);
         this.variant = variant;
-        //this.setTranslationKey("betteranimalsplus." + name + variant);
+        this.setUnlocalizedName(Ref.MOD_ID + "." + name + variant);
         this.setRegistryName(name + variant);
         this.setCreativeTab(BetterAnimalsPlusMod.tab);
         this.repairItem = repairItem;

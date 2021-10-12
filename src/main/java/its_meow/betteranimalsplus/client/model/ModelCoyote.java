@@ -129,7 +129,7 @@ public class ModelCoyote extends ModelBetterAnimals {
         this.tail02 = new ModelRenderer(this, 0, 36);
         this.tail02.setRotationPoint(0.0F, 0.2F, 1.8F);
         this.tail02.addBox(-1.5F, -1.5F, 0.0F, 3, 3, 4, 0.0F);
-        this.setRotateAngle(this.tail02, -0.4553564018453205F, 0.0F, 0.0F);
+        this.setRotateAngle(this.tail02, -0.6553564018453205F, 0.0F, 0.0F);
         this.rHindLeg03 = new ModelRenderer(this, 55, 11);
         this.rHindLeg03.mirror = true;
         this.rHindLeg03.setRotationPoint(-0.1F, 3.2F, 0.6F);
@@ -154,7 +154,7 @@ public class ModelCoyote extends ModelBetterAnimals {
         this.tail03 = new ModelRenderer(this, 0, 44);
         this.tail03.setRotationPoint(0.0F, 0.0F, 3.5F);
         this.tail03.addBox(-1.5F, -1.5F, 0.0F, 3, 3, 6, 0.0F);
-        this.setRotateAngle(this.tail03, -0.31869712141416456F, 0.0F, 0.0F);
+        this.setRotateAngle(this.tail03, -0.41869712141416456F, 0.0F, 0.0F);
         this.rArm01 = new ModelRenderer(this, 30, 0);
         this.rArm01.mirror = true;
         this.rArm01.setRotationPoint(-3.1F, 0.2F, -3.3F);
@@ -329,8 +329,8 @@ public class ModelCoyote extends ModelBetterAnimals {
                 this.rArm01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount + 0.22759093446006054F;
             }
             
-            this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.16F * limbSwingAmount;
-            this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.16F * limbSwingAmount;
+            this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.12F * limbSwingAmount;
+            this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.11F * limbSwingAmount;
         }
     }
 

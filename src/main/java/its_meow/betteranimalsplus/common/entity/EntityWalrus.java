@@ -5,7 +5,6 @@ import java.util.Random;
 import its_meow.betteranimalsplus.common.entity.ai.BreatheAirGoal;
 import its_meow.betteranimalsplus.common.entity.ai.WalkAndSwimNodeProcessor;
 import its_meow.betteranimalsplus.init.ModEntities;
-import its_meow.betteranimalsplus.init.ModItems;
 import its_meow.betteranimalsplus.init.ModLootTables;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -27,7 +26,6 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -38,8 +36,6 @@ import net.minecraft.pathfinding.PathNavigateSwimmer;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -93,17 +89,18 @@ public class EntityWalrus extends EntityAnimal {
 //        }
 //    }
 
-//    @Override
-//    public boolean attackEntityAsMob(Entity entityIn) {
-//        // 1/3 chance to pierce armor
-//        boolean flag = entityIn.attackEntityFrom(this.getRNG().nextInt(3) == 0 ? DamageSource.causeMobDamage(this).setDamageBypassesArmor() : DamageSource.causeMobDamage(this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue());
-//        if(flag) {
-//            Vec3d pos = this.getPositionVector();
-//            Vec3d targetPos = entityIn.getPositionVector();
-//            ((EntityLivingBase) entityIn).knockBack(this, 0.5F, pos.x - targetPos.x, pos.z - targetPos.z);
-//        }
-//        return flag;
-//    }
+    @Override
+    public boolean attackEntityAsMob(Entity entityIn)
+    {
+        boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue());
+    	if (flag)
+        {
+            Vec3d pos = this.getPositionVector();
+            Vec3d targetPos = entityIn.getPositionVector();
+            ((EntityLivingBase) entityIn).knockBack(this, 0.5F, pos.x - targetPos.x, pos.z - targetPos.z);
+        }
+        return flag;
+    }
 
     public void setHome(BlockPos position) {
         this.dataManager.set(HOME_POS, position);
@@ -188,18 +185,19 @@ public class EntityWalrus extends EntityAnimal {
     protected void initEntityAI()
     {
         this.tasks.addTask(0, new BreatheAirGoal(this));
-        this.tasks.addTask(1, new EntityWalrus.GoToWaterGoal(this, 1.0D));
-        this.tasks.addTask(2, new EntityWalrus.GoHomeGoal(this, 1.0D));
-        this.tasks.addTask(3, new EntityWalrus.TravelGoal(this, 1.0D));
-        this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.0D, false)
+        this.tasks.addTask(1, new EntityWalrus.GoToWaterGoal(this, 1.1D));
+        this.tasks.addTask(2, new EntityWalrus.GoHomeGoal(this, 1.1D));
+        this.tasks.addTask(3, new EntityWalrus.TravelGoal(this, 1.1D));
+        this.tasks.addTask(4, new EntityAIAttackMelee(this, 1.2D, false)
         {
             @Override
-            protected double getAttackReachSqr(EntityLivingBase attackTarget) {
-                return (double) (this.attacker.width * this.attacker.width + attackTarget.width);
+            protected double getAttackReachSqr(EntityLivingBase attackTarget)
+            {
+                return 5.0D + attackTarget.width;
             }
         });
         this.tasks.addTask(4, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
-        this.tasks.addTask(5, new EntityWalrus.WanderGoal(this, 1.0D, 100));
+        this.tasks.addTask(5, new EntityWalrus.WanderGoal(this, 1.1D, 100));
         this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false, new Class[0]));
     }
 
@@ -279,7 +277,8 @@ public class EntityWalrus extends EntityAnimal {
     }
 	
     @Override
-    public void travel(float strafe, float vertical, float forward) {
+    public void travel(float strafe, float vertical, float forward)
+    {
         if(this.isServerWorld() && this.isInWater()) {
             this.moveRelative(strafe, vertical, forward, 0.1F);
             this.move(MoverType.SELF, motionX, motionY, motionZ);

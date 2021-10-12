@@ -10,7 +10,10 @@ import its_meow.betteranimalsplus.common.entity.ai.EntityAICallForHelp;
 import its_meow.betteranimalsplus.init.ModEntities;
 import its_meow.betteranimalsplus.init.ModLootTables;
 import its_meow.betteranimalsplus.util.HeadTypes;
+import net.minecraft.block.Block;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
@@ -18,12 +21,14 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.passive.EntityRabbit;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
@@ -34,20 +39,25 @@ public class EntityBearNeutral extends EntityBear implements IVariantTypes {
     public EntityBearNeutral(World world)
     {
         super(world);
-        //this.setSize(2F, 1.5F);
+        this.setSize(0.8F, 1.4F);
     }
 
-//    protected void initEntityAI() {
-//        this.tasks.addTask(0, new EntityAISwimming(this));
-//        this.tasks.addTask(1, new EntityBear.AIMeleeAttack());
-//        this.targetTasks.addTask(0, new EntityAICallForHelp(this, 16, new Class[0]));
-//        this.tasks.addTask(5, new EntityAIWander(this, 0.5D));
-//        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
-//        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityChicken>(this, EntityChicken.class, true));
-//        this.targetTasks.addTask(3, new EntityAINearestAttackableTarget<EntityRabbit>(this, EntityRabbit.class, true));
-//        this.targetTasks.addTask(4, new EntityAINearestAttackableTarget<EntityPheasant>(this, EntityPheasant.class, 90, true, true, Predicates.alwaysTrue()));
-//    }
-
+    protected double attackReachModifier()
+    {
+    	return 9.0D;
+    }
+    
+    @Override
+    protected void playStepSound(BlockPos pos, Block blockIn)
+    {
+        this.playSound(SoundEvents.ENTITY_POLAR_BEAR_STEP, 0.6F, 1.0F + rand.nextFloat()/10.0F);
+    }
+    
+    public boolean grabTarget(EntityLivingBase entity)
+    {
+    	return false;
+    }
+    
     @Override
     public boolean isChildI() {
         return this.isChild();
@@ -80,17 +90,28 @@ public class EntityBearNeutral extends EntityBear implements IVariantTypes {
         return this.initData(super.onInitialSpawn(difficulty, livingdata), getBiasedRandomType(validTypes));
     }
 
-    private int getBiasedRandomType(int[] validTypes) { // Double bias against kermode spawn
-        int r = validTypes[this.getRNG().nextInt(validTypes.length)];
-        if(validTypes.length > 1) { // No point if only a single possibility
-            if(r == 2) {
-                r = validTypes[this.getRNG().nextInt(validTypes.length)];
-            }
-            if(r == 2) {
-                r = validTypes[this.getRNG().nextInt(validTypes.length)];
-            }
+    private int getBiasedRandomType(int[] validTypes)
+    {
+        if ( this.world.canSnowAt(this.getPosition(), false) )
+        {
+        	return 2;
         }
-        return r;
+        else
+        {
+        	return 1;
+        }
+    	
+    	// Double bias against kermode spawn
+//        int r = validTypes[this.getRNG().nextInt(validTypes.length)];
+//        if(validTypes.length > 1) { // No point if only a single possibility
+//            if(r == 2) {
+//                r = validTypes[this.getRNG().nextInt(validTypes.length)];
+//            }
+//            if(r == 2) {
+//                r = validTypes[this.getRNG().nextInt(validTypes.length)];
+//            }
+//        }
+//        return r;
     }
 
     protected void entityInit() {
@@ -132,6 +153,20 @@ public class EntityBearNeutral extends EntityBear implements IVariantTypes {
     @Override
     protected boolean canDespawn() {
         return ModEntities.entityMap.containsKey("blackbear") ? ModEntities.entityMap.get("blackbear").despawn && !this.hasCustomName() : false;
+    }
+    
+    @Override
+    protected void applyEntityAttributes()
+    {
+        super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.32D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+        //this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_SPEED);
+        //this.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(1.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(0.5D);
     }
 
 }

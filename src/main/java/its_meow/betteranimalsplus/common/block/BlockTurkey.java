@@ -54,7 +54,7 @@ public class BlockTurkey extends Block {
     public BlockTurkey(String name) {
         super(Material.SPONGE);
         this.setRegistryName(Ref.MOD_ID, name);
-        //this.setTranslationKey(Ref.MOD_ID + "." + name);
+        this.setUnlocalizedName(Ref.MOD_ID + "." + name);
         this.setDefaultState(this.blockState.getBaseState().withProperty(BITES, 0).withProperty(FACING, EnumFacing.NORTH));
     }
 

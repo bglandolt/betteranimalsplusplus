@@ -81,14 +81,21 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
   @Override
   public boolean attackEntityFrom(DamageSource source, float amount)
   {
+	  if ( source == null ) return false;
+	  
 	  if ( source == DamageSource.FALL )
 	  {
-		  amount = amount/2.0F;
+		  amount /= 2.0F;
 		  if ( amount <= 2 )
 		  {
 			  return false;
 		  }
 		  return super.attackEntityFrom(source, amount);
+	  }
+	  
+	  if ( source.isProjectile() )
+	  {
+		  amount *= 2.0F;
 	  }
 	  
 	  if ( source.getTrueSource() instanceof EntityLivingBase )

@@ -62,6 +62,12 @@ public class EntityHirschgeist extends EntityLiving implements IMob {
     {
     	return false;
     }
+    
+    @Override
+    public boolean canBeCollidedWith()
+    {
+        return false;
+    }
 
     public boolean isDaytime() {
         long time = this.world.getWorldTime() % 24000L; // Time can go over values of 24000, so divide and take the

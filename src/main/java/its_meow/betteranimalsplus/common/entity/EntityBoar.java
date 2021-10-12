@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import its_meow.betteranimalsplus.common.entity.ai.AIHelper;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAIBoarAttack;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAICallForHelp;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAIChildFlee;
@@ -39,7 +40,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
@@ -62,34 +62,32 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
         this.setSize(0.8F, 0.7F);
         this.stepHeight = 1.05F;
     }
-    
-    public boolean fleeing = false;
-    
+        
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-    	 // FLEE NO TARGET
+    	// FLEE NO TARGET
 		if ( source != null && source.getTrueSource() instanceof EntityPlayer )
 		{
 			EntityPlayer p = (EntityPlayer)source.getTrueSource();
-			if ( this.getNavigator().getPathToEntityLiving(p) == null || p.posY + 2.5 > this.posY || this.getDistance(source.getTrueSource()) > 16 )
+			if ( this.rand.nextInt(4) == 0 || this.getNavigator().getPathToEntityLiving(p) == null || ( Math.abs(this.posY-p.posY) > 2 ) || this.getDistance(p) > 8 )
 			{
 				Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, p.getPositionVector());
 				
                 if ( vec3d != null )
                 {
-                	this.fleeing = true;
+                	this.fleeTimer = 80 + rand.nextInt(40);
                 	this.setAttackTarget(null);
-                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.8D);
+                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
                 }
                 else
                 {
     				vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, p.getPositionVector());
     				if ( vec3d != null )
                     {
-                    	this.fleeing = true;
+                    	this.fleeTimer = 60 + rand.nextInt(30);
     					this.setAttackTarget(null);
-    					this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.8D);
+    					this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
                     }
                 }
 			}
@@ -97,50 +95,76 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
 		return super.attackEntityFrom(source, amount);
     }
     
+    public int cannotReachTimer = 0;
+    public int fleeTimer = 0;
     
     @Override
     public void onLivingUpdate()
     {
-    	if ( this.getAttackTarget() != null && !this.fleeing )
+    	if ( this.getAttackTarget() != null )
     	{
-    		this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
-    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+        	this.cannotReachTimer++;
+        	if ( this.cannotReachTimer > 120 && ( Math.abs(this.posY-this.getAttackTarget().posY) > 1 || this.getDistance(this.getAttackTarget()) > 4 ) )
+        	{
+        		this.fleeTimer = 80 + rand.nextInt(80);
+        		this.cannotReachTimer = 0;
+        	}
+        	if ( this.fleeTimer > 0 )
+    		{
+				if ( this.getNavigator().noPath() )
+				{
+					Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, this.getAttackTarget().getPositionVector());
+					
+	                if ( vec3d != null )
+	                {
+	                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
+	                }
+	                else
+	                {
+	                	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, this.getAttackTarget().getPositionVector());
+						
+		                if ( vec3d != null )
+		                {
+		                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
+		                }
+		                else
+		                {
+		                	this.fleeTimer -= 20;
+		                }
+	                }
+				}
+				AIHelper.faceMovingDirection(this);
+    		}
+    		else
+    		{
+	    		this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
+	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+    		}
     	}
     	else
     	{
-        	this.faceMovingDirection();
+    		this.cannotReachTimer = 0;
     	}
     	
     	super.onLivingUpdate();
+    	    	
+    	if ( this.getAttackTarget() != null )
+    	{
+    		if ( this.fleeTimer > 0 )
+    		{
+				AIHelper.faceMovingDirection(this);
+    		}
+    		else
+    		{
+	    		this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
+	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+	    	}
+    	}
     	
-    	if ( this.getAttackTarget() != null && !this.fleeing )
-    	{
-    		this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
-    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
-    	}
-    	else
-    	{
-        	this.faceMovingDirection();
-    	}
-    }
-    
-    public void faceMovingDirection()
-    {
-    	try
-    	{
-	    	PathPoint p = this.getNavigator().getPath().getFinalPathPoint();
-
-	        double d0 = (p.x - this.posX) * 2;
-	        double d2 = (p.z - this.posZ) * 2;
-	        double d1 = p.y - this.posY;
-	
-	        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-	        float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
-	        float f1 = (float)(-(MathHelper.atan2(d1, d3) * (180D / Math.PI)));
-	        this.rotationPitch = f1;
-	        this.rotationYaw = f;
-    	}
-    	catch ( Exception e ) {}
+         if ( this.fleeTimer > 0 )
+         {
+         	this.fleeTimer--;
+         }
     }
     
     /*
@@ -173,10 +197,10 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
         {
             this.tasks.addTask(1, new EntityAIChildFlee(this, 1.0D)); // EntityVillager
         }
-        this.tasks.addTask(4, new EntityAIMate(this, 0.8D));
-        this.tasks.addTask(5, new EntityAIFollowHerd(this, 0.8D));
+        this.tasks.addTask(4, new EntityAIMate(this, 0.7D));
+        this.tasks.addTask(5, new EntityAIFollowHerd(this, 0.7D));
         this.tasks.addTask(6, new BoarAIEatCrops(this));
-        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 0.8D));
+        this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 0.7D));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
         this.targetTasks.addTask(1, new EntityAIBoarAttack(this));
     }
@@ -195,7 +219,7 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     	}
     	else
     	{
-    		this.fleeing = false;
+        	this.fleeTimer = 0;
             super.setAttackTarget(entitylivingbaseIn);
     	}
     }
@@ -205,10 +229,10 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(12.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.38D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3.5D);
-        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(24.0D);
     }
 
     @Override
@@ -269,7 +293,8 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
         float f = (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
         int i = 0;
 
-        if (entityIn instanceof EntityLivingBase) {
+        if (entityIn instanceof EntityLivingBase)
+        {
             f += EnchantmentHelper.getModifierForCreature(this.getHeldItemMainhand(), ((EntityLivingBase) entityIn).getCreatureAttribute());
             i += EnchantmentHelper.getKnockbackModifier(this);
         }
@@ -395,7 +420,8 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     }
 
     @Override
-    protected int[] getTypesFor(Set<BiomeDictionary.Type> types) {
+    protected int[] getTypesFor(Set<BiomeDictionary.Type> types)
+    {
         if(types.contains(Type.FOREST) && !types.contains(Type.CONIFEROUS)) {
             return new int[] {1, 2, 3};
         } else if(types.contains(Type.CONIFEROUS) && !types.contains(Type.SNOWY)) {
@@ -407,7 +433,7 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
         } else if(types.contains(Type.SAVANNA) || types.contains(Type.PLAINS)) {
             return new int[] {1, 2, 3};
         } else {
-            return new int[] {1, 2, 3, 4};
+            return new int[] {1, 2, 3};
         }
     }
 
@@ -460,13 +486,13 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     {
         public AIMeleeAttack()
         {
-            super(EntityBoar.this, 1.0D, true);
+            super(EntityBoar.this, 1.1D, true);
         }
         
         @Override
         protected void checkAndPerformAttack(EntityLivingBase entity, double dist)
         {
-        	if ( EntityBoar.this.fleeing ) return;
+        	if ( EntityBoar.this.fleeTimer > 0 ) return;
         	
         	double attackRange = this.getAttackReachSqr(entity);
 
@@ -485,14 +511,21 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
 		        	this.attackTick = 14;
 	        		this.attacker.setSprinting(false);
 		        }
-		        else if ( this.attackTick <= 5 )
+		        else if ( this.attackTick <= 8 )
 		        {	        		
 		        	this.attacker.setSprinting(true);
 
-		        	if ( this.attackTick == 5 )
+		        	if ( this.attackTick == 4 )
 		        	{
 		        		this.attacker.world.setEntityState(this.attacker, (byte) 27);
 		        		this.attacker.getNavigator().clearPath();
+		        		if ( !this.attacker.world.isRemote )
+		        		{
+		        			Vec3d velocityVector = new Vec3d(entity.posX-this.attacker.posX, 0, entity.posZ-this.attacker.posZ);
+		        			double push = 0.25D;
+		        			this.attacker.addVelocity(velocityVector.x*push, -0.02D, velocityVector.z*push);
+		        			this.attacker.velocityChanged = true;
+		                }
 		        		
 //		        		if ( this.attacker.world.rand.nextInt(4) == 0 )
 //		        		{

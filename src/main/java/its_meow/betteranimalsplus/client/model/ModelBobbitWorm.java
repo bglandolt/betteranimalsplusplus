@@ -4,12 +4,14 @@ import its_meow.betteranimalsplus.common.entity.EntityBobbitWorm;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * bobbit_worm - cybercat5555
  * Created using Tabula 7.0.1
  */
-public class ModelBobbitWorm extends ModelBase {
+public class ModelBobbitWorm extends ModelBase
+{
     public ModelRenderer body;
     public ModelRenderer lFin00a;
     public ModelRenderer rFin00a;
@@ -375,24 +377,70 @@ public class ModelBobbitWorm extends ModelBase {
             } else {
                 float mul = 0.1F;
                 float div = 40F;
-                this.lMandible00.rotateAngleY = (float) Math.cos(ageInTicks * (mul + 0.03F) + add) / div + 0.3839724354387525F;
-                this.rMandible00.rotateAngleY = (float) Math.cos(ageInTicks * (mul) + add) / div - 0.3839724354387525F;
+                this.lMandible00.rotateAngleY = MathHelper.cos(ageInTicks * (mul + 0.03F) + add) / div + 0.3839724354387525F;
+                this.rMandible00.rotateAngleY = MathHelper.cos(ageInTicks * (mul) + add) / div - 0.3839724354387525F;
             }
             this.body.rotateAngleX = 0;
             this.body.offsetY = 0;
-            if(worm.world.isBlockLoaded(entity.getPosition()) && worm.world.isBlockLoaded(entity.getPosition().down())) {
-                if(worm.motionX < 0.03 && worm.motionZ < 0.03 && worm.motionY < 0.03 && !worm.getMoveHelper().isUpdating() && worm.isGoodBurrowingPosition(worm.getPosition())) {
-                    this.body.rotateAngleX = - (float) Math.toRadians(60F);
-                    this.body.offsetY = 0.3F;
+            
+            if (worm.world.isBlockLoaded(entity.getPosition()) && worm.world.isBlockLoaded(entity.getPosition().down()))
+            {
+                if (worm.motionX < 0.03 && worm.motionZ < 0.03 && worm.motionY < 0.03 && !worm.getMoveHelper().isUpdating() && worm.isGoodBurrowingPosition(worm.getPosition()))
+                {
+                    this.body.rotateAngleX = (float) - Math.toRadians(70.F);
+                    
+//                    if ( worm.grabTargetAnimation > 0 )
+//                    {
+//                    	if ( worm.grabTargetAnimation > 15 )
+//                    	{
+//                    		int n = 30-worm.grabTargetAnimation;
+//                        	this.body.offsetY = 0.3F - (n)/(8.0F + n/2.0F);
+//                            this.body.offsetX = this.body.offsetY;
+//                    	}
+//                    	else
+//                    	{
+//                    		int n = worm.grabTargetAnimation;
+//                        	this.body.offsetY = 0.3F - (n)/(8.0F + n/2.0F);
+//                            this.body.offsetX = this.body.offsetY;
+//                    	}
+//                    }
+//                    else
+//                    {
+//                        this.body.offsetX = 0.0F;
+//                    	this.body.offsetY = 0.3F;
+//                    }
                 }
             }
             float mul = 0.3F;
-            float div = 20F;
-            this.lAntenna00.rotateAngleX = (float) Math.cos(ageInTicks * (mul + 0.05F) + add) / div;
-            this.lAntenna01.rotateAngleX = (float) Math.cos(ageInTicks * mul + add) / div;
-            this.mAntenna.rotateAngleX = (float) Math.cos(ageInTicks * (mul + 0.1F) + add) / div;
-            this.rAntenna00.rotateAngleX = (float) Math.cos(ageInTicks * mul + add) / div;
-            this.rAntenna01.rotateAngleX = (float) Math.cos(ageInTicks * (mul + 0.03F) + add) / div;
+            float div = 20.0F;
+            this.lAntenna00.rotateAngleX = MathHelper.cos(ageInTicks * (mul + 0.05F) + add) / div;
+            this.lAntenna01.rotateAngleX = MathHelper.cos(ageInTicks * mul + add) / div;
+            this.mAntenna.rotateAngleX = MathHelper.cos(ageInTicks * (mul + 0.1F) + add) / div;
+            this.rAntenna00.rotateAngleX = MathHelper.cos(ageInTicks * mul + add) / div;
+            this.rAntenna01.rotateAngleX = MathHelper.cos(ageInTicks * (mul + 0.03F) + add) / div;
+            
+            
+            if ( worm.grabTargetAnimation > 0 )
+            {
+            	if ( worm.grabTargetAnimation > 15 )
+            	{
+            		int n = 30-worm.grabTargetAnimation;
+                	this.body.offsetY = 0.3F - (n)/(3.0F + n/3.0F);
+                    this.body.offsetZ = this.body.offsetY - 0.3F;
+            	}
+            	else
+            	{
+            		int n = worm.grabTargetAnimation;
+                	this.body.offsetY = 0.3F - (n)/(3.0F + n/3.0F);
+                    this.body.offsetZ = this.body.offsetY - 0.3F;
+            	}
+            }
+            else
+            {
+            	this.body.offsetY = 0.3F;
+                this.body.offsetZ = 0.0F;
+            }
+            
         }
     }
 

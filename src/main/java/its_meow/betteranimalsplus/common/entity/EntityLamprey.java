@@ -31,7 +31,6 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
 public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
@@ -40,9 +39,9 @@ public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
 
     public EntityLamprey(World worldIn) {
         super(worldIn);
-        this.setSize(1.0F, 0.7F);
+        this.setSize(0.7F, 0.7F);
     }
-
+    
     @Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAIMoveTowardsAttackTarget(this, 0.8D, 30));
@@ -62,6 +61,12 @@ public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
             }
             return false;
         }, true));
+    }
+    
+    public void onDeath(DamageSource cause)
+    {
+    	this.dismountZotz();
+    	super.onDeath(cause);
     }
 
     @Override
@@ -83,7 +88,8 @@ public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
     }
 
     @Override
-    public void onUpdate() {
+    public void onUpdate()
+    {
         super.onUpdate();
         if(!this.inWater) {
             this.motionX *= 0.2F;
@@ -106,7 +112,7 @@ public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
             }
         }
         if(!this.world.isRemote && this.isDead && this.isRiding()) {
-            this.dismountAndSync();
+            this.dismountZotz();
         }
     }
 
@@ -119,30 +125,32 @@ public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
     protected SoundEvent getDeathSound() {
         return SoundEvents.ENTITY_SQUID_DEATH;
     }
+    
+    protected int riding = 0;
+    protected int abilityCooldown = 0;
 
     @Override
-    public boolean attackEntityAsMob(Entity entityIn) {
+    public boolean attackEntityAsMob(Entity entityIn)
+    {
         float f = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
-        if(entityIn instanceof EntityLivingBase) {
+        
+        if (entityIn instanceof EntityLivingBase)
+        {
             f += EnchantmentHelper.getModifierForCreature(this.getHeldItemMainhand(), ((EntityLivingBase)entityIn).getCreatureAttribute());
         }
+        
         boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), f);
-        if(flag) {
+        
+        if (flag)
+        {
             this.lastAttack = this.ticksExisted;
-            if(entityIn instanceof EntityPlayer) {
+            
+            if (entityIn instanceof EntityPlayer)
+            {
                 EntityPlayer entityplayer = (EntityPlayer)entityIn;
-
-
-                int weakTicks = 0;
-                if (this.world.getDifficulty() == EnumDifficulty.EASY) {
-                    weakTicks = 200;
-                } else if (this.world.getDifficulty() == EnumDifficulty.NORMAL) {
-                    weakTicks = 300;
-                } else if (this.world.getDifficulty() == EnumDifficulty.HARD) {
-                    weakTicks = 600;
-                }
-                entityplayer.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("weakness"), weakTicks, 1, false, false));
-
+                
+                entityplayer.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("weakness"), 200, 0, false, false));
+                
                 ItemStack itemstack = this.getHeldItemMainhand();
                 ItemStack itemstack1 = entityplayer.isHandActive() ? entityplayer.getActiveItemStack() : ItemStack.EMPTY;
                 if(!itemstack.isEmpty() && !itemstack1.isEmpty() && itemstack.getItem().canDisableShield(itemstack, itemstack1, entityplayer, this) && itemstack1.getItem().isShield(itemstack1, entityplayer)) {
@@ -152,14 +160,52 @@ public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
                         this.world.setEntityState(entityplayer, (byte)30);
                     }
                 }
+                
+                if ( !this.world.isRemote )
+                {
+                	entityIn.motionX /= 2.0D;
+                	entityIn.motionY /= 2.0D;
+                	entityIn.motionZ /= 2.0D;
+                }
+                
             }
             this.applyEnchantments(this, entityIn);
         }
         return flag;
     }
 
+//    @Override
+//    public boolean attackEntityAsMob(Entity entityIn)
+//    {
+//        boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getBaseValue());
+//    	if (flag)
+//        {
+//            Vec3d pos = this.getPositionVector();
+//            Vec3d targetPos = entityIn.getPositionVector();
+//            ((EntityLivingBase) entityIn).knockBack(this, 0.5F, pos.x - targetPos.x, pos.z - targetPos.z);
+//        }
+//        return flag;
+//    }
+    
     @Override
-    public void onLivingUpdate() {
+    public void onLivingUpdate()
+    {
+    	if ( this.isRiding() )
+    	{
+        	if ( this.riding++ > 90 )
+        	{
+        		this.dismountZotz();
+        	}
+    	}
+    	else
+    	{
+    		if ( this.abilityCooldown > 0 )
+    		{
+    			this.abilityCooldown--;
+    		}
+        	this.riding = 0;
+    	}
+    	
         super.onLivingUpdate();
         if(!this.world.isRemote && this.getAttackTarget() != null && !this.getAttackTarget().isDead) {
             if(this.isRiding() && this.getRidingEntity() == this.getAttackTarget()) {
@@ -178,42 +224,84 @@ public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
         }
     }
 
-    @Override
-    public void dismountRidingEntity() {
-        if(this.world.isChunkGeneratedAt(this.chunkCoordX, this.chunkCoordZ)) {
-            if(this.getRidingEntity() != null && !this.getRidingEntity().shouldDismountInWater(this)) {
-                super.dismountRidingEntity();
-            } else if(this.getAttackTarget() == null) {
-                super.dismountRidingEntity();
-            }
-        }
-    }
+//    @Override
+//    public void dismountRidingEntity()
+//    {
+//        if(this.world.isChunkGeneratedAt(this.chunkCoordX, this.chunkCoordZ))
+//        {
+//            if(this.getRidingEntity() != null && !this.getRidingEntity().shouldDismountInWater(this)) {
+//                super.dismountRidingEntity();
+//            } else if(this.getAttackTarget() == null) {
+//                super.dismountRidingEntity();
+//            }
+//        }
+//    }
+//    
+//    public void dismountAndSync()
+//    {
+//        Entity mount = this.getRidingEntity();
+//               	
+//    	if ( mount != null )
+//    	{
+//            this.dismountRidingEntity();
+//            this.dismountEntity(mount);
+//
+//            if ( !world.isRemote ) // SERVER
+//            {
+//                if ( mount instanceof EntityPlayerMP )
+//                {
+//                    ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
+//                }
+//            }
+//    	}
+//    }
     
-    public void dismountAndSync() {
-        if(!this.world.isRemote) {
-            Entity mount = this.getRidingEntity();
-            this.dismountEntity(mount);
-            this.dismountRidingEntity();
-            if(mount instanceof EntityPlayerMP) {
-                ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
-            }
-        }
-    }
+    
 
     @Override
-    public boolean shouldDismountInWater(Entity rider) {
+    public boolean shouldDismountInWater(Entity rider)
+    {
         return false;
     }
 
-    public void grabTarget(Entity entity) {
-        if(!world.isRemote) {
-            if(entity == this.getAttackTarget() && !this.isRidingOrBeingRiddenBy(entity) && this.inWater) {
-                this.startRiding(entity);
-                if(entity instanceof EntityPlayerMP) {
-                    ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
-                }
+    public boolean grabTarget(EntityLivingBase entity)
+    {
+    	if ( this.abilityCooldown > 0 )
+    	{
+    		return false;
+    	}
+    	
+        if ( !this.isRiding() )
+        {
+            this.startRiding(entity, true);
+            if ( !world.isRemote && entity instanceof EntityPlayerMP)
+            {
+                ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
             }
         }
+        
+        return true;
+    }
+
+    public void dismountZotz()
+    {
+    	Entity mount = this.getRidingEntity();
+    	
+    	if ( mount != null )
+    	{
+            this.dismountRidingEntity();
+            this.dismountEntity(mount);
+
+            if ( !world.isRemote ) // SERVER
+            {
+                if ( mount instanceof EntityPlayerMP )
+                {
+                    ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
+                }
+            }
+    	}
+    	
+    	this.abilityCooldown = 60 + this.rand.nextInt(60);
     }
 
     @Override

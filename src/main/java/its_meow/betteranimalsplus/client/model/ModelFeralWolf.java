@@ -378,7 +378,7 @@ public class ModelFeralWolf extends ModelBetterAnimals
             }
             
             this.torso.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.16F * limbSwingAmount;
-            this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.16F * limbSwingAmount;
+            this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.15F * limbSwingAmount;
         }
 
         if ( wolf.isRiding() )

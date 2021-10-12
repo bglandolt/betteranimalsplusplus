@@ -7,6 +7,7 @@ import its_meow.betteranimalsplus.init.ModLootTables;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityAgeable;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAIFollowParent;
 import net.minecraft.entity.ai.EntityAIMate;
 import net.minecraft.entity.ai.EntityAIPanic;
@@ -14,6 +15,7 @@ import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITempt;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -28,6 +30,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityPheasant extends EntityAnimalWithTypes {
@@ -48,12 +51,13 @@ public class EntityPheasant extends EntityAnimalWithTypes {
         //this.timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
     }
 
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     protected void initEntityAI() {
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIPanic(this, 1.4D));
         this.tasks.addTask(2, new EntityAIMate(this, 1.0D));
-        this.tasks.addTask(3, new EntityAITempt(this, 1.0D, Items.PUMPKIN_SEEDS, false)
+        this.tasks.addTask(3, new EntityAITempt(this, 1.0D, Items.PUMPKIN_SEEDS, true)
         {
         	@Override
         	protected boolean isTempting(ItemStack stack)
@@ -61,19 +65,48 @@ public class EntityPheasant extends EntityAnimalWithTypes {
                 return stack.getItem() instanceof ItemSeeds;
             }
         });
-        this.tasks.addTask(4, new EntityAIFollowParent(this, 1.1D));
-        this.tasks.addTask(5, new EntityAIWanderAvoidWater(this, 1.0D));
-        this.tasks.addTask(6, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
+        this.tasks.addTask(4, new EntityAIAvoidEntity(this, EntityPlayer.class, 9.0F, 1.0D, 1.4D)
+		{
+			@Override
+        	public void startExecuting()
+            {
+				if ( rand.nextInt(3) == 0 )
+				{
+					if ( this.entity.onGround && !this.entity.world.isRemote )
+					{
+						if ( this.closestLivingEntity != null && this.entity.getDistance(this.closestLivingEntity) < 6 )
+						{
+							Vec3d velocityVector = new Vec3d(this.entity.posX-this.closestLivingEntity.posX, 0, this.entity.posZ-this.closestLivingEntity.posZ);
+							double push = 2.0D+this.entity.getDistanceSq(this.closestLivingEntity);
+							this.entity.addVelocity(velocityVector.x/push, 0.22D+rand.nextDouble()/8.0D, velocityVector.z/push);
+							this.entity.velocityChanged = true;
+						}
+						else
+						{
+							this.entity.addVelocity(0.0D, 0.22D+rand.nextDouble()/8.0D, 0.0D);
+							this.entity.velocityChanged = true;
+						}
+					}
+				}
+                super.startExecuting();
+            }
+	
+		});
+        this.tasks.addTask(5, new EntityAIFollowParent(this, 1.1D));
+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D));
+        this.tasks.addTask(7, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
     }
 
     @Override
-    protected void applyEntityAttributes() {
+    protected void applyEntityAttributes()
+    {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(4.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.25D);
     }
 
-    private int getNewPeck() {
+    private int getNewPeck()
+    {
         return this.rand.nextInt(600) + 30;
     }
 
@@ -104,17 +137,14 @@ public class EntityPheasant extends EntityAnimalWithTypes {
 
         this.wingRotation += this.wingRotDelta * 2.0F;
 
-        if(!this.onGround || this.getMoveHelper().isUpdating())
+        if ( this.getPeckTime() <= 61 && !this.onGround || (this.motionX*this.motionX+this.motionZ*this.motionZ) > 0.008D )
         {
-            if(this.getPeckTime() <= 61)
-            {
-                this.setPeckTime(80);
-            }
+        	this.setPeckTime(100);
         }
 
         if ( !this.world.isRemote )
         {
-	        if ( this.getPeckTime() <= 60 && this.getPeckTime() % 7 == 0 && this.rand.nextBoolean() )
+	        if ( this.getPeckTime() <= 60 && this.getPeckTime() % 4 == 0 && this.rand.nextBoolean() )
 	        {
 	            this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
 	        }
@@ -154,8 +184,9 @@ public class EntityPheasant extends EntityAnimalWithTypes {
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, Block blockIn) {
-        this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 0.8F);
+    protected void playStepSound(BlockPos pos, Block blockIn)
+    {
+    	//this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 0.8F);
     }
 
     @Override
@@ -189,6 +220,7 @@ public class EntityPheasant extends EntityAnimalWithTypes {
     {
     	this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
     	this.dropItem(ModItems.PHEASANT_EGG, 1);
+    	this.resetInLove();
     	return null;
 //        if ( !(ageable instanceof IVariantTypes) )
 //        {

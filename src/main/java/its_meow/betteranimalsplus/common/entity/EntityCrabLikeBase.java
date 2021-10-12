@@ -19,22 +19,25 @@ public abstract class EntityCrabLikeBase extends EntityAnimalWithTypes {
 
     public int snipTime = 0;
 
-    public EntityCrabLikeBase(World worldIn) {
+    public EntityCrabLikeBase(World worldIn)
+    {
         super(worldIn);
         this.setPathPriority(PathNodeType.WATER, 10F);
     }
     
     @Override
-    protected void applyEntityAttributes() {
+    protected void applyEntityAttributes()
+    {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(6.5D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(6.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.3D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(3D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.0D);
     }
     
     @Override
-    public void onUpdate() {
+    public void onUpdate()
+    {
         super.onUpdate();
         if(snipTime == 0 && Math.random() < 0.005) {
             snipTime = 20;
@@ -46,7 +49,8 @@ public abstract class EntityCrabLikeBase extends EntityAnimalWithTypes {
     }
     
     @Override
-    public boolean attackEntityAsMob(Entity entityIn) {
+    public boolean attackEntityAsMob(Entity entityIn)
+    {
         if(snipTime == 0) {
             snipTime = 20;
         }

@@ -56,7 +56,7 @@ public class EntityGoat extends EntityAnimalEatsGrassWithTypes {
     public EntityGoat(World worldIn) {
         super(worldIn, 5);
         this.world = worldIn;
-        this.setSize(1.2F, 1.2F);
+        this.setSize(0.8F, 0.7F);
     }
 
     @Override
@@ -167,7 +167,9 @@ public class EntityGoat extends EntityAnimalEatsGrassWithTypes {
     }
 
     @Override
-    protected SoundEvent getAmbientSound() {
+    protected SoundEvent getAmbientSound()
+    {
+        this.world.setEntityState(this, (byte) 10);
         return SoundEvents.ENTITY_SHEEP_AMBIENT;
     }
 

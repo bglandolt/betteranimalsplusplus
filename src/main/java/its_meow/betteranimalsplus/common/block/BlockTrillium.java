@@ -28,7 +28,7 @@ public class BlockTrillium extends BlockBush {
     public BlockTrillium() {
         super(Material.PLANTS);
         this.setRegistryName("trillium");
-        //this.setTranslationKey("betteranimalsplus.trillium");
+        this.setUnlocalizedName("betteranimalsplus.trillium");
         this.translucent = true;
         this.fullBlock = false;
         this.setCreativeTab(BetterAnimalsPlusMod.tab);

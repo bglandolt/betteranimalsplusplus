@@ -21,10 +21,14 @@ public abstract class EntityAnimalEatsGrassWithTypes extends EntityAnimalWithTyp
 	}
 
 	@SideOnly(Side.CLIENT)
-	public void handleStatusUpdate(byte id) {
-		if (id == 10) {
+	public void handleStatusUpdate(byte id)
+	{
+		if (id == 10)
+		{
 			this.eatTimer = 60;
-		} else {
+		}
+		else
+		{
 			super.handleStatusUpdate(id);
 		}
 	}

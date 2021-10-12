@@ -13,10 +13,10 @@ import its_meow.betteranimalsplus.init.ModLootTables;
 import its_meow.betteranimalsplus.util.HeadTypes;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAISit;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
@@ -83,6 +83,16 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     public int cannotReachTimer = 0;
     public int fleeTimer = 0;
     
+    protected double jumpModifier()
+    {
+    	return 0.36D;
+    }
+    
+    protected double forwardModifier()
+    {
+    	return 0.32D;
+    }
+    
     public class AIMeleeAttack extends PublicEntityAIAttack
     {
         public AIMeleeAttack()
@@ -121,11 +131,11 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
                      
                     if ( entity.posY - this.attacker.posY <= -1 )
  	                {
- 	                	this.attacker.motionY -= 0.2D;
+ 	                	this.attacker.motionY -= 0.16D;
  	                }
  	                else
  	                {
- 	                	this.attacker.motionY += 0.2D;
+ 	                	this.attacker.motionY += 0.16D;
  	                }
  		        }
  		    }
@@ -143,8 +153,8 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
                 
              	if ( EntityFeralWolf.this.latchTimer <= 0 )
              	{
-			        this.attacker.motionX += d0 / f * 1.25D + this.attacker.motionX * 0.32D;
-                    this.attacker.motionZ += d1 / f * 1.25D + this.attacker.motionZ * 0.32D;
+			        this.attacker.motionX += d0 / f * 1.25D + this.attacker.motionX * forwardModifier();
+                    this.attacker.motionZ += d1 / f * 1.25D + this.attacker.motionZ * forwardModifier();
                     //this.attacker.faceEntity(this.attacker.getAttackTarget(), 20.0F, 20.0F);
                     AIHelper.faceEntitySmart(this.attacker, this.attacker.getAttackTarget());
 		    		this.attacker.getLookHelper().setLookPositionWithEntity(this.attacker.getAttackTarget(), 20.0F, 20.0F);
@@ -152,8 +162,8 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
              	}
              	else
              	{
-			        this.attacker.motionX += d0 / f * 0.75D + this.attacker.motionX * 0.32D;
-                    this.attacker.motionZ += d1 / f * 0.75D + this.attacker.motionZ * 0.32D;
+			        this.attacker.motionX += d0 / f * 0.75D + this.attacker.motionX * forwardModifier();
+                    this.attacker.motionZ += d1 / f * 0.75D + this.attacker.motionZ * forwardModifier();
                     //this.attacker.faceEntity(this.attacker.getAttackTarget(), 20.0F, 20.0F);
                     AIHelper.faceEntitySmart(this.attacker, this.attacker.getAttackTarget());
 		    		this.attacker.getLookHelper().setLookPositionWithEntity(this.attacker.getAttackTarget(), 20.0F, 20.0F);
@@ -161,11 +171,11 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
              	
                 if ( entity.posY - this.attacker.posY <= -0.5D )
                 {
-                	this.attacker.motionY -= 0.4D;
+                	this.attacker.motionY -= jumpModifier();
                 }
                 else
                 {
-                	this.attacker.motionY += 0.4D;
+                	this.attacker.motionY += jumpModifier();
                 }
          	}
         }
@@ -243,8 +253,13 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
         @Override
         protected double getAttackReachSqr(EntityLivingBase attackTarget)
         {
-            return 9.0D + attackTarget.width;
+            return attackReachModifier() + attackTarget.width;
         }
+    }
+    
+    protected double attackReachModifier()
+    {
+    	return 9.0D;
     }
     
     public int leaping = -1;
@@ -534,21 +549,18 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     	this.world.setEntityState(this, (byte)27);
     	this.latchSnapshot = this.ticksExisted;
     	
-    	if ( this.world.isRemote )
-    	{
+        if ( this.world.isRemote && entity instanceof EntityPlayerSP )
+        {
 			this.oldCameraMode = Minecraft.getMinecraft().gameSettings.thirdPersonView;
 			Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
-    	}
-		
-        //if(!world.isRemote)
+        }
+        
+        if ( !this.isRiding() )
         {
-            if ( !this.isRiding() )
+            this.startRiding(entity, true);
+            if ( !world.isRemote && entity instanceof EntityPlayerMP)
             {
-                this.startRiding(entity, true);
-                if ( !world.isRemote && entity instanceof EntityPlayerMP)
-                {
-                    ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
-                }
+                ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
             }
         }
         
@@ -557,14 +569,9 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
 
     public void dismountZotz()
     {
-		if ( this.world.isRemote && this.oldCameraMode != -1 )
-		{
-			Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
-			this.oldCameraMode = -1;
-		}
-
-    	this.latchTimer = 100 + this.rand.nextInt(7)*10;
+    	this.latchTimer = 80 + this.rand.nextInt(6)*10;
     	Entity mount = this.getRidingEntity();
+    	
     	if ( mount != null )
     	{
             this.dismountRidingEntity();
@@ -572,14 +579,77 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
 
             if ( !world.isRemote ) // SERVER
             {
-                if(mount instanceof EntityPlayerMP)
+                if ( mount instanceof EntityPlayerMP )
                 {
                     ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
                 }
             }
-            
+            else if ( this.oldCameraMode != -1 && mount instanceof EntityPlayerMP )
+    		{
+    			Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
+    			this.oldCameraMode = -1;
+    		}
     	}
     }
+    
+//    public boolean grabTarget(EntityLivingBase entity)
+//    {
+//    	this.fleeTimer = 0;
+//    	
+//    	if ( !entity.isPotionApplicable(new PotionEffect(MobEffects.SLOWNESS)) ) // || !entity.isPotionActive(MobEffects.SLOWNESS) )
+//    	{
+//    		return false;
+//    	}
+//    	
+//    	this.world.setEntityState(this, (byte)27);
+//    	this.latchSnapshot = this.ticksExisted;
+//    	
+//    	if ( this.world.isRemote )
+//    	{
+//			this.oldCameraMode = Minecraft.getMinecraft().gameSettings.thirdPersonView;
+//			Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
+//    	}
+//		
+//        //if(!world.isRemote)
+//        {
+//            if ( !this.isRiding() )
+//            {
+//                this.startRiding(entity, true);
+//                if ( !world.isRemote && entity instanceof EntityPlayerMP)
+//                {
+//                    ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
+//                }
+//            }
+//        }
+//        
+//        return true;
+//    }
+//
+//    public void dismountZotz()
+//    {
+//		if ( this.world.isRemote && this.oldCameraMode != -1 )
+//		{
+//			Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
+//			this.oldCameraMode = -1;
+//		}
+//
+//    	this.latchTimer = 100 + this.rand.nextInt(7)*10;
+//    	Entity mount = this.getRidingEntity();
+//    	if ( mount != null )
+//    	{
+//            this.dismountRidingEntity();
+//            this.dismountEntity(mount);
+//
+//            if ( !world.isRemote ) // SERVER
+//            {
+//                if(mount instanceof EntityPlayerMP)
+//                {
+//                    ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
+//                }
+//            }
+//            
+//    	}
+//    }
 
     @Override
     public void dismountRidingEntity()
@@ -602,8 +672,18 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     @Override
     public double getYOffset()
     {
+    	if ( this.getRidingEntity() != null )
+    	{
+    		return -this.getRidingEntity().height+0.8D;
+    	}
         return -1.0D;
     }
+    
+//    @Override
+//    public double getYOffset()
+//    {
+//        return -1.0D;
+//    }
 
     @Override
     public void setAttackTarget(@Nullable EntityLivingBase entitylivingbaseIn)
