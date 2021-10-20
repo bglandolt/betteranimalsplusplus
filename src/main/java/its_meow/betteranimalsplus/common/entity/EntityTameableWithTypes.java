@@ -78,7 +78,8 @@ public abstract class EntityTameableWithTypes extends EntityTameableBetterAnimal
     protected abstract String getContainerName();
 
     @Override
-    protected boolean canDespawn() {
+    protected boolean canDespawn()
+    {
         return ModEntities.entityMap.containsKey(this.getContainerName()) ? ModEntities.entityMap.get(this.getContainerName()).despawn : false;
     }
 

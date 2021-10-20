@@ -4,9 +4,6 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.google.common.base.Predicates;
-
-import its_meow.betteranimalsplus.common.entity.ai.EntityAICallForHelp;
 import its_meow.betteranimalsplus.init.ModEntities;
 import its_meow.betteranimalsplus.init.ModLootTables;
 import its_meow.betteranimalsplus.util.HeadTypes;
@@ -14,13 +11,6 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAISwimming;
-import net.minecraft.entity.ai.EntityAIWander;
-import net.minecraft.entity.ai.EntityAIWatchClosest;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.entity.passive.EntityRabbit;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -32,14 +22,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
-public class EntityBearNeutral extends EntityBear implements IVariantTypes {
-
+public class EntityBearNeutral extends EntityBear implements IVariantTypes
+{
     protected static final DataParameter<Integer> TYPE_NUMBER = EntityDataManager.<Integer>createKey(EntityBearNeutral.class, DataSerializers.VARINT);
 
     public EntityBearNeutral(World world)
     {
         super(world);
-        this.setSize(0.8F, 1.4F);
+        this.setSize(0.95F, 1.4F);
     }
 
     protected double attackReachModifier()

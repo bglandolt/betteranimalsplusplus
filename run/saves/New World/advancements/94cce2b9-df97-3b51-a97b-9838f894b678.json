@@ -1,0 +1,44 @@
+{
+  "minecraft:husbandry/balanced_diet": {
+    "criteria": {
+      "enchanted_golden_apple": "2021-10-11 14:49:51 -0400"
+    },
+    "done": false
+  },
+  "betteranimalsplus:root": {
+    "criteria": {
+      "tick": "2021-10-11 14:46:50 -0400"
+    },
+    "done": true
+  },
+  "minecraft:husbandry/root": {
+    "criteria": {
+      "consumed_item": "2021-10-11 14:49:51 -0400"
+    },
+    "done": true
+  },
+  "betteranimalsplus:bear_killed_player": {
+    "criteria": {
+      "bear_kill1": "2021-10-11 14:49:58 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/combat/arrow": {
+    "criteria": {
+      "has_feather": "2021-10-11 14:47:32 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/root": {
+    "criteria": {
+      "killed_by_something": "2021-10-11 14:49:58 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "plains": "2021-10-11 14:46:50 -0400"
+    },
+    "done": false
+  }
+}

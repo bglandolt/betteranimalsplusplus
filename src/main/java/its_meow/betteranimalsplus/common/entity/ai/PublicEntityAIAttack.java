@@ -125,6 +125,8 @@ public class PublicEntityAIAttack extends EntityAIBase
      */
     public void resetTask()
     {
+    	this.attacker.setSprinting(false);
+
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
 
         if (entitylivingbase instanceof EntityPlayer && (((EntityPlayer)entitylivingbase).isSpectator() || ((EntityPlayer)entitylivingbase).isCreative()))

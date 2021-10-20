@@ -467,13 +467,13 @@ public class ModelBear extends ModelBetterAnimals {
 	        	// OTHER
 	        	if ( bear.warningSoundTicks >= 0 && !bear.isRiding() )
 	        	{
-		        	float r = ( 0.5F - MathHelper.abs((bear.attackAnimationTimer-25)/50.0F) ) * 2.0F;
-		        	this.lowerJaw.rotateAngleX = (float) MathHelper.clamp(r, 0.0D, 0.6D);
-		        	bear.warningSoundTicks--;
+		        	this.lowerJaw.rotateAngleX = MathHelper.cos((15.0F-bear.warningSoundTicks--)/15.0F) * 1.2F - 0.54030230586F;
 	        	}
 	        	
 	            this.hind.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.45F) * 0.19F * f1;
 	            this.body.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.55F) * 0.18F * f1;
+	        	this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
+
 	            
 	            // L ARM
 	            this.lForepaw.rotateAngleX = -MathHelper.cos(f * 0.6662F) * 0.5F * f1;

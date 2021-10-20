@@ -151,15 +151,23 @@ public class EntitySquirrel extends EntityAnimalWithSelectiveTypes {
 
     @Override
     @Nullable
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata) {
-        if (!this.isChild()) {
-            int i = this.rand.nextInt(this.getVariantMax()) + 1; // Values 1 to 3
-            if (i == 3 && this.rand.nextInt(4) != 0) { // 1/4 chance it remains white (overall 1/12 chance of white)
-                i = this.rand.nextInt(2) + 1; // 1 - 2
-            }
-            if (livingdata instanceof TypeData) {
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, @Nullable IEntityLivingData livingdata)
+    {
+        if (!this.isChild())
+        {
+            int i = this.rand.nextInt(this.getVariantMax());
+
+        	if ( this.world.canSnowAt(this.getPosition(), false) )
+        	{
+        		i = 3;
+        	}
+            
+            if (livingdata instanceof TypeData)
+            {
                 i = ((TypeData) livingdata).typeData;
-            } else {
+            }
+            else
+            {
                 livingdata = new TypeData(i);
             }
 
@@ -287,7 +295,8 @@ public class EntitySquirrel extends EntityAnimalWithSelectiveTypes {
     }
 
     @Override
-    protected String getContainerName() {
+    protected String getContainerName()
+    {
         return "squirrel";
     }
 

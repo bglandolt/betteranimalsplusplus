@@ -374,6 +374,8 @@ public class ModelBoar extends ModelBase {
         
         this.ass.rotateAngleZ = MathHelper.cos(f * 0.5F) * 0.16F * f1;
         this.body.rotateAngleZ = MathHelper.cos(f * 0.6F) * 0.14F * f1;
+    	this.body.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
+
         
         this.head.rotateAngleX = MathHelper.cos(f * 0.7F) * 0.12F * f1 + this.headDownAmount;
 

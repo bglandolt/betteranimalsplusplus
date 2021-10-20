@@ -2,8 +2,11 @@ package its_meow.betteranimalsplus.common.entity;
 
 import javax.annotation.Nullable;
 
+import its_meow.betteranimalsplus.common.entity.ai.AIHelper;
+import its_meow.betteranimalsplus.common.entity.ai.EntityAIBearAttack;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAIEatGrassCustom;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAIMooseAttack;
+import its_meow.betteranimalsplus.common.entity.ai.PublicEntityAIAttack;
 import its_meow.betteranimalsplus.init.ModLootTables;
 import its_meow.betteranimalsplus.util.HeadTypes;
 import net.minecraft.block.Block;
@@ -41,6 +44,117 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
 {
 
+	
+	
+	
+	
+	
+	
+	public class AIMeleeAttack extends PublicEntityAIAttack
+    {
+        public AIMeleeAttack()
+        {
+            super(EntityMoose.this, 1.35D, true); // ttt
+        }
+        
+        public void resetTask()
+        {
+        	this.attacker.setSprinting(false);
+        	super.resetTask();
+        }
+        
+        protected void checkAndPerformAttack(EntityLivingBase entity, double dist)
+        {
+        	double attackRange = this.getAttackReachSqr(entity);
+
+            if ( this.attackTick <= 5 && dist <= attackRange )
+            {
+            	if ( this.attackTick <= 0 )
+            	{
+    		        this.attackTick = 30;
+    		        this.attacker.attackEntityAsMob(entity);
+    	        	this.attacker.playSound(SoundEvents.BLOCK_CLOTH_PLACE, 2.0F, 0.4F);
+    	    		this.attacker.playSound(SoundEvents.BLOCK_SAND_FALL, 1.0F, 0.7F);
+    	    		this.attacker.world.setEntityState(this.attacker, (byte) 28);
+    	    		if ( EntityMoose.this.headDownDuration == 0 )
+    				{
+    					EntityMoose.this.headDownDuration = 120;
+    				}
+    				else if ( EntityMoose.this.headDownDuration < 30 )
+    				{
+    					EntityMoose.this.headDownDuration = 120 - EntityMoose.this.headDownDuration;
+    				}
+    				else
+    				{
+    					EntityMoose.this.headDownDuration = 90;
+    				}
+            	}
+            	else if ( this.attackTick == 5 )
+            	{
+            		EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 27);
+        			EntityMoose.this.headRam = 20;
+            		EntityMoose.this.getNavigator().clearPath();
+            	}
+    	    }
+            else if ( dist <= attackRange * 2.0D )
+    	    {
+            	if ( this.attackTick % 10 == 0 )
+            	{
+    		        if ( this.attackTick <= 0 )
+    		        {
+    		        	this.attackTick = 10;
+    		        }
+    		        EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 28);
+    	    		if ( EntityMoose.this.headDownDuration == 0 )
+    				{
+    					EntityMoose.this.headDownDuration = 120;
+    				}
+    				else if ( EntityMoose.this.headDownDuration < 30 )
+    				{
+    					EntityMoose.this.headDownDuration = 120 - EntityMoose.this.headDownDuration;
+    				}
+    				else
+    				{
+    					EntityMoose.this.headDownDuration = 90;
+    				}
+    	    	}
+            } 
+            else
+            {
+            	this.attackTick = 30;
+            }
+        }
+
+        @Override
+        public void updateTask()
+        {
+        	if ( EntityMoose.this.fleeTimer > 0 )
+        	{
+        		return;
+        	}
+        	super.updateTask();
+        }
+        
+        @Override
+        protected double getAttackReachSqr(EntityLivingBase attackTarget)
+        {
+            return attackReachModifier() + attackTarget.width;
+        }
+    }
+    
+    protected double attackReachModifier()
+    {
+    	return 14.0D;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     public EntityMoose(World worldIn)
    {
         super(worldIn, 5);
@@ -54,78 +168,270 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
         this.playSound(SoundEvents.ENTITY_HORSE_STEP, 0.5F, 1.0F);
     }
     
+//    @Override
+//    public boolean attackEntityFrom(DamageSource source, float amount)
+//    {
+//		if ( source != null && source.getTrueSource() instanceof EntityPlayer )
+//		{
+//			EntityPlayer p = (EntityPlayer)source.getTrueSource();
+//			if ( this.getNavigator().getPathToEntityLiving(p) == null )
+//			{
+//				Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, p.getPositionVector());
+//				
+//                if ( vec3d != null )
+//                {
+//                	this.setAttackTarget(null);
+//                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.8D);
+//                }
+//			}
+//		}
+//		return super.attackEntityFrom(source, amount);
+//    }
+
+    
+    
+    // TODO
+    
+    
+    
+    // add flee to moose
+    
+    // goose / turkey like pheasant
+    
+    // test server
+    
+    
+    
+    
+    
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
-		if ( source != null && source.getTrueSource() instanceof EntityPlayer )
-		{
-			EntityPlayer p = (EntityPlayer)source.getTrueSource();
-			if ( this.getNavigator().getPathToEntityLiving(p) == null )
-			{
-				Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, p.getPositionVector());
-				
-                if ( vec3d != null )
-                {
-                	this.setAttackTarget(null);
-                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.8D);
-                }
-			}
-		}
-		return super.attackEntityFrom(source, amount);
+    	
+    	// AGGRO
+    	if ( source.getTrueSource() instanceof EntityLivingBase )    		
+    	{
+    		if ( this.getAttackTarget() == null )
+    		{
+	    		if ( this.getDistance(source.getTrueSource()) > 25 )
+	    		{
+	    			this.cannotReachTimer = 200;
+	    		}
+	    		this.setAttackTarget((EntityLivingBase) source.getTrueSource());
+    		}
+    		else if ( this.rand.nextInt(3) == 0 )
+    		{
+	    		this.setAttackTarget((EntityLivingBase) source.getTrueSource());
+    		}
+    	}
+    	
+       if ( this.isRiding() && source == DamageSource.IN_WALL )
+       {
+            return false;
+       }
+       else
+       {
+            if ( this.motionY > 0 )
+            {
+            	this.motionY = 0.0D;
+            }
+            
+            this.cannotReachTimer += 30;
+            
+            if ( this.fleeTimer > 0 && ( source.getTrueSource() != null && this.getDistance(source.getTrueSource()) < 4 ) )
+            {
+                this.cannotReachTimer = 0;
+                this.fleeTimer = 0;
+            }
+            
+            return super.attackEntityFrom(source, amount);
+        }
     }
 
+    @Override
+    public boolean attackEntityAsMob(Entity entityIn)
+    {   	
+    	//this.faceEntity(entityIn, 20.0F, 20.0F);
+    	//this.getLookHelper().setLookPositionWithEntity(entityIn, 20.0F, 20.0F);
+    	
+    	this.cannotReachTimer = 0;
+		this.fleeTimer = 0;
+    	this.setSprinting(false);
+		
+//		if ( !this.world.isRemote && this.getDistance(entityIn) < 4 )
+//		{
+//			Vec3d velocityVector = new Vec3d(entityIn.posX-this.posX, 0, entityIn.posZ-this.posZ);
+//			double push = 0.5D;
+//			entityIn.addVelocity(velocityVector.x*push, -0.02D, velocityVector.z*push);
+//			entityIn.velocityChanged = true;
+//        }
+				
+        boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
+
+        if (flag)
+        {
+            this.applyEnchantments(this, entityIn);
+        }
+
+        Vec3d pos = this.getPositionVector();
+        Vec3d targetPos = entityIn.getPositionVector();
+        ((EntityLivingBase) entityIn).knockBack(entityIn, 1.0F+this.rand.nextFloat()/8.0F, pos.x - targetPos.x, pos.z - targetPos.z);
+        entityIn.motionY += 0.2D;
+        entityIn.velocityChanged = true;
+        //float f = (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
+        // return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), f);
+        
+        return flag;
+    }
+    
+    
+    
+    public int cannotReachTimer = 0;
+    public int fleeTimer = 0;
+    
     @Override
     protected void initEntityAI() // TODO =--==--==--=-=-==-=-=
     {
         super.initEntityAI();
-        this.tasks.addTask(1, new EntityAIWander(this, 0.35D));
-        //this.tasks.addTask(2, new EntityAIAttackMelee(this, 0.65D, false));
-        this.tasks.addTask(2, new EntityAIMooseAttack(this, 0.65D, true));
+        this.tasks.addTask(1, new EntityAIWander(this, 0.4D));
+        this.tasks.addTask(2, new EntityMoose.AIMeleeAttack());
         this.tasks.addTask(3, new EntityAILookIdle(this));
         this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false, (Class<?>) null));
-        this.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(this, EntityPlayer.class, 75, true, true, e -> e.getDistance(this) < 15));
+        this.targetTasks.addTask(2, new EntityAIMooseAttack(this));
     }
 
     @Override
-    protected void applyEntityAttributes() {
+    protected void applyEntityAttributes()
+    {
         super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(60.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.6D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(9.0D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
     }
     
     @Override
     public void onLivingUpdate()
     {
-    	if ( this.getAttackTarget() != null )
-    	{
-    		this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.prevRotationPitch = 0;
-//    		this.prevRotationYaw = 0;
-//    		this.newPosRotationIncrements = 0;
-    	}
-    	else
-    	{
-        	this.faceMovingDirection();
-    	}
     	super.onLivingUpdate();
+    	if ( this.world.isRemote ) return;
+    	
     	if ( this.getAttackTarget() != null )
     	{
-    		this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.prevRotationPitch = 0;
-//    		this.prevRotationYaw = 0;
-//    		this.newPosRotationIncrements = 0;
+        	this.cannotReachTimer++;
+        	if ( this.cannotReachTimer > 200 && ( Math.abs(this.posY-this.getAttackTarget().posY) > 2 || this.getDistance(this.getAttackTarget()) > 6 ) )
+        	{
+        		this.fleeTimer = 150 + rand.nextInt(50);
+        		this.getNavigator().clearPath();
+        		this.cannotReachTimer = this.fleeTimer;
+        	}
+            
+        	if ( this.fleeTimer > 0 )
+    		{
+				if ( this.getNavigator().noPath() )
+				{
+					Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, this.getAttackTarget().getPositionVector());
+					
+	                if ( vec3d != null )
+	                {
+	                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0);
+	                }
+	                else
+	                {
+	                	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, this.getAttackTarget().getPositionVector());
+						
+		                if ( vec3d != null )
+		                {
+		                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0);
+		                }
+		                else
+		                {
+		                	this.fleeTimer -= 20;
+		                }
+	                }
+				}
+				AIHelper.faceMovingDirection(this);
+    		}
+    		else
+    		{
+	    		//this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
+				AIHelper.faceEntitySmart(this, this.getAttackTarget());
+	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+    		}
     	}
     	else
     	{
-        	this.faceMovingDirection();
+    		this.cannotReachTimer = 0;
     	}
+    	
+//    	super.onLivingUpdate();
+//    	    	
+//    	if ( this.getAttackTarget() != null )
+//    	{
+//    		if ( this.fleeTimer > 0 )
+//    		{
+//				AIHelper.faceMovingDirection(this);
+//    		}
+//    		else
+//    		{
+//	    		//this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
+//				AIHelper.faceEntitySmart(this, this.getAttackTarget());
+//	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+//	    	}
+//    	}
+         
+         if ( this.fleeTimer > 0 )
+         {
+         	this.fleeTimer--;
+         }
+         
+         if ( this.cannotReachTimer > 0 )
+         {
+         	this.cannotReachTimer--;
+         	if ( this.cannotReachTimer == 1 && this.getAttackTarget() != null && this.getDistance(this.getAttackTarget()) > 12 )
+         	{
+         		this.setAttackTarget(null);
+         	}
+         }
+         
     }
+    
+//    @Override
+//    public void onLivingUpdate()
+//    {
+//    	if ( this.getAttackTarget() != null )
+//    	{
+//			AIHelper.faceEntitySmart(this, this.getAttackTarget());
+//
+//    		//this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
+//    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
+////    		this.prevRotationPitch = 0;
+////    		this.prevRotationYaw = 0;
+////    		this.newPosRotationIncrements = 0;
+//    	}
+//    	else
+//    	{
+//        	this.faceMovingDirection();
+//    	}
+//    	super.onLivingUpdate();
+//    	if ( this.getAttackTarget() != null )
+//    	{
+//			AIHelper.faceEntitySmart(this, this.getAttackTarget());
+//
+//    		//this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
+//    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
+////    		this.prevRotationPitch = 0;
+////    		this.prevRotationYaw = 0;
+////    		this.newPosRotationIncrements = 0;
+//    	}
+//    	else
+//    	{
+//        	this.faceMovingDirection();
+//    	}
+//    }
     
     public void faceMovingDirection()
     {
@@ -218,16 +524,6 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
             EnumFacing facing = eater.getHorizontalFacing();
             return eater.getPosition().offset(facing).offset(facing);
         });
-    }
-
-    @Override
-    public boolean attackEntityAsMob(Entity entityIn)
-    {
-        Vec3d pos = this.getPositionVector();
-        Vec3d targetPos = entityIn.getPositionVector();
-        ((EntityLivingBase) entityIn).knockBack(entityIn, 2.0F, pos.x - targetPos.x, pos.z - targetPos.z);
-        float f = (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
-        return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), f);
     }
     
 //    @Override

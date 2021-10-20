@@ -43,7 +43,6 @@ public class EntityBadgerDirt extends EntityThrowable {
     @Override
     protected void onImpact(RayTraceResult result) {
         if (result.entityHit != null) {
-            int i = 2;
             result.entityHit.attackEntityFrom(DamageSource.causeThrownDamage(this, this.getThrower()), 0);
             if ( Math.random() >= 0.5 && !this.world.isRemote )
             {
@@ -59,7 +58,7 @@ public class EntityBadgerDirt extends EntityThrowable {
 //                        blindnessTicks = 35;
 //                    }
                     ;
-                    player.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("blindness"), player.isPotionActive(Potion.getPotionFromResourceLocation("blindness"))?20:16, 2, false, false));
+                    player.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("blindness"), (player.isPotionActive(Potion.getPotionFromResourceLocation("blindness"))?40:20), 2, false, false));
                 }
             }
         }

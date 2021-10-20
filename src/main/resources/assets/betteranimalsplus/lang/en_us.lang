@@ -59,6 +59,10 @@ tile.betteranimalsplus.turkey_cooked.name=Cooked Turkey
 tile.betteranimalsplus.turkey_eaten_raw.name=Raw Half Eaten Turkey
 tile.betteranimalsplus.turkey_eaten_cooked.name=Cooked Half Eaten Turkey
 #Entities
+
+entity.betteranimalsplus.giantsquid.name=Giant Squid
+entity.betteranimalsplus.octopus.name=Octopus
+
 entity.betteranimalsplus.brownbear.name=Grizzly Bear
 entity.betteranimalsplus.blackbear.name=Black Bear
 entity.betteranimalsplus.deer.name=Deer

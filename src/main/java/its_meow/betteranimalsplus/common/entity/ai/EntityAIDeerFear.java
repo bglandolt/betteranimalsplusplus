@@ -9,8 +9,10 @@ import com.google.common.base.Predicate;
 
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
@@ -70,7 +72,12 @@ public class EntityAIDeerFear extends EntityAIBase
 			return true;
 		}
     	
-    	List<EntityPlayer> list = this.entity.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.entity.getPosition()).grow(20, 6, 20), new Predicate<EntityPlayer>()
+    	if ( this.entity.ticksExisted % 18 != 0 )
+    	{
+    		return false;
+    	}
+    	
+    	List<EntityPlayer> list = this.entity.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.entity.getPosition()).grow(18, 6, 18), new Predicate<EntityPlayer>()
 	    {
     		public boolean apply(@Nullable EntityPlayer entity)
 	    	{
@@ -81,6 +88,15 @@ public class EntityAIDeerFear extends EntityAIBase
         for ( EntityPlayer player : list )
         {
         	if ( !this.entity.canEntityBeSeen(player) )
+        	{
+        		continue;
+        	}
+        	
+        	if ( this.entity.getDistance(player) < 8.0D + (abs(player.motionX)+abs(player.motionY)+abs(player.motionZ))*10.0D )
+        	{
+        		
+        	}
+        	else
         	{
         		continue;
         	}
@@ -104,9 +120,50 @@ public class EntityAIDeerFear extends EntityAIBase
                 return this.path != null;
             }
         }
+    	
+    	List<EntityAnimal> animals = this.entity.world.getEntitiesWithinAABB(EntityAnimal.class, new AxisAlignedBB(this.entity.getPosition()).grow(12, 4, 12), new Predicate<EntityAnimal>()
+	    {
+    		public boolean apply(@Nullable EntityAnimal entity)
+	    	{
+				return true;
+			}
+		});
+        
+        for ( EntityAnimal animal : animals )
+        {
+        	if ( animal.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE) != null && animal.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue() >= 1 )
+			{
+			    return true;
+			}
+        	
+            this.closestLivingEntity = animal;
+            this.entity.setRevengeTarget(animal);
+
+            Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 16, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+
+            if (vec3d == null)
+            {
+                continue;
+            }
+            else if (this.closestLivingEntity.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.closestLivingEntity.getDistanceSq(this.entity))
+            {
+            	continue;
+            }
+            else
+            {
+                this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                return this.path != null;
+            }
+        }
+        
         return false;
     }
 
+    public static double abs(double value)
+    {
+        return value >= 0.0D ? value : -value;
+    }
+    
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */

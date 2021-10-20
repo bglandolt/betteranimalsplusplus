@@ -4,6 +4,7 @@ import its_meow.betteranimalsplus.common.entity.EntityBadger;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.MathHelper;
 
@@ -11,7 +12,8 @@ import net.minecraft.util.math.MathHelper;
  * Badger - Batman
  * Created using Tabula 5.1.0
  */
-public class ModelBadger extends ModelBase {
+public class ModelBadger extends ModelBase
+{
     public ModelRenderer rear;
     public ModelRenderer front;
     public ModelRenderer lLeg01;
@@ -286,39 +288,46 @@ public class ModelBadger extends ModelBase {
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
+    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    { 
         this.rear.render(f5);
     }
-
+    
     @Override
-    public void setLivingAnimations(EntityLivingBase entity, float limbSwing, float limbSwingAmount,
-            float partialTickTime) {
-
-        if(entity instanceof EntityBadger) {
-            /*EntityBadger badger = (EntityBadger) entity;
-            int f1 = badger.getDigOffset();
-            if(f1 > 0) {
-                float r = (float) Math.toRadians(f1);
-                this.lArm01.rotateAngleX = Math.max(MathHelper.sin(r*10) * 2.5F * 10 + 0.22759093446006054F, 0.22759093446006054F);
-                this.rArm01.rotateAngleX = Math.max(MathHelper.cos(r*10 + (float) Math.PI) * 2.5F * 10 + 0.22759093446006054F, 0.22759093446006054F);
-                this.rear.rotateAngleX = (float) (Math.toRadians(Math.max((r * 100), 45F)) - 0.045553093477052F);
-                EntityLivingBase t = badger.getAttackTarget();
-                if(t != null) {
-                    this.rear.rotateAngleY = (float) Math.toRadians(Math.atan2((badger.posZ - t.posZ), (badger.posX - t.posX)));
-                } else {
-                    this.rear.rotateAngleY = 0F;
-                }
-            } else */{
-                this.lLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * 1.5F * limbSwingAmount;
-                this.rLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * 1.5F * limbSwingAmount;
-                this.lArm01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F) * 1.5F * limbSwingAmount + 0.22759093446006054F;
-                this.rArm01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F + (float) Math.PI) * 1.5F * limbSwingAmount + 0.22759093446006054F;
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity)
+    {
+        if ( entity instanceof EntityBadger )
+        {
+            EntityBadger badger = (EntityBadger) entity;
+        	{
+                this.lLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount;
+                this.rLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * limbSwingAmount;
+                this.lArm01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F) * limbSwingAmount + 0.22759093446006054F;
+                this.rArm01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount + 0.22759093446006054F;
                 this.rear.rotateAngleX = -0.045553093477052F;
                 this.rear.rotateAngleY = 0F;
             }
+        	
+        	if ( badger.abilityTick > 0 ) // badger.world.isRemote && 
+            {
+                float r = (float) Math.toRadians(badger.abilityCooldown);
+                this.lArm01.rotateAngleX = Math.max(MathHelper.sin(r) * 2.5F * 10 + 0.23F, 0.23F);
+                this.rArm01.rotateAngleX = Math.max(MathHelper.cos(r + (float) Math.PI) * 2.5F * 10 + 0.23F, 0.23F);
+                this.rear.rotateAngleX = (float) (Math.toRadians(Math.max((r * 100), 45F)) - 0.045F);
+            }
         }
+        
+        if ( entity.onGround )
+        {
+        	this.front.rotateAngleX = MathHelper.sin(limbSwingAmount)/12.0F;
+        }
+        else this.front.rotateAngleX = MathHelper.sin(-MathHelper.clamp((float)entity.motionY, -0.4F, 0.4F)* 1.5F) - 0.2F;
+        
+        this.neck.rotateAngleX = ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F; // head up & down
+        this.neck.rotateAngleY = ModelBetterAnimals.getHeadYaw((EntityLiving) entity) * 0.017453292F;
 
-        super.setLivingAnimations(entity, limbSwing, limbSwingAmount, partialTickTime);
+        this.rear.rotateAngleZ = MathHelper.cos(limbSwing * 0.6F) * 0.12F * limbSwingAmount;
+        this.front.rotateAngleZ = MathHelper.cos(limbSwing * 0.7F) * 0.1F * limbSwingAmount;
     }
 
     /**

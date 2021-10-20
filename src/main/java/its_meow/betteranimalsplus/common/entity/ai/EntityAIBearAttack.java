@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 
@@ -50,7 +51,7 @@ public class EntityAIBearAttack extends EntityAITarget
 					return false;
 				}
 				
-				if ( target instanceof EntityPlayer || target instanceof EntityAnimal )
+				if ( target instanceof EntityPlayer || ( target instanceof EntityAnimal && target.height <= 1.0F && !target.isInWater() ) || target instanceof EntityVillager )
 				{
 					return true;
 				}
@@ -98,9 +99,9 @@ public class EntityAIBearAttack extends EntityAITarget
 					{
 						if ( !npc.isSneaking() )
 						{
+							this.taskOwner.faceEntity(npc, 10.0F, 10.0F);
 							this.taskOwner.getLookHelper().setLookPositionWithEntity(npc, 20.0F, 20.0F);
-							
-							if ( rand.nextInt(10) == 0 )
+							if ( rand.nextInt(12) == 0 )
 							{
 								this.targetEntity = npc;
 								return true;

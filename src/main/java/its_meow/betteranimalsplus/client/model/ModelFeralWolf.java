@@ -347,19 +347,36 @@ public class ModelFeralWolf extends ModelBetterAnimals
             this.setRotateAngle(lForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
             this.setRotateAngle(rHindPaw, 0.12217304763960307F, 0.0F, 0.0F);
             
-            if ( wolf.leaping >= 0 )
+            if ( wolf.leaping >= 0 && !wolf.onGround )
             {
-                this.jawLower.rotateAngleX = MathHelper.clamp((float)(wolf.motionY*2.0D), 0.0F, 0.4F) + 0.5F; //  - 0.9
-                
-            	this.chest.rotateAngleX = -MathHelper.clamp((float)(wolf.motionY), -0.3F, 0.3F);
-            	this.torso.rotateAngleX = MathHelper.clamp((float)(wolf.motionY), -0.4F, 0.4F) + 0.1F;
-                
-            	float legs = MathHelper.clamp((float)(wolf.motionY), -0.4F, 0.4F) + 0.3F;
             	
-            	this.lHindLeg01.rotateAngleX = legs;
-                this.rHindLeg01.rotateAngleX = legs;
-                this.lForeleg01.rotateAngleX = legs;
-                this.rForeleg01.rotateAngleX = legs;
+            	// ~0 .08 1 0.8 0
+            	float leapAmount = 0.0F;
+            	
+            	if ( wolf.leaping >= 10 )
+            	{
+            		leapAmount = MathHelper.cos((wolf.leaping-10)/7.0F);
+            	}
+            	else
+            	{
+            		leapAmount = MathHelper.cos((wolf.leaping-10)/14.0F);
+            	}
+            	
+            	// 0 -1 0
+//              this.jawLower.rotateAngleX = MathHelper.clamp((float)(wolf.motionY*2.0D), 0.0F, 0.4F) + 0.5F;
+//            	this.chest.rotateAngleX = -MathHelper.clamp((float)(wolf.motionY), -0.3F, 0.3F);
+//            	this.torso.rotateAngleX = MathHelper.clamp((float)(wolf.motionY), -0.4F, 0.4F) + 0.1F;
+            	this.jawLower.rotateAngleX = MathHelper.clamp((float)(leapAmount*0.4F), 0.0F, 0.4F) + 0.4F;
+             	this.chest.rotateAngleX = leapAmount*0.6F + 0.2F;
+             	this.torso.rotateAngleX = leapAmount*0.6F - 0.2F;
+                
+//            	float legs = MathHelper.clamp((float)(wolf.motionY), -0.4F, 0.4F) + 0.3F;
+            	float legs = leapAmount*0.2F + 0.2F;
+            	
+            	this.lHindLeg01.rotateAngleX = legs + 0.1F;
+                this.rHindLeg01.rotateAngleX = legs + 0.1F;
+                this.lForeleg01.rotateAngleX = -legs;
+                this.rForeleg01.rotateAngleX = -legs;
             	
                 wolf.leaping--;
             }
@@ -377,8 +394,10 @@ public class ModelFeralWolf extends ModelBetterAnimals
                 this.rForeleg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount + 0.22759093446006054F;
             }
             
-            this.torso.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.16F * limbSwingAmount;
-            this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.15F * limbSwingAmount;
+            this.torso.rotateAngleZ = MathHelper.cos(limbSwing * 0.6F) * 0.1F * limbSwingAmount;
+            this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.65F) * 0.8F * limbSwingAmount;
+        	this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
+
         }
 
         if ( wolf.isRiding() )

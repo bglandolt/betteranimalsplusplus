@@ -1,0 +1,38 @@
+{
+  "betteranimalsplus:ride_reindeer": {
+    "criteria": {
+      "ride_reindeer": "2021-10-11 17:00:19 -0400"
+    },
+    "done": true
+  },
+  "betteranimalsplus:root": {
+    "criteria": {
+      "tick": "2021-10-11 16:53:26 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/combat/arrow": {
+    "criteria": {
+      "has_feather": "2021-10-11 16:53:25 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/decorations/chest": {
+    "criteria": {
+      "has_lots_of_items": "2021-10-11 16:53:25 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/brewing/cauldron": {
+    "criteria": {
+      "has_water_bucket": "2021-10-11 16:53:25 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "plains": "2021-10-11 16:53:25 -0400"
+    },
+    "done": false
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "minecraft:husbandry/balanced_diet": {
+    "criteria": {
+      "enchanted_golden_apple": "2021-09-27 15:37:40 -0400"
+    },
+    "done": false
+  },
+  "betteranimalsplus:root": {
+    "criteria": {
+      "tick": "2021-09-27 15:36:27 -0400"
+    },
+    "done": true
+  },
+  "minecraft:husbandry/root": {
+    "criteria": {
+      "consumed_item": "2021-09-27 15:37:40 -0400"
+    },
+    "done": true
+  },
+  "betteranimalsplus:badger_attack": {
+    "criteria": {
+      "badger_attack": "2021-09-27 15:37:42 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "extreme_hills": "2021-09-27 15:36:27 -0400"
+    },
+    "done": false
+  }
+}

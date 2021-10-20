@@ -1,0 +1,50 @@
+{
+  "betteranimalsplus:animal_head_variants": {
+    "criteria": {
+      "head15": "2021-10-11 01:14:15 -0400"
+    },
+    "done": false
+  },
+  "betteranimalsplus:root": {
+    "criteria": {
+      "tick": "2021-10-11 01:12:18 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/root": {
+    "criteria": {
+      "killed_something": "2021-10-11 01:12:30 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/kill_a_mob": {
+    "criteria": {
+      "slime": "2021-10-11 01:12:34 -0400"
+    },
+    "done": true
+  },
+  "betteranimalsplus:animal_head_all": {
+    "criteria": {
+      "head15": "2021-10-11 01:14:15 -0400"
+    },
+    "done": false
+  },
+  "minecraft:adventure/kill_all_mobs": {
+    "criteria": {
+      "slime": "2021-10-11 01:12:34 -0400"
+    },
+    "done": false
+  },
+  "betteranimalsplus:animal_head_first": {
+    "criteria": {
+      "head15": "2021-10-11 01:14:15 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "plains": "2021-10-11 01:12:18 -0400"
+    },
+    "done": false
+  }
+}

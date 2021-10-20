@@ -12,7 +12,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 // https://github.com/CreativeMD/PlayerRevive/blob/1.12/src/main/java/com/creativemd/playerrevive/client/ReviveEventClient.java
 
-//@SideOnly(Side.CLIENT)
 public class ClientEventHandler
 {
 //	@SuppressWarnings("deprecation")
@@ -60,6 +59,7 @@ public class ClientEventHandler
 //		
 //	}
 	
+	//@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void mountEvent(EntityMountEvent event)
 	{
@@ -73,7 +73,6 @@ public class ClientEventHandler
 //	@SideOnly(Side.CLIENT)
 //	protected Entity attackTarget = null;
 	
-	@SideOnly(Side.CLIENT)
 	protected boolean cameraRiding = false;
 	
 	@SideOnly(Side.CLIENT)

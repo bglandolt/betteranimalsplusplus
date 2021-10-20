@@ -1,0 +1,86 @@
+{
+  "betteranimalsplus:animal_head_variants": {
+    "criteria": {
+      "feralwolfhead_red": "2021-10-10 16:00:04 -0400"
+    },
+    "done": false
+  },
+  "minecraft:recipes/redstone/dispenser": {
+    "criteria": {
+      "has_bow": "2021-10-10 16:00:04 -0400"
+    },
+    "done": true
+  },
+  "minecraft:husbandry/root": {
+    "criteria": {
+      "consumed_item": "2021-10-10 16:00:54 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/decorations/chest": {
+    "criteria": {
+      "has_lots_of_items": "2021-10-10 16:00:28 -0400"
+    },
+    "done": true
+  },
+  "minecraft:story/shiny_gear": {
+    "criteria": {
+      "diamond_chestplate": "2021-10-10 16:00:28 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/redstone/stone_button": {
+    "criteria": {
+      "has_stone": "2021-10-10 16:00:04 -0400"
+    },
+    "done": true
+  },
+  "minecraft:husbandry/balanced_diet": {
+    "criteria": {
+      "enchanted_golden_apple": "2021-10-10 16:00:54 -0400"
+    },
+    "done": false
+  },
+  "betteranimalsplus:root": {
+    "criteria": {
+      "tick": "2021-10-10 16:00:04 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/building_blocks/stonebrick": {
+    "criteria": {
+      "has_stone": "2021-10-10 16:00:04 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/building_blocks/stone_slab": {
+    "criteria": {
+      "has_stone": "2021-10-10 16:00:04 -0400"
+    },
+    "done": true
+  },
+  "minecraft:recipes/redstone/stone_pressure_plate": {
+    "criteria": {
+      "has_stone": "2021-10-10 16:00:04 -0400"
+    },
+    "done": true
+  },
+  "betteranimalsplus:animal_head_all": {
+    "criteria": {
+      "feralwolfhead_red": "2021-10-10 16:00:04 -0400"
+    },
+    "done": false
+  },
+  "betteranimalsplus:animal_head_first": {
+    "criteria": {
+      "feralwolfhead_red": "2021-10-10 16:00:04 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "plains": "2021-10-10 16:00:04 -0400"
+    },
+    "done": false
+  }
+}

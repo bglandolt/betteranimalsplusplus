@@ -439,7 +439,7 @@ public class ModelDeer extends ModelBase {
             else
             {
             	if ( entity.onGround ) this.body.rotateAngleX = MathHelper.sin(limbSwingAmount)/12.0F; // this.chest.rotateAngleX = ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 13;
-                else this.body.rotateAngleX = MathHelper.sin(-MathHelper.clamp((float)entity.motionY, -0.375F, 0.375F)* 1.375F) - 0.07F;
+                else this.body.rotateAngleX = MathHelper.sin(-MathHelper.clamp((float)entity.motionY, -0.3F, 0.3F)* 1.3F) - 0.2F;
             	this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/6.0F - 0.58F;
                 this.neck.rotateAngleX = headPitch * 0.017453292F - 0.31869712141416456F;
                 this.head.rotateAngleX = -0.31869712141416456F;
@@ -456,8 +456,8 @@ public class ModelDeer extends ModelBase {
             this.body.rotateAngleZ = MathHelper.cos(f * 0.6662F) * 0.15F * f1;
         }
         
-        this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.45F) * 0.13F * limbSwingAmount;
-        this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.12F * limbSwingAmount;
+        this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.6F) * 0.1F * limbSwingAmount;
+        this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.65F) * 0.08F * limbSwingAmount;
 
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entity);
     }

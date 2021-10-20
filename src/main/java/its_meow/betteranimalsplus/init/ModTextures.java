@@ -7,6 +7,16 @@ public class ModTextures {
 
     private static final String entitytex = Ref.MOD_ID + ":textures/entities/";
 
+    // Octopus Variants
+    public static final ResourceLocation octopus_1 = new ResourceLocation(entitytex + "octopus_common.png");
+    public static final ResourceLocation octopus_2 = new ResourceLocation(entitytex + "octopus_east_pacific_red.png");
+    public static final ResourceLocation octopus_3 = new ResourceLocation(entitytex + "octopus_blue_ringed.png");
+    public static final ResourceLocation octopus_4 = new ResourceLocation(entitytex + "octopus_giant_pacific.png");
+
+    // Squid Variants
+    public static final ResourceLocation squid_1 = new ResourceLocation(entitytex + "squid_giant.png");
+    public static final ResourceLocation squid_2 = new ResourceLocation(entitytex + "squid_colossal.png");
+
     // Bear Variants
     public static final ResourceLocation bear_brown = new ResourceLocation(entitytex + "bear_brown.png");
     public static final ResourceLocation bear_black = new ResourceLocation(entitytex + "bear_black.png");

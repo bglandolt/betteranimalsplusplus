@@ -24,12 +24,14 @@ public class RenderBadger extends RenderLiving<EntityBadger> {
     }
 
     @Override
-    protected ResourceLocation getEntityTexture(EntityBadger entity) {
-        switch(entity.getTypeNumber()) {
-        case 1: return ModTextures.badger_1;
-        case 2: return ModTextures.badger_2;
-        case 3: return ModTextures.badger_3;
-        default: return ModTextures.badger_1;
+    protected ResourceLocation getEntityTexture(EntityBadger entity)
+    {
+        switch(entity.getTypeNumber())
+        {
+	        case 1: return ModTextures.badger_1;
+	        case 2: return ModTextures.badger_2;
+	        case 3: return ModTextures.badger_3;
+	        default: return ModTextures.badger_1;
         }
     }
 

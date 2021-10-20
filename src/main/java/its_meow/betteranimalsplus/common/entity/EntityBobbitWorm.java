@@ -20,6 +20,7 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
@@ -255,6 +256,7 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
 	            	{
 	            		this.world.setEntityState(this, (byte)28);
 	                 	this.grabTargetAnimation = 30;
+	                    this.playSound(SoundEvents.ENTITY_HOSTILE_SPLASH, 1.0F, 0.8F + rand.nextFloat() / 8.0F );
 	            	}
 	            }
 	        }

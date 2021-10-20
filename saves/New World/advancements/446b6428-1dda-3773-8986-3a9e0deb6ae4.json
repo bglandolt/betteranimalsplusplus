@@ -1,0 +1,15 @@
+{
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "extreme_hills_with_trees": "2021-09-27 15:00:45 -0400",
+      "extreme_hills": "2021-09-27 15:00:39 -0400"
+    },
+    "done": false
+  },
+  "minecraft:husbandry/tame_an_animal": {
+    "criteria": {
+      "tamed_animal": "2021-09-27 15:01:22 -0400"
+    },
+    "done": true
+  }
+}

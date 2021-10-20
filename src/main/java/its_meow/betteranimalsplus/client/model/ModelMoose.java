@@ -564,8 +564,10 @@ public class ModelMoose extends ModelBase {
                 this.lowerJaw.rotateAngleX = 0F;
             }
             
-            this.body.rotateAngleZ = MathHelper.cos(f * 0.35F) * 0.18F * f1;
-            this.chest.rotateAngleZ = MathHelper.cos(f * 0.4F) * 0.18F * f1;
+            this.body.rotateAngleZ = MathHelper.cos(f * 0.45F) * 0.14F * f1;
+            this.chest.rotateAngleZ = MathHelper.cos(f * 0.5F) * 0.12F * f1;
+        	this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
+
             
 //            {
 //            	this.neck.rotateAngleX = -0.3490658503988659F + (float) Math.toRadians(60F);

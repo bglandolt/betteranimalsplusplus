@@ -16,6 +16,7 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -52,7 +53,7 @@ public class EntityAIBoarAttack extends EntityAITarget
 					return false;
 				}
 				
-				if ( target instanceof EntityPlayer || ( target instanceof EntityAnimal && target.height <= 0.75F && rand.nextInt(10) == 0 ) )
+				if ( target instanceof EntityPlayer || ( taskOwner.isHungry && ( (target instanceof EntityAnimal && target.height <= 0.75F) || target instanceof EntityVillager ) && rand.nextInt(10) == 0 ) )
 				{
 					return true;
 				}
@@ -86,7 +87,7 @@ public class EntityAIBoarAttack extends EntityAITarget
 			{
 				if ( npc instanceof EntityPlayer )
 				{
-					if ( this.taskOwner.getDistance(npc) <= 5 )
+					if ( this.taskOwner.getDistance(npc) <= 6 )
 					{
 						this.targetEntity = npc;
 						return true;
@@ -110,6 +111,7 @@ public class EntityAIBoarAttack extends EntityAITarget
 				else if ( this.taskOwner.canEntityBeSeen(npc) && !npc.isInvisible() )
 				{
 					this.targetEntity = npc;
+					this.taskOwner.isHungry = false;
 					return true;
 				}
 			}

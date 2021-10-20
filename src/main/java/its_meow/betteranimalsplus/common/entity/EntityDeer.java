@@ -36,7 +36,7 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
 
     public EntityDeer(World worldIn) {
         super(worldIn, 5);
-        this.setSize(0.6F, 0.9F);
+        this.setSize(0.7F, 0.9F);
         this.stepHeight = 1.55F;
     }
 
@@ -52,6 +52,12 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
 //
 //        return super.processInteract(player, hand);
 //    }
+    
+//    public static void init(int entityId)
+//	{
+//		EntityRegistry.registerModEntity(new ResourceLocation(ToroQuest.MODID, NAME), EntitySentry.class, NAME, entityId, ToroQuest.INSTANCE, 80, 1,
+//				true, 0x8f3026, 0xe0d359);
+//	}
 
     @SideOnly(Side.CLIENT)
    	public void handleStatusUpdate(byte id)
@@ -203,12 +209,18 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
     }
 
     @Override
-    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata) {
-        if(!this.isChild()) {
+    public IEntityLivingData onInitialSpawn(DifficultyInstance difficulty, IEntityLivingData livingdata)
+    {
+        if (!this.isChild())
+        {
             int variant = this.getBiasedRandomType();
-            if(livingdata instanceof TypeData) {
+            
+            if(livingdata instanceof TypeData)
+            {
                 variant = ((TypeData) livingdata).typeData;
-            } else {
+            }
+            else
+            {
                 livingdata = new TypeData(variant);
             }
             this.setType(variant);
@@ -216,16 +228,46 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
         return livingdata;
     }
 
-    private int getBiasedRandomType() {
-        int[] validTypes = new int[] { 1, 2, 3, 4 };
-        int r = validTypes[this.getRNG().nextInt(validTypes.length)];
-        if(r > 2) {
-            r = validTypes[this.getRNG().nextInt(validTypes.length)];
+    private int getBiasedRandomType()
+    {
+    	if ( this.world.canSnowAt(this.getPosition(), false) )
+        {
+        	if ( rand.nextBoolean() )
+        	{
+        		return 3;
+        	}
+        	else
+        	{
+        		return 4;
+        	}
         }
-        if(r > 2) {
-            r = validTypes[this.getRNG().nextInt(validTypes.length)];
+        else
+        {
+        	if ( rand.nextBoolean() )
+        	{
+        		return 1;
+        	}
+        	else
+        	{
+        		return 2;
+        	}
         }
-        return r;
+    	
+//        int[] validTypes = new int[] { 1, 2, 3, 4 };
+//        
+//        int r = validTypes[this.getRNG().nextInt(validTypes.length)];
+//        
+//        if(r > 2)
+//        {
+//            r = validTypes[this.getRNG().nextInt(validTypes.length)];
+//        }
+//        
+//        if(r > 2)
+//        {
+//            r = validTypes[this.getRNG().nextInt(validTypes.length)];
+//        }
+//        
+//        return r;
     }
     
     @Override

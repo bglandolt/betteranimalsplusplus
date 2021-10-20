@@ -1,0 +1,32 @@
+{
+  "betteranimalsplus:animal_head_variants": {
+    "criteria": {
+      "head15": "2021-10-11 01:34:36 -0400"
+    },
+    "done": false
+  },
+  "betteranimalsplus:root": {
+    "criteria": {
+      "tick": "2021-10-11 01:34:36 -0400"
+    },
+    "done": true
+  },
+  "betteranimalsplus:animal_head_all": {
+    "criteria": {
+      "head15": "2021-10-11 01:34:36 -0400"
+    },
+    "done": false
+  },
+  "betteranimalsplus:animal_head_first": {
+    "criteria": {
+      "head15": "2021-10-11 01:34:36 -0400"
+    },
+    "done": true
+  },
+  "minecraft:adventure/adventuring_time": {
+    "criteria": {
+      "plains": "2021-10-11 01:34:36 -0400"
+    },
+    "done": false
+  }
+}

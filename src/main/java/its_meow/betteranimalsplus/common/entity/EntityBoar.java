@@ -59,13 +59,30 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     public EntityBoar(World worldIn)
     {
         super(worldIn);
-        this.setSize(0.8F, 0.7F);
+        this.setSize(0.9F, 0.9F);
         this.stepHeight = 1.05F;
     }
         
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
+    	// AGGRO
+    	if ( source.getTrueSource() instanceof EntityLivingBase )    		
+    	{
+    		if ( this.getAttackTarget() == null )
+    		{
+	    		if ( this.getDistance(source.getTrueSource()) > 10 )
+	    		{
+	    			this.cannotReachTimer = 200;
+	    		}
+	    		this.setAttackTarget((EntityLivingBase) source.getTrueSource());
+    		}
+    		else if ( this.rand.nextInt(3) == 0 )
+    		{
+	    		this.setAttackTarget((EntityLivingBase) source.getTrueSource());
+    		}
+    	}
+    	
     	// FLEE NO TARGET
 		if ( source != null && source.getTrueSource() instanceof EntityPlayer )
 		{
@@ -92,8 +109,19 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
                 }
 			}
 		}
+		
+		this.cannotReachTimer += 50;
+        
+        if ( this.fleeTimer > 0 && ( source.getTrueSource() != null && this.getDistance(source.getTrueSource()) < 4 ) )
+        {
+            this.cannotReachTimer = 0;
+            this.fleeTimer = 0;
+        }
+        
 		return super.attackEntityFrom(source, amount);
     }
+    
+    
     
     public int cannotReachTimer = 0;
     public int fleeTimer = 0;
@@ -101,13 +129,17 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     @Override
     public void onLivingUpdate()
     {
+    	super.onLivingUpdate();
+    	if ( this.world.isRemote ) return;
+    	
     	if ( this.getAttackTarget() != null )
     	{
         	this.cannotReachTimer++;
-        	if ( this.cannotReachTimer > 120 && ( Math.abs(this.posY-this.getAttackTarget().posY) > 1 || this.getDistance(this.getAttackTarget()) > 4 ) )
+        	if ( this.cannotReachTimer > 200 && ( Math.abs(this.posY-this.getAttackTarget().posY) > 1 || this.getDistance(this.getAttackTarget()) > 6 ) )
         	{
-        		this.fleeTimer = 80 + rand.nextInt(80);
-        		this.cannotReachTimer = 0;
+        		this.fleeTimer = 100 + rand.nextInt(50);
+        		this.getNavigator().clearPath();
+        		this.cannotReachTimer = this.fleeTimer;
         	}
         	if ( this.fleeTimer > 0 )
     		{
@@ -137,7 +169,7 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     		}
     		else
     		{
-	    		this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
+    			AIHelper.faceEntitySmart(this, this.getAttackTarget());
 	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
     		}
     	}
@@ -146,25 +178,42 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     		this.cannotReachTimer = 0;
     	}
     	
-    	super.onLivingUpdate();
-    	    	
-    	if ( this.getAttackTarget() != null )
-    	{
-    		if ( this.fleeTimer > 0 )
-    		{
-				AIHelper.faceMovingDirection(this);
-    		}
-    		else
-    		{
-	    		this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
-	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
-	    	}
-    	}
     	
-         if ( this.fleeTimer > 0 )
-         {
-         	this.fleeTimer--;
-         }
+    	
+//    	super.onLivingUpdate();
+//    	    	
+//    	if ( this.getAttackTarget() != null )
+//    	{
+//    		if ( this.fleeTimer > 0 )
+//    		{
+//				AIHelper.faceMovingDirection(this);
+//    		}
+//    		else
+//    		{
+//    			AIHelper.faceEntitySmart(this, this.getAttackTarget());
+//	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+//	    	}
+//    	}
+    	
+	    if ( this.fleeTimer > 0 )
+	    {
+	    	this.setSprinting(false);
+	    	this.fleeTimer--;
+	    }
+	    
+	    if ( this.cannotReachTimer > 0 )
+        {
+        	this.cannotReachTimer--;
+        	if ( this.cannotReachTimer == 1 && this.getAttackTarget() != null && this.getDistance(this.getAttackTarget()) > 10 )
+        	{
+        		this.setAttackTarget(null);
+        	}
+        }
+	    
+	    if ( !this.isHungry && this.world.getWorldTime() % 2000 == 0 && this.rand.nextBoolean() )
+	    {
+	    	this.isHungry = true;
+	    }
     }
     
     /*
@@ -180,19 +229,13 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     
     */
     
+    public boolean isHungry = rand.nextBoolean();
+    
 	@Override
     protected void initEntityAI()
     {
         this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityBoar.AIMeleeAttack());
-        this.targetTasks.addTask(0, new EntityAICallForHelp(this, 12, new Class[0])
-        {
-        	@Override
-        	protected void setEntityAttackTarget(EntityCreature creatureIn, EntityLivingBase entityLivingBaseIn)
-            {
-                if ( rand.nextInt(3) == 0 ) creatureIn.setAttackTarget(entityLivingBaseIn);
-            }
-        });
         if ( this.isChild() )
         {
             this.tasks.addTask(1, new EntityAIChildFlee(this, 1.0D)); // EntityVillager
@@ -202,6 +245,15 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
         this.tasks.addTask(6, new BoarAIEatCrops(this));
         this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 0.7D));
         this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 6.0F));
+        
+        this.targetTasks.addTask(0, new EntityAICallForHelp(this, 12, new Class[0])
+        {
+        	@Override
+        	protected void setEntityAttackTarget(EntityCreature creatureIn, EntityLivingBase entityLivingBaseIn)
+            {
+                if ( rand.nextInt(3) == 0 ) creatureIn.setAttackTarget(entityLivingBaseIn);
+            }
+        });
         this.targetTasks.addTask(1, new EntityAIBoarAttack(this));
     }
 	
@@ -217,9 +269,10 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     		this.setRevengeTarget(entitylivingbaseIn);
             super.setAttackTarget(null);
     	}
-    	else
+    	else if ( this.getAttackTarget() == null )
     	{
-        	this.fleeTimer = 0;
+    		this.fleeTimer = 0;
+    		this.cannotReachTimer = 0;
             super.setAttackTarget(entitylivingbaseIn);
     	}
     }
@@ -283,7 +336,10 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     public boolean attackEntityAsMob(Entity entityIn)
     {
 		this.setSprinting(false);
-
+		
+		this.cannotReachTimer = 0;
+		this.fleeTimer = 0;
+		
         Vec3d pos = this.getPositionVector();
         Vec3d targetPos = entityIn.getPositionVector();
         ((EntityLivingBase) entityIn).knockBack(entityIn, 0.8F, pos.x - targetPos.x, pos.z - targetPos.z);
@@ -529,7 +585,7 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
 		        		
 //		        		if ( this.attacker.world.rand.nextInt(4) == 0 )
 //		        		{
-//			        		Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.attacker, 12, 6, this.attacker.getAttackTarget().getPositionVector());
+//			        		Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.attacker, 12, 6, entity.getPositionVector());
 //	
 //			                if ( vec3d != null )
 //			                {
@@ -611,6 +667,7 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
                     this.boar.world.playEvent(2001, blockpos, Block.getIdFromBlock(Blocks.GRASS));
                     world.setBlockState(blockpos, Blocks.AIR.getDefaultState(), 2);
                     world.destroyBlock(blockpos, true);
+                    this.boar.isHungry = false;
                     this.boar.setInLove(null);
                 }
             }

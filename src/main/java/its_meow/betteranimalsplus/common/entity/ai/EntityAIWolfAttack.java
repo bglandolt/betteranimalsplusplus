@@ -15,6 +15,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -51,7 +52,7 @@ public class EntityAIWolfAttack extends EntityAITarget
 					return false;
 				}
 				
-				if ( target instanceof EntityPlayer || ( target instanceof EntityAnimal && target.width <= 1.5F ) )
+				if ( target instanceof EntityPlayer || ( target instanceof EntityAnimal && target.width <= 1.5F ) || target instanceof EntityVillager )
 				{
 					return true;
 				}

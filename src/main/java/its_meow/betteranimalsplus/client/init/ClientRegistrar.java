@@ -13,6 +13,8 @@ import its_meow.betteranimalsplus.client.renderer.entity.RenderCustomWolf;
 import its_meow.betteranimalsplus.client.renderer.entity.RenderDeer;
 import its_meow.betteranimalsplus.client.renderer.entity.RenderFox;
 import its_meow.betteranimalsplus.client.renderer.entity.RenderFreshwaterEel;
+import its_meow.betteranimalsplus.client.renderer.entity.RenderGiantSquid;
+import its_meow.betteranimalsplus.client.renderer.entity.RenderOctopus;
 import its_meow.betteranimalsplus.client.renderer.entity.RenderGoat;
 import its_meow.betteranimalsplus.client.renderer.entity.RenderGoose;
 import its_meow.betteranimalsplus.client.renderer.entity.RenderHirschgeist;
@@ -48,6 +50,8 @@ import its_meow.betteranimalsplus.common.entity.EntityDeer;
 import its_meow.betteranimalsplus.common.entity.EntityFeralWolf;
 import its_meow.betteranimalsplus.common.entity.EntityFox;
 import its_meow.betteranimalsplus.common.entity.EntityFreshwaterEel;
+import its_meow.betteranimalsplus.common.entity.EntityGiantSquid;
+import its_meow.betteranimalsplus.common.entity.EntityOctopus;
 import its_meow.betteranimalsplus.common.entity.EntityGoat;
 import its_meow.betteranimalsplus.common.entity.EntityGoose;
 import its_meow.betteranimalsplus.common.entity.EntityHorseshoeCrab;
@@ -171,6 +175,9 @@ public class ClientRegistrar {
         
         // Entities
         
+        RenderingRegistry.registerEntityRenderingHandler(EntityOctopus.class, RenderOctopus::new);
+        RenderingRegistry.registerEntityRenderingHandler(EntityGiantSquid.class, RenderGiantSquid::new);
+
         RenderingRegistry.registerEntityRenderingHandler(EntityBear.class, RenderBear::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityBearNeutral.class, RenderBlackBear::new);
         RenderingRegistry.registerEntityRenderingHandler(EntityDeer.class, RenderDeer::new);

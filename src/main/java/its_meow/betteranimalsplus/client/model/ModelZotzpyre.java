@@ -397,6 +397,8 @@ public class ModelZotzpyre extends ModelBase {
                     this.chest.rotateAngleZ = moveAmount * 1.2F;
     	            this.stomach.rotateAngleZ = moveAmount;
     	            
+                    this.lowerJaw.rotateAngleX = 0.8F + moveAmount*2.0F;
+
                     this.setRotateAngle(head, 0.4F + moveAmount * 0.4F, 0.0F, 0.0F);
                 }
                 else
@@ -416,15 +418,15 @@ public class ModelZotzpyre extends ModelBase {
     	            this.rLeg01.rotateAngleZ = this.rLeg01.rotateAngleZ;
     	            
     	            
-    	            
-    	            
+    	            // JAW ***
+                	this.lowerJaw.rotateAngleX = 0.9F + MathHelper.cos(ageInTicks * 0.2F) * 0.25F;
     	            
     	            
     	            // whole wing, z = flap V
                 	this.lWing03.rotateAngleZ = MathHelper.cos(limbSwing) * limbSwingAmount - 0.13962634015954636F;
                     this.rWing03.rotateAngleZ = -this.lWing03.rotateAngleZ;
                     
-                    this.chest.rotateAngleX = -(MathHelper.cos(ageInTicks * 0.45F) * 0.1F * limbSwingAmount)/6.0F;
+                    this.chest.rotateAngleX = -(MathHelper.cos(ageInTicks * 0.45F) * 0.12F * limbSwingAmount)/6.0F;
                     
                     this.setRotateAngle(head, -0.08726646259971647F, 0.0F, 0.0F);
 
@@ -435,10 +437,9 @@ public class ModelZotzpyre extends ModelBase {
                 // first wing flaps
 //              this.lWing02.rotateAngleZ = this.lWing01.rotateAngleZ*2.0F;
 //              this.rWing02.rotateAngleZ = -this.lWing01.rotateAngleZ*2.0F;
-                this.lowerJaw.rotateAngleX = 0.785F;
                 
             }
-            else
+            else // NORMAL
             {
                 this.setRotateAngle(lWing02, 0.3490658503988659F, 0.6981317007977318F, 0.7853981633974483F);
                 this.setRotateAngle(rWing03, 0.0F, 1.9547687622336491F, 0.0F);
@@ -452,19 +453,28 @@ public class ModelZotzpyre extends ModelBase {
                 this.setRotateAngle(lWing01, -0.13962634015954636F, -0.5759586531581287F, 0.40142572795869574F);
                 this.setRotateAngle(lWing03, 0.0F, -1.9547687622336491F, 0.0F);
                 this.setRotateAngle(rLeg01, 0.0F, -0.45378560551852565F, 0.03490658503988659F);
-                this.lLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount;
-                this.rLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * limbSwingAmount;
-                this.lWing01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount - 0.13962634015954636F;
-                this.rWing01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * limbSwingAmount - 0.13962634015954636F;
+                this.lLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount * 0.6F;
+                this.rLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * limbSwingAmount * 0.6F;
+                this.lWing01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount * 0.4F - 0.13962634015954636F;
+                this.rWing01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * limbSwingAmount * 0.4F - 0.13962634015954636F;
                 
-                this.chest.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.45F) * 0.1F * limbSwingAmount;
+                this.chest.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.45F) * 0.12F * limbSwingAmount;
                 this.chest.rotateAngleX = this.chest.rotateAngleZ/6.0F;
 	            this.stomach.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.55F) * 0.1F * limbSwingAmount;
 	            
-                this.lowerJaw.rotateAngleX = 0F;
+//                if ( )
+//                {
+//                	this.lowerJaw.rotateAngleX = 0.9F + MathHelper.cos(ageInTicks * 0.2F) * 0.2F;
+//                }
+//                else
+                {
+                	this.lowerJaw.rotateAngleX = 0F;
+                }
 
             }
             
+            //this.chest.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.55F) * 0.18F * f1;
+
             this.neck.rotateAngleX = ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F;
             this.neck.rotateAngleY = ModelBetterAnimals.getHeadYaw((EntityLiving) entity) * 0.017453292F;
         }
