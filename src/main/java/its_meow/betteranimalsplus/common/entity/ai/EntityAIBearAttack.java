@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
 
-import its_meow.betteranimalsplus.common.entity.EntityBear;
+import its_meow.betteranimalsplus.common.entity.EntityBrownBear;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -26,10 +26,10 @@ public class EntityAIBearAttack extends EntityAITarget
 	protected final Predicate<EntityLivingBase> targetEntitySelector;
 	protected EntityLivingBase targetEntity;
 
-	protected EntityBear taskOwner;
+	protected EntityBrownBear taskOwner;
 	//protected int threat;
 	
-	public EntityAIBearAttack( EntityBear npc )
+	public EntityAIBearAttack( EntityBrownBear npc )
 	{
 		//    checkSight, onlyNearby
 		super( npc, false, false );
@@ -46,7 +46,7 @@ public class EntityAIBearAttack extends EntityAITarget
 					return false;
 				}
 				
-				if ( target instanceof EntityBear )
+				if ( target instanceof EntityBrownBear )
 				{
 					return false;
 				}
@@ -71,7 +71,7 @@ public class EntityAIBearAttack extends EntityAITarget
 			return false;
 		}
 		
-		if ( rand.nextInt(20) != 0 )
+		if ( rand.nextInt(12) != 0 )
         {
 			return false;
 	    }
@@ -99,8 +99,9 @@ public class EntityAIBearAttack extends EntityAITarget
 					{
 						if ( !npc.isSneaking() )
 						{
-							this.taskOwner.faceEntity(npc, 10.0F, 10.0F);
-							this.taskOwner.getLookHelper().setLookPositionWithEntity(npc, 20.0F, 20.0F);
+							this.taskOwner.getNavigator().clearPath();
+							this.taskOwner.faceEntity(npc, 30.0F, 30.0F);
+							this.taskOwner.getLookHelper().setLookPositionWithEntity(npc, 30.0F, 30.0F);
 							if ( rand.nextInt(12) == 0 )
 							{
 								this.targetEntity = npc;

@@ -20,6 +20,7 @@ import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -190,9 +191,10 @@ public class EntityTurkey extends EntityAnimalWithTypes {
         }
     }
 
-    public boolean isBreedingItem(ItemStack stack) {
-        return stack.getItem() == Items.PUMPKIN_SEEDS;
-    }
+//    public boolean isBreedingItem(ItemStack stack)
+//    {
+//        return stack.getItem() == Items.PUMPKIN_SEEDS;
+//    }
 
     @Override
     public void fall(float distance, float damageMultiplier) {
@@ -238,6 +240,33 @@ public class EntityTurkey extends EntityAnimalWithTypes {
     @Override
     public int getVariantMax() {
         return 4;
+    }
+    
+    @Override
+    protected void dropFewItems(boolean wasRecentlyHit, int lootingModifier)
+    {
+        int i = this.rand.nextInt(3);
+
+        if (lootingModifier > 0)
+        {
+            i += this.rand.nextInt(lootingModifier + 1);
+        }
+
+        this.dropItem(Items.FEATHER, i);
+        
+        if ( this.isBurning() ) 
+        {
+        	this.dropItem(ModItems.TURKEY_COOKED, 1);
+        }
+        else
+        {
+        	this.dropItem(ModItems.TURKEY_RAW, 1);
+        }
+        
+        this.dropItem(ModItems.TURKEY_EGG, lootingModifier>0?1:rand.nextInt(2));
+
+        
+        //super.dropFewItems(wasRecentlyHit, lootingModifier);
     }
 
     @Override

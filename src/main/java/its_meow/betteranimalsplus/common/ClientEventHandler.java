@@ -1,6 +1,6 @@
 package its_meow.betteranimalsplus.common;
 
-import its_meow.betteranimalsplus.common.entity.EntityBear;
+import its_meow.betteranimalsplus.common.entity.EntityBrownBear;
 import its_meow.betteranimalsplus.common.entity.EntityFeralWolf;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,7 +63,7 @@ public class ClientEventHandler
 	@SubscribeEvent
 	public void mountEvent(EntityMountEvent event)
 	{
-		if ( ( event.getEntityMounting() instanceof EntityFeralWolf || event.getEntityMounting() instanceof EntityBear ) && event.getEntityBeingMounted() instanceof EntityPlayer )
+		if ( ( event.getEntityMounting() instanceof EntityFeralWolf || event.getEntityMounting() instanceof EntityBrownBear ) && event.getEntityBeingMounted() instanceof EntityPlayer )
 		{
 			//EntityPlayer player = (EntityPlayer) event.getEntityBeingMounted();
 			if ( event.getWorldObj().isRemote ) this.cameraRiding = true;

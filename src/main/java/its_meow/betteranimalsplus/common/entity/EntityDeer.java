@@ -312,25 +312,32 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
     
     private void faceAwayEntity(Entity entityIn)
     {
-        double d0 = this.posX - entityIn.posX;
-        double d2 = this.posZ - entityIn.posZ;
-        double d1;
+    	if ( this.getDistance(entityIn) <= 5 )
+    	{
 
-        if (entityIn instanceof EntityLivingBase)
-        {
-            EntityLivingBase entitylivingbase = (EntityLivingBase)entityIn;
-            d1 = entitylivingbase.posY + (double)entitylivingbase.getEyeHeight() - (this.posY + (double)this.getEyeHeight());
-        }
-        else
-        {
-            d1 = (entityIn.getEntityBoundingBox().minY + entityIn.getEntityBoundingBox().maxY) / 2.0D - (this.posY + (double)this.getEyeHeight());
-        }
-
-        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-        float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
-        float f1 = (float)(-(MathHelper.atan2(d1, d3) * (180D / Math.PI)));
-        this.rotationPitch = f1;
-        this.rotationYaw = f;
+    	}
+    	else
+    	{
+	        double d0 = this.posX - entityIn.posX;
+	        double d2 = this.posZ - entityIn.posZ;
+	        double d1;
+	
+	        if (entityIn instanceof EntityLivingBase)
+	        {
+	            EntityLivingBase entitylivingbase = (EntityLivingBase)entityIn;
+	            d1 = entitylivingbase.posY + (double)entitylivingbase.getEyeHeight() - (this.posY + (double)this.getEyeHeight());
+	        }
+	        else
+	        {
+	            d1 = (entityIn.getEntityBoundingBox().minY + entityIn.getEntityBoundingBox().maxY) / 2.0D - (this.posY + (double)this.getEyeHeight());
+	        }
+	
+	        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
+	        float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
+	        float f1 = (float)(-(MathHelper.atan2(d1, d3) * (180D / Math.PI)));
+	        this.rotationPitch = f1;
+	        this.rotationYaw = f;
+    	}
     }
     
     @Override

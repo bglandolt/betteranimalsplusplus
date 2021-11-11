@@ -3,7 +3,6 @@ package its_meow.betteranimalsplus.common.entity;
 import javax.annotation.Nullable;
 
 import its_meow.betteranimalsplus.common.entity.ai.AIHelper;
-import its_meow.betteranimalsplus.common.entity.ai.EntityAIBearAttack;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAIEatGrassCustom;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAIMooseAttack;
 import its_meow.betteranimalsplus.common.entity.ai.PublicEntityAIAttack;
@@ -19,22 +18,18 @@ import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
-import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ReportedException;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
@@ -43,18 +38,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
 {
-
-	
-	
-	
-	
-	
 	
 	public class AIMeleeAttack extends PublicEntityAIAttack
     {
         public AIMeleeAttack()
         {
-            super(EntityMoose.this, 1.35D, true); // ttt
+            super(EntityMoose.this, 1.35D); // ttt
         }
         
         public void resetTask()
@@ -76,23 +65,23 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     	        	this.attacker.playSound(SoundEvents.BLOCK_CLOTH_PLACE, 2.0F, 0.4F);
     	    		this.attacker.playSound(SoundEvents.BLOCK_SAND_FALL, 1.0F, 0.7F);
     	    		this.attacker.world.setEntityState(this.attacker, (byte) 28);
-    	    		if ( EntityMoose.this.headDownDuration == 0 )
-    				{
-    					EntityMoose.this.headDownDuration = 120;
-    				}
-    				else if ( EntityMoose.this.headDownDuration < 30 )
-    				{
-    					EntityMoose.this.headDownDuration = 120 - EntityMoose.this.headDownDuration;
-    				}
-    				else
-    				{
-    					EntityMoose.this.headDownDuration = 90;
-    				}
+//	    	    		if ( EntityMoose.this.headDownDuration <= 0 )
+//	    				{
+//	    	    			EntityMoose.this.headDownDuration = 120;
+//	    				}
+//	    				else if ( EntityMoose.this.headDownDuration < 30 )
+//	    				{
+//	    					EntityMoose.this.headDownDuration = 120 - EntityMoose.this.headDownDuration;
+//	    				}
+//	    				else
+//	    				{
+//	    					EntityMoose.this.headDownDuration = 90;
+//	    				}
             	}
             	else if ( this.attackTick == 5 )
             	{
             		EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 27);
-        			EntityMoose.this.headRam = 20;
+        			// EntityMoose.this.headRam = 20;
             		EntityMoose.this.getNavigator().clearPath();
             	}
     	    }
@@ -104,19 +93,20 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     		        {
     		        	this.attackTick = 10;
     		        }
+    		        
     		        EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 28);
-    	    		if ( EntityMoose.this.headDownDuration == 0 )
-    				{
-    					EntityMoose.this.headDownDuration = 120;
-    				}
-    				else if ( EntityMoose.this.headDownDuration < 30 )
-    				{
-    					EntityMoose.this.headDownDuration = 120 - EntityMoose.this.headDownDuration;
-    				}
-    				else
-    				{
-    					EntityMoose.this.headDownDuration = 90;
-    				}
+//	    		        if ( EntityMoose.this.headDownDuration <= 0 )
+//	    				{
+//	    	    			EntityMoose.this.headDownDuration = 120;
+//	    				}
+//	    				else if ( EntityMoose.this.headDownDuration < 30 )
+//	    				{
+//	    					EntityMoose.this.headDownDuration = 120 - EntityMoose.this.headDownDuration;
+//	    				}
+//	    				else
+//	    				{
+//	    					EntityMoose.this.headDownDuration = 90;
+//	    				}
     	    	}
             } 
             else
@@ -147,16 +137,24 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     	return 14.0D;
     }
     
-    
-    
-    
-    
-    
-    
-    
+    @Override
+    public void onUpdate()
+    {
+        super.onUpdate();
+        
+        if (this.headRam >= 0)
+        {
+        	this.headRam--;
+        	this.headDownDuration = -1;
+        }
+        else if (this.headDownDuration >= 0)
+        {
+        	this.headDownDuration--;
+        }
+    }
     
     public EntityMoose(World worldIn)
-   {
+    {
         super(worldIn, 5);
         this.setSize(1.4F, 1.9F);
         this.stepHeight = 2.05F;
@@ -251,8 +249,8 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     @Override
     public boolean attackEntityAsMob(Entity entityIn)
     {   	
-    	//this.faceEntity(entityIn, 20.0F, 20.0F);
-    	//this.getLookHelper().setLookPositionWithEntity(entityIn, 20.0F, 20.0F);
+    	//this.faceEntity(entityIn, 30.0F, 30.0F);
+    	//this.getLookHelper().setLookPositionWithEntity(entityIn, 30.0F, 30.0F);
     	
     	this.cannotReachTimer = 0;
 		this.fleeTimer = 0;
@@ -304,7 +302,7 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(6.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(60.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
@@ -317,9 +315,10 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     public void onLivingUpdate()
     {
     	super.onLivingUpdate();
+    	
     	if ( this.world.isRemote ) return;
     	
-    	if ( this.getAttackTarget() != null )
+    	if ( this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive() )
     	{
         	this.cannotReachTimer++;
         	if ( this.cannotReachTimer > 200 && ( Math.abs(this.posY-this.getAttackTarget().posY) > 2 || this.getDistance(this.getAttackTarget()) > 6 ) )
@@ -335,53 +334,43 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
 				{
 					Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, this.getAttackTarget().getPositionVector());
 					
-	                if ( vec3d != null )
-	                {
-	                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0);
-	                }
+	                if ( vec3d != null && this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0) )
+                    {
+
+                    }
 	                else
 	                {
 	                	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, this.getAttackTarget().getPositionVector());
 						
-		                if ( vec3d != null )
+		                if ( vec3d != null && this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0) )
 		                {
-		                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0);
+
 		                }
 		                else
 		                {
 		                	this.fleeTimer -= 20;
 		                }
 	                }
+    				AIHelper.faceMovingDirection(this);
 				}
-				AIHelper.faceMovingDirection(this);
     		}
     		else
     		{
-	    		//this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
-				AIHelper.faceEntitySmart(this, this.getAttackTarget());
-	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+    	    	if ( !this.collidedHorizontally )
+    	    	{
+    	    		AIHelper.faceEntitySmart(this, this.getAttackTarget());
+    	    	}
+    	    	else
+    	    	{
+    	    		if ( this.motionY < 0.3D && this.ticksExisted % 20 == 0 )
+    	    		{
+    	    			this.addVelocity(0, 0.3D, 0);
+    	    			this.velocityChanged = true;
+    	    		}
+    	    	}
+				this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
     		}
     	}
-    	else
-    	{
-    		this.cannotReachTimer = 0;
-    	}
-    	
-//    	super.onLivingUpdate();
-//    	    	
-//    	if ( this.getAttackTarget() != null )
-//    	{
-//    		if ( this.fleeTimer > 0 )
-//    		{
-//				AIHelper.faceMovingDirection(this);
-//    		}
-//    		else
-//    		{
-//	    		//this.faceEntity(this.getAttackTarget(), 20.0F, 20.0F);
-//				AIHelper.faceEntitySmart(this, this.getAttackTarget());
-//	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
-//	    	}
-//    	}
          
          if ( this.fleeTimer > 0 )
          {
@@ -391,122 +380,13 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
          if ( this.cannotReachTimer > 0 )
          {
          	this.cannotReachTimer--;
-         	if ( this.cannotReachTimer == 1 && this.getAttackTarget() != null && this.getDistance(this.getAttackTarget()) > 12 )
+         	if ( this.cannotReachTimer <= 1 && this.getAttackTarget() != null && this.getDistance(this.getAttackTarget()) > 12 )
          	{
          		this.setAttackTarget(null);
          	}
          }
          
     }
-    
-//    @Override
-//    public void onLivingUpdate()
-//    {
-//    	if ( this.getAttackTarget() != null )
-//    	{
-//			AIHelper.faceEntitySmart(this, this.getAttackTarget());
-//
-//    		//this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
-////    		this.prevRotationPitch = 0;
-////    		this.prevRotationYaw = 0;
-////    		this.newPosRotationIncrements = 0;
-//    	}
-//    	else
-//    	{
-//        	this.faceMovingDirection();
-//    	}
-//    	super.onLivingUpdate();
-//    	if ( this.getAttackTarget() != null )
-//    	{
-//			AIHelper.faceEntitySmart(this, this.getAttackTarget());
-//
-//    		//this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
-////    		this.prevRotationPitch = 0;
-////    		this.prevRotationYaw = 0;
-////    		this.newPosRotationIncrements = 0;
-//    	}
-//    	else
-//    	{
-//        	this.faceMovingDirection();
-//    	}
-//    }
-    
-    public void faceMovingDirection()
-    {
-    	try
-    	{
-	    	PathPoint p = this.getNavigator().getPath().getFinalPathPoint();
-
-	        double d0 = (p.x - this.posX) * 2;
-	        double d2 = (p.z - this.posZ) * 2;
-	        double d1 = p.y - this.posY;
-	
-	        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-	        float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
-	        float f1 = (float)(-(MathHelper.atan2(d1, d3) * (180D / Math.PI)));
-	        this.rotationPitch = f1;
-	        this.rotationYaw = f;
-    	}
-    	catch ( Exception e ) {}
-    }
-    
-    //public float rotationYaw;
-    //public float rotationPitch;
-    //public float prevRotationYaw;
-    //public float prevRotationPitch;
-    
-//    @Override
-//    protected void setRotation(float yaw, float pitch)
-//    {
-//    	if ( Math.abs(this.rotationYaw - yaw) > 1.0F )
-//    	{
-//    		yaw = 1.0F;
-//    	}
-//    	if ( Math.abs(this.rotationPitch - pitch) > 1.0F )
-//    	{
-//    		yaw = 1.0F;
-//    	}
-//        this.rotationYaw = yaw % 360.0F;
-//        this.rotationPitch = pitch % 360.0F;
-//    }
-    
-//    @SideOnly(Side.CLIENT)
-//    public void turn(float yaw, float pitch)
-//    {
-//        float f = this.rotationPitch;
-//        float f1 = this.rotationYaw;
-//        this.rotationYaw = (float)((double)this.rotationYaw + (double)yaw * 0.15D);
-//        this.rotationPitch = (float)((double)this.rotationPitch - (double)pitch * 0.15D);
-//        this.rotationPitch = MathHelper.clamp(this.rotationPitch, -90.0F, 90.0F);
-//        this.prevRotationPitch += this.rotationPitch - f;
-//        this.prevRotationYaw += this.rotationYaw - f1;
-//    }
-    
-    
-    
-    // STOPS THE STUPID SPINNING THAT ENTITIES DO FOR NO REASON
-//    @Override
-//    public void onLivingUpdate()
-//    {
-//    	if ( this.getAttackTarget() != null )
-//    	{
-//    		this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.prevRotationPitch = 0;
-//    		this.prevRotationYaw = 0;
-//    	}
-//    	super.onLivingUpdate();
-//    	if ( this.getAttackTarget() != null )
-//    	{
-//    		this.faceEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
-//    		this.prevRotationPitch = 0;
-//    		this.prevRotationYaw = 0;
-//    	}
-//    }
-
     @Override
     protected float getWaterSlowDown() {
         return 0.9F;
@@ -525,31 +405,6 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
             return eater.getPosition().offset(facing).offset(facing);
         });
     }
-    
-//    @Override
-//    public boolean attackEntityFrom(DamageSource source, float amount)
-//    {
-//        if ( source.getTrueSource() instanceof EntityPlayer && ( this.getDistance(source.getTrueSource()) > 12 || this.getNavigator().getPathToEntityLiving(source.getTrueSource()) == null ) )
-//        {
-//        	EntityPlayer player = (EntityPlayer) source.getTrueSource();
-//        	
-//        	Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 7, new Vec3d(player.posX,player.posY,player.posZ));
-//
-//            if ( vec3d != null )
-//            {
-//            	this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.55D);
-//            }
-//            else
-//            {
-//            	this.world.setEntityState(this, (byte) 28);
-//            }
-//        }
-//        else
-//        {
-//        	this.world.setEntityState(this, (byte) 28);
-//        }
-//    	return super.attackEntityFrom(source, amount);
-//    }
     
     @SideOnly(Side.CLIENT)
 	public void handleStatusUpdate(byte id)

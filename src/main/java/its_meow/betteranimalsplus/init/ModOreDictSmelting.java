@@ -14,17 +14,20 @@ public class ModOreDictSmelting {
         GameRegistry.addSmelting(new ItemStack(ModItems.PHEASANT_RAW), new ItemStack(ModItems.PHEASANT_COOKED), 0.0F);
         GameRegistry.addSmelting(new ItemStack(ModItems.CRAB_MEAT_RAW), new ItemStack(ModItems.CRAB_MEAT_COOKED), 0.0F);
         GameRegistry.addSmelting(new ItemStack(ModItems.TURKEY_RAW), new ItemStack(ModItems.TURKEY_COOKED), 0.0F);
-        GameRegistry.addSmelting(new ItemStack(ModItems.TURKEY_LEG_RAW), new ItemStack(ModItems.TURKEY_LEG_COOKED), 0.0F);
+//        GameRegistry.addSmelting(new ItemStack(ModItems.WOLF_MEAT_RAW), new ItemStack(ModItems.WOLF_MEAT_COOKED), 0.0F);
+//        GameRegistry.addSmelting(new ItemStack(ModItems.BEAR_MEAT_RAW), new ItemStack(ModItems.BEAR_MEAT_COOKED), 0.0F);
         GameRegistry.addSmelting(new ItemStack(ModItems.GOLDEN_GOOSE_EGG), new ItemStack(Items.GOLD_INGOT), 0.3F);
-        GameRegistry.addSmelting(new ItemStack(ModItems.EEL_MEAT_RAW), new ItemStack(ModItems.EEL_MEAT_COOKED), 0.3F);
+        GameRegistry.addSmelting(new ItemStack(ModItems.EEL_MEAT_RAW), new ItemStack(ModItems.EEL_MEAT_COOKED), 0.0F);
 
         // Register oredict
         OreDictionary.registerOre("listAllmeatraw", ModItems.VENISON_RAW);
         OreDictionary.registerOre("listAllmeatcooked", ModItems.VENISON_COOKED);
         OreDictionary.registerOre("listAllmeatraw", ModItems.TURKEY_RAW);
         OreDictionary.registerOre("listAllmeatcooked", ModItems.TURKEY_COOKED);
-        OreDictionary.registerOre("listAllmeatraw", ModItems.TURKEY_LEG_RAW);
-        OreDictionary.registerOre("listAllmeatcooked", ModItems.TURKEY_LEG_COOKED);
+//        OreDictionary.registerOre("listAllmeatraw", ModItems.WOLF_MEAT_RAW);
+//        OreDictionary.registerOre("listAllmeatcooked", ModItems.WOLF_MEAT_COOKED);
+//        OreDictionary.registerOre("listAllmeatraw", ModItems.BEAR_MEAT_RAW);
+//        OreDictionary.registerOre("listAllmeatcooked", ModItems.BEAR_MEAT_COOKED);
         OreDictionary.registerOre("listAllmeatraw", ModItems.PHEASANT_RAW);
         OreDictionary.registerOre("listAllmeatcooked", ModItems.PHEASANT_COOKED);
         OreDictionary.registerOre("listAllvenisonraw", ModItems.VENISON_RAW);
@@ -34,6 +37,7 @@ public class ModOreDictSmelting {
         OreDictionary.registerOre("listAllMilk", ModItems.GOAT_MILK);
         OreDictionary.registerOre("listAllGoatMilk", ModItems.GOAT_MILK);
         OreDictionary.registerOre("foodGoatMilk", ModItems.GOAT_MILK);
+        OreDictionary.registerOre("foodCheese", ModItems.CHEESE);
         OreDictionary.registerOre("foodCheese", ModItems.GOAT_CHEESE);
         OreDictionary.registerOre("foodGoatCheese", ModItems.GOAT_CHEESE);
         OreDictionary.registerOre("foodVenisonraw", ModItems.VENISON_RAW);
@@ -58,7 +62,7 @@ public class ModOreDictSmelting {
         regEgg(ModItems.GOOSE_EGG);
 
         for(ItemStack item : OreDictionary.getOres("egg")) {
-            GameRegistry.addSmelting(item, new ItemStack(ModItems.FRIED_EGG), 0.3F);
+            GameRegistry.addSmelting(item, new ItemStack(ModItems.FRIED_EGG), 0.0F);
         }
     }
     

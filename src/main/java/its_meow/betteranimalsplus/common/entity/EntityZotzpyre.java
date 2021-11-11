@@ -134,12 +134,21 @@ public class EntityZotzpyre extends EntityMobWithTypes {
     @Override
     public void onUpdate()
     {
-        super.onUpdate();
-        if ( (this.isDead && this.isRiding()) || (this.isRiding() && this.getRidingEntity() != null && this.getRidingEntity().isDead) )
-        {
-            this.dismountZotz();
-        }
-        if(!this.world.isRemote)
+    	
+    	if ( (this.isRiding() && !this.getRidingEntity().isEntityAlive()) )
+    	{
+    		this.getRidingEntity().setDead();
+    		this.dismountZotz();
+    	}
+    	
+    	if ( !this.isEntityAlive() )
+    	{
+    		this.dismountZotz();
+    	}
+
+    	super.onUpdate();
+                
+        if ( !this.world.isRemote )
         {
             this.setBesideClimbableBlock(this.collidedHorizontally);
         }
@@ -291,7 +300,7 @@ public class EntityZotzpyre extends EntityMobWithTypes {
     	
     	// super.onLivingUpdate();
     	
-    	if ( this.getAttackTarget() != null )
+    	if ( this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive() )
     	{
     		if ( this.isFleeing() )
     		{
@@ -482,6 +491,7 @@ public class EntityZotzpyre extends EntityMobWithTypes {
 		{
 			if ( this.oldCameraMode != -1 ) Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
 			this.oldCameraMode = -1;
+            this.dismountZotz();
 		}
 		else if ( id == 25 )
 		{
@@ -509,9 +519,7 @@ public class EntityZotzpyre extends EntityMobWithTypes {
     
     public boolean grabTarget(EntityLivingBase entity)
     {
-    	//this.fleeTimer = 0;
-    	
-    	if ( entity.isBeingRidden() || this.isRiding() )
+    	if ( entity.isRiding() || entity.isBeingRidden() || this.isRiding() || this.isBeingRidden() )
     	{
     		return false;
     	}
@@ -524,13 +532,10 @@ public class EntityZotzpyre extends EntityMobWithTypes {
         this.world.setEntityState(this, (byte)25);
         this.playSound(SoundEvents.ENTITY_CAT_HISS, 0.6F, 1.2F);
         
-        if ( !this.isRiding() )
+        this.startRiding(entity, true);
+        if ( !world.isRemote && entity instanceof EntityPlayerMP)
         {
-            this.startRiding(entity, true);
-            if ( !world.isRemote && entity instanceof EntityPlayerMP)
-            {
-                ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
-            }
+            ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
         }
         
         return true;
@@ -558,10 +563,14 @@ public class EntityZotzpyre extends EntityMobWithTypes {
                 {
                     ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
                 }
+            	this.world.setEntityState(this, (byte)23);
             }
             
-        	this.world.setEntityState(this, (byte)23);
+        	mount.attackEntityFrom(DamageSource.GENERIC, 0.0F);
     	}
+    	
+    	this.attackEntityFrom(DamageSource.GENERIC, 0.0F);
+    	
     }
     
     
@@ -744,7 +753,7 @@ public class EntityZotzpyre extends EntityMobWithTypes {
     {
         public AIMeleeAttack()
         {
-            super(EntityZotzpyre.this, 1.35D, true);
+            super(EntityZotzpyre.this, 1.35D);
         }
         
         protected double d0 = 0.0D;
@@ -912,78 +921,85 @@ public class EntityZotzpyre extends EntityMobWithTypes {
         }
         
         
-        @Override
-        public void updateTask()
-        {
-        	if ( this.attacker.isRiding() || EntityZotzpyre.this.isFleeing() )
-        	{
-        		return;
-        	}
-        	
-            EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
-            if ( entitylivingbase == null ) return;
-
-            double d0 = 1+this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
-            --this.delayCounter;
-
-            if ((this.longMemory || this.attacker.getEntitySenses().canSee(entitylivingbase)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || entitylivingbase.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F))
-            {
-                this.targetX = entitylivingbase.posX;
-                this.targetY = entitylivingbase.getEntityBoundingBox().minY;
-                this.targetZ = entitylivingbase.posZ;
-                this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
-
-                if (this.canPenalize)
-                {
-                    this.delayCounter += failedPathFindingPenalty;
-                    if (this.attacker.getNavigator().getPath() != null)
-                    {
-                        net.minecraft.pathfinding.PathPoint finalPathPoint = this.attacker.getNavigator().getPath().getFinalPathPoint();
-                        if (finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
-                            failedPathFindingPenalty = 0;
-                        else
-                            failedPathFindingPenalty += 10;
-                    }
-                    else
-                    {
-                        failedPathFindingPenalty += 10;
-                    }
-                }
-
-                if (d0 > 1024.0D)
-                {
-                    this.delayCounter += 10;
-                }
-                else if (d0 > 256.0D)
-                {
-                    this.delayCounter += 5;
-                }
-
-                if ( d0 >= 20 )
-                {
-	                if ( !this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget) )
-	                {
-	                    this.delayCounter += 15;
-	                }
-                }
-                else
-                {                	
-//                	if ( !this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget*(1.0D+(d0-16.0D)/16.0D) ) )
+        // THIS WORKED BEFORE THE CHANGE, FALLBACK
+//        @Override
+//        public void updateTask()
+//        {
+//        	if ( this.attacker.isRiding() || EntityZotzpyre.this.isFleeing() )
+//        	{
+//        		return;
+//        	}
+//        	
+//            EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+//            if ( entitylivingbase == null ) return;
+//
+//            double d0 = 1+this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
+//            --this.delayCounter;
+//
+//            if ((this.longMemory || this.attacker.getEntitySenses().canSee(entitylivingbase)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || entitylivingbase.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F))
+//            {
+//                this.targetX = entitylivingbase.posX;
+//                this.targetY = entitylivingbase.getEntityBoundingBox().minY;
+//                this.targetZ = entitylivingbase.posZ;
+//                this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
+//
+//                if (this.canPenalize)
+//                {
+//                    this.delayCounter += failedPathFindingPenalty;
+//                    if (this.attacker.getNavigator().getPath() != null)
+//                    {
+//                        net.minecraft.pathfinding.PathPoint finalPathPoint = this.attacker.getNavigator().getPath().getFinalPathPoint();
+//                        if (finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
+//                            failedPathFindingPenalty = 0;
+//                        else
+//                            failedPathFindingPenalty += 10;
+//                    }
+//                    else
+//                    {
+//                        failedPathFindingPenalty += 10;
+//                    }
+//                }
+//
+//                if (d0 > 1024.0D)
+//                {
+//                    this.delayCounter += 10;
+//                }
+//                else if (d0 > 256.0D)
+//                {
+//                    this.delayCounter += 5;
+//                }
+//
+//                if ( d0 >= 20 )
+//                {
+//	                if ( !this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget) )
 //	                {
 //	                    this.delayCounter += 15;
 //	                }
-                	this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, 0.0D);
-
-                	Vec3d velocityVector = new Vec3d(this.attacker.posX - entitylivingbase.posX, 0, this.attacker.posZ - entitylivingbase.posZ);
-					double push = (2.0D+d0)*2.0D;
-					this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
-                	this.attacker.velocityChanged = true;
-                }
-            }
-
-            this.attackTick = Math.max(this.attackTick - 1, 0);
-            this.checkAndPerformAttack(entitylivingbase, d0);
-        }
+//                }
+//                else
+//                {                	
+////                	if ( !this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget*(1.0D+(d0-16.0D)/16.0D) ) )
+////	                {
+////	                    this.delayCounter += 15;
+////	                }
+//                	this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, 0.0D);
+//
+//                	Vec3d velocityVector = new Vec3d(this.attacker.posX - entitylivingbase.posX, 0, this.attacker.posZ - entitylivingbase.posZ);
+//					double push = (2.0D+d0)*2.0D;
+//					this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
+//                	this.attacker.velocityChanged = true;
+//                }
+//            }
+//
+//            this.attackTick = Math.max(this.attackTick - 1, 0);
+//            this.checkAndPerformAttack(entitylivingbase, d0);
+//        }
+        
+        
+        
+        
+        
+        
         
 
 //	    else if ( this.attackTick >= 25 ) // else // if ( dist <= 256.0D ) //( EntityZotzpyre.this.latchTimer <= 0 && dist <= 144.0D ) || dist <= 49.0D )

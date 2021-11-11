@@ -117,6 +117,7 @@ public class BetterAnimalsPlusRegistrar {
         ModItems.TURKEY_EGG,
         ModItems.GOOSE_EGG,
         ModItems.GOLDEN_GOOSE_EGG,
+        ModItems.CHEESE,
         ModItems.TURKEY_LEG_RAW,
         ModItems.TURKEY_LEG_COOKED,
         ModItems.EEL_MEAT_RAW,

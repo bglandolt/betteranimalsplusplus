@@ -302,104 +302,6 @@ public class ModelFeralWolf extends ModelBetterAnimals
             this.tail01.rotateAngleY = MathHelper.cos(ageInTicks * 0.6662F) * 0.16F * limbSwingAmount;
         }
         
-        if ( wolf.isSitting() )
-        {
-            this.setRotateAngle(rHindPaw, 1.3089969389957472F, 0.20943951023931953F, 0.0F);
-            this.setRotateAngle(lForePaw, 0.03490658503988659F, 0.0F, 0.0F);
-            this.setRotateAngle(rForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
-            this.setRotateAngle(lForeleg01, 0.8726646259971648F, 0.0F, 0.0F);
-            this.setRotateAngle(tail02, 0.5235987755982988F, 0.0F, 0.0F);
-            this.setRotateAngle(tail04, 0.06981317007977318F, 0.0F, 0.0F);
-            this.setRotateAngle(rHindLeg01, -0.20943951023931953F, 0.0F, 0.5235987755982988F);
-            this.setRotateAngle(lHindPaw, 1.3089969389957472F, -0.20943951023931953F, 0.0F);
-            this.setRotateAngle(lForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
-            this.setRotateAngle(tail03, -0.03490658503988659F, 0.0F, 0.0F);
-            this.setRotateAngle(torso, -0.17453292519943295F, 0.0F, 0.0F);
-            this.setRotateAngle(rForeleg01, 0.8726646259971648F, 0.0F, 0.0F);
-            this.setRotateAngle(rForePaw, 0.03490658503988659F, 0.0F, 0.0F);
-            this.setRotateAngle(neck, 0.22689280275926282F, 0.0F, 0.0F);
-            this.setRotateAngle(lHindLeg03, -0.6981317007977318F, 0.0F, 0.05235987755982988F);
-            this.setRotateAngle(rHindLeg02, 0.6981317007977318F, 0.0F, 0.0F);
-            this.setRotateAngle(lHindLeg02, 0.6981317007977318F, 0.0F, 0.0F);
-            this.setRotateAngle(rHindLeg03, -0.6981317007977318F, 0.0F, -0.05235987755982988F);
-            this.setRotateAngle(lHindLeg01, -0.20943951023931953F, 0.0F, -0.5235987755982988F);
-            this.setRotateAngle(chest, -0.8028514559173915F, 0.0F, 0.0F);
-        }
-        else
-        {
-            this.setRotateAngle(neck, -0.5535987755982988F, 0.0F, 0.0F);
-            this.setRotateAngle(lHindLeg03, 0.5235987755982988F, 0.0F, 0.05235987755982988F);
-            this.setRotateAngle(lHindPaw, 0.12217304763960307F, 0.0F, 0.0F);
-            this.setRotateAngle(chest, -0.06981317007977318F, 0.0F, 0.0F); // 06981317007977318F
-            this.setRotateAngle(tail04, 0.06981317007977318F, 0.0F, 0.0F);
-            this.setRotateAngle(lHindLeg02, -0.2617993877991494F, 0.0F, 0.0F);
-            this.setRotateAngle(lForePaw, 0.03490658503988659F, 0.0F, 0.0F);
-            this.setRotateAngle(rHindLeg01, -0.3839724354387525F, 0.0F, 0.05235987755982988F);
-            this.setRotateAngle(rForeleg01, 0.13962634015954636F, 0.0F, 0.0F);
-            this.setRotateAngle(tail02, -0.3141592653589793F, 0.0F, 0.0F);
-            this.setRotateAngle(lForeleg01, 0.13962634015954636F, 0.0F, 0.0F);
-            this.setRotateAngle(lHindLeg01, -0.3839724354387525F, 0.0F, -0.05235987755982988F);
-            this.setRotateAngle(tail03, 0.13962634015954636F, 0.0F, 0.0F);
-            this.setRotateAngle(rHindLeg02, -0.2617993877991494F, 0.0F, 0.0F);
-            this.setRotateAngle(rForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
-            this.setRotateAngle(rHindLeg03, 0.5235987755982988F, 0.0F, -0.05235987755982988F);
-            this.setRotateAngle(rForePaw, 0.03490658503988659F, 0.0F, 0.0F);
-            this.setRotateAngle(lForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
-            this.setRotateAngle(rHindPaw, 0.12217304763960307F, 0.0F, 0.0F);
-            
-            if ( wolf.leaping >= 0 && !wolf.onGround )
-            {
-            	
-            	// ~0 .08 1 0.8 0
-            	float leapAmount = 0.0F;
-            	
-            	if ( wolf.leaping >= 10 )
-            	{
-            		leapAmount = MathHelper.cos((wolf.leaping-10)/7.0F);
-            	}
-            	else
-            	{
-            		leapAmount = MathHelper.cos((wolf.leaping-10)/14.0F);
-            	}
-            	
-            	// 0 -1 0
-//              this.jawLower.rotateAngleX = MathHelper.clamp((float)(wolf.motionY*2.0D), 0.0F, 0.4F) + 0.5F;
-//            	this.chest.rotateAngleX = -MathHelper.clamp((float)(wolf.motionY), -0.3F, 0.3F);
-//            	this.torso.rotateAngleX = MathHelper.clamp((float)(wolf.motionY), -0.4F, 0.4F) + 0.1F;
-            	this.jawLower.rotateAngleX = MathHelper.clamp((float)(leapAmount*0.4F), 0.0F, 0.4F) + 0.4F;
-             	this.chest.rotateAngleX = leapAmount*0.6F + 0.2F;
-             	this.torso.rotateAngleX = leapAmount*0.6F - 0.2F;
-                
-//            	float legs = MathHelper.clamp((float)(wolf.motionY), -0.4F, 0.4F) + 0.3F;
-            	float legs = leapAmount*0.2F + 0.2F;
-            	
-            	this.lHindLeg01.rotateAngleX = legs + 0.1F;
-                this.rHindLeg01.rotateAngleX = legs + 0.1F;
-                this.lForeleg01.rotateAngleX = -legs;
-                this.rForeleg01.rotateAngleX = -legs;
-            	
-                wolf.leaping--;
-            }
-            else
-            {
-                float swingModifier = 0.85f;
-
-            	this.chest.rotateAngleX = 0.1F;
-                this.jawLower.rotateAngleX = 0.0F;
-                this.torso.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * -0.1F * limbSwingAmount - 0.22759093446006054F;
-                
-                this.lHindLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount - 0.22759093446006054F;
-                this.rHindLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * swingModifier * limbSwingAmount  - 0.22759093446006054F;
-                this.lForeleg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F) * swingModifier * limbSwingAmount + 0.22759093446006054F;
-                this.rForeleg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount + 0.22759093446006054F;
-            }
-            
-            this.torso.rotateAngleZ = MathHelper.cos(limbSwing * 0.6F) * 0.1F * limbSwingAmount;
-            this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.65F) * 0.8F * limbSwingAmount;
-        	this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
-
-        }
-
         if ( wolf.isRiding() )
         {            
             // CHEST
@@ -422,6 +324,115 @@ public class ModelFeralWolf extends ModelBetterAnimals
         else
         {
             this.chest.offsetZ = 0.0F;
+            
+            if ( wolf.isSitting() )
+            {
+                this.setRotateAngle(rHindPaw, 1.3089969389957472F, 0.20943951023931953F, 0.0F);
+                this.setRotateAngle(lForePaw, 0.03490658503988659F, 0.0F, 0.0F);
+                this.setRotateAngle(rForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
+                this.setRotateAngle(lForeleg01, 0.8726646259971648F, 0.0F, 0.0F);
+                this.setRotateAngle(tail02, 0.5235987755982988F, 0.0F, 0.0F);
+                this.setRotateAngle(tail04, 0.06981317007977318F, 0.0F, 0.0F);
+                this.setRotateAngle(rHindLeg01, -0.20943951023931953F, 0.0F, 0.5235987755982988F);
+                this.setRotateAngle(lHindPaw, 1.3089969389957472F, -0.20943951023931953F, 0.0F);
+                this.setRotateAngle(lForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
+                this.setRotateAngle(tail03, -0.03490658503988659F, 0.0F, 0.0F);
+                this.setRotateAngle(torso, -0.17453292519943295F, 0.0F, 0.0F);
+                this.setRotateAngle(rForeleg01, 0.8726646259971648F, 0.0F, 0.0F);
+                this.setRotateAngle(rForePaw, 0.03490658503988659F, 0.0F, 0.0F);
+                this.setRotateAngle(neck, 0.22689280275926282F, 0.0F, 0.0F);
+                this.setRotateAngle(lHindLeg03, -0.6981317007977318F, 0.0F, 0.05235987755982988F);
+                this.setRotateAngle(rHindLeg02, 0.6981317007977318F, 0.0F, 0.0F);
+                this.setRotateAngle(lHindLeg02, 0.6981317007977318F, 0.0F, 0.0F);
+                this.setRotateAngle(rHindLeg03, -0.6981317007977318F, 0.0F, -0.05235987755982988F);
+                this.setRotateAngle(lHindLeg01, -0.20943951023931953F, 0.0F, -0.5235987755982988F);
+                this.setRotateAngle(chest, -0.8028514559173915F, 0.0F, 0.0F);
+            }
+            else
+            {
+                this.setRotateAngle(neck, -0.5535987755982988F, 0.0F, 0.0F);
+                this.setRotateAngle(lHindLeg03, 0.5235987755982988F, 0.0F, 0.05235987755982988F);
+                this.setRotateAngle(lHindPaw, 0.12217304763960307F, 0.0F, 0.0F);
+                this.setRotateAngle(chest, -0.06981317007977318F, 0.0F, 0.0F); // 06981317007977318F
+                this.setRotateAngle(tail04, 0.06981317007977318F, 0.0F, 0.0F);
+                this.setRotateAngle(lHindLeg02, -0.2617993877991494F, 0.0F, 0.0F);
+                this.setRotateAngle(lForePaw, 0.03490658503988659F, 0.0F, 0.0F);
+                this.setRotateAngle(rHindLeg01, -0.3839724354387525F, 0.0F, 0.05235987755982988F);
+                this.setRotateAngle(rForeleg01, 0.13962634015954636F, 0.0F, 0.0F);
+                this.setRotateAngle(tail02, -0.3141592653589793F, 0.0F, 0.0F);
+                this.setRotateAngle(lForeleg01, 0.13962634015954636F, 0.0F, 0.0F);
+                this.setRotateAngle(lHindLeg01, -0.3839724354387525F, 0.0F, -0.05235987755982988F);
+                this.setRotateAngle(tail03, 0.13962634015954636F, 0.0F, 0.0F);
+                this.setRotateAngle(rHindLeg02, -0.2617993877991494F, 0.0F, 0.0F);
+                this.setRotateAngle(rForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
+                this.setRotateAngle(rHindLeg03, 0.5235987755982988F, 0.0F, -0.05235987755982988F);
+                this.setRotateAngle(rForePaw, 0.03490658503988659F, 0.0F, 0.0F);
+                this.setRotateAngle(lForeleg02, -0.10471975511965977F, 0.0F, 0.0F);
+                this.setRotateAngle(rHindPaw, 0.12217304763960307F, 0.0F, 0.0F);
+                
+                if ( wolf.leaping >= 0 )
+                {
+                	
+                	//System.out.println("leaping");
+
+                	// ~0 .08 1 0.8 0
+                	
+                	//System.out.println(wolf.leaping);
+                	float leapAmount = MathHelper.cos((wolf.leaping-10)/13.0F) - 0.7F;
+                	//System.out.println(leapAmount);
+
+                	// 0 -1 0
+//                  this.jawLower.rotateAngleX = MathHelper.clamp((float)(wolf.motionY*2.0D), 0.0F, 0.4F) + 0.5F;
+//                	this.chest.rotateAngleX = -MathHelper.clamp((float)(wolf.motionY), -0.3F, 0.3F);
+//                	this.torso.rotateAngleX = MathHelper.clamp((float)(wolf.motionY), -0.4F, 0.4F) + 0.1F;
+                	this.jawLower.rotateAngleX = MathHelper.clamp((float)(leapAmount*1.5F), 0.0F, 0.45F) + 0.4F;
+                	
+                 	//this.torso.rotateAngleX = -leapAmount*0.4F;
+                 	this.chest.rotateAngleX = -leapAmount*1.5F + 0.15F;
+                 	
+                 	this.tail01.rotateAngleX = leapAmount*4.5F + 0.7F;
+                    
+                	//System.out.println("la" + this.chest.rotateAngleX);
+//                	float legs = MathHelper.clamp((float)(wolf.motionY), -0.4F, 0.4F) + 0.3F;
+                	
+                	this.lHindLeg01.rotateAngleX = leapAmount*2.5F - 0.3F;
+                    this.rHindLeg01.rotateAngleX = leapAmount*2.5F - 0.3F;
+                    this.lHindLeg02.rotateAngleX = leapAmount - 0.26F;
+                    this.rHindLeg02.rotateAngleX = leapAmount - 0.26F;
+                    this.lHindPaw.rotateAngleX = leapAmount*6.0F + 0.122F;
+                    this.rHindPaw.rotateAngleX = leapAmount*6.0F + 0.122F;
+                    
+                    this.lForeleg01.rotateAngleX = leapAmount*3.0F;
+                    this.rForeleg01.rotateAngleX = leapAmount*3.0F;
+                    this.lForeleg02.rotateAngleX = -leapAmount*5.0F - 0.15F;
+                    this.rForeleg02.rotateAngleX = -leapAmount*5.0F - 0.15F;
+                    this.lForePaw.rotateAngleX = leapAmount*6.0F + 0.035F;
+                    this.rForePaw.rotateAngleX = leapAmount*6.0F + 0.035F;
+                    
+                    wolf.leaping--;
+                }
+                else
+                {
+                    float swingModifier = 0.85f;
+
+                	//this.chest.rotateAngleX = 0.1F;
+                    this.jawLower.rotateAngleX = 0.0F;
+                    
+                    this.torso.rotateAngleX = MathHelper.sin(limbSwing*0.4333F+(float)Math.PI) * -0.1F * limbSwingAmount - 0.22759093446006054F - (float)(wolf.motionY/8.0D);
+                	this.chest.rotateAngleX = MathHelper.sin(limbSwing*0.4333F)*0.1F * limbSwingAmount;
+                	
+                    this.lHindLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount - 0.22759093446006054F;
+                    this.rHindLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * swingModifier * limbSwingAmount  - 0.22759093446006054F;
+                    this.lForeleg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F) * swingModifier * limbSwingAmount + 0.22759093446006054F;
+                    this.rForeleg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F + (float) Math.PI) * swingModifier * limbSwingAmount + 0.22759093446006054F;
+                
+                 	this.chest.rotateAngleX = limbSwingAmount*0.04F;
+                	
+                }
+                
+                this.torso.rotateAngleZ = MathHelper.cos(limbSwing * 0.5F) * 0.08F * limbSwingAmount;
+                this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.55F) * 0.06F * limbSwingAmount;
+            }
         }
     }
 

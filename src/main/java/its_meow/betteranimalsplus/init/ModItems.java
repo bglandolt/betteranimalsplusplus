@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import its_meow.betteranimalsplus.BetterAnimalsPlusMod;
 import its_meow.betteranimalsplus.Ref;
 import its_meow.betteranimalsplus.common.entity.projectile.EntityGoldenGooseEgg;
 import its_meow.betteranimalsplus.common.entity.projectile.EntityGooseEgg;
@@ -36,21 +35,46 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @ObjectHolder("betteranimalsplus")
 public class ModItems {
 
-    public static final ItemBetterFood VENISON_RAW = new ItemBetterFood("venisonraw", 4, 0, 32, true);
-    public static final ItemBetterFood VENISON_COOKED = new ItemBetterFood("venisoncooked", 8, 1.2F, 32, true);
-    public static final ItemHirschgeistSkullWearable HIRSCHGEIST_SKULL_WEARABLE = new ItemHirschgeistSkullWearable();
-    public static final Item ANTLER = new ItemNamedSimple("antler");
-    public static final Item BLUBBER = new ItemBetterFood("blubber", 1, 2.0F, 32, false) {
+    public static final Item BLUBBER = new ItemBetterFood("blubber", 1, 2.0F, 32, false)
+    {
         @Override
         public int getItemBurnTime(ItemStack itemStack) {
             return 800; // half of coal
         }
     };
-    public static final Item GOAT_MILK = new ItemBucketMilk().setRegistryName("goatmilk").setContainerItem(Items.BUCKET);
-    //public static final Item GOAT_MILK = new ItemBucketMilk().setRegistryName("goatmilk").setCreativeTab(BetterAnimalsPlusMod.tab).setRegistryName(Ref.MOD_ID + "." + "goatmilk").setContainerItem(Items.BUCKET);
-    public static final ItemBetterFood GOAT_CHEESE = new ItemBetterFood("goatcheese", 3, 1, 15, false);
-    public static final ItemBetterFood PHEASANT_RAW = new ItemBetterFood("pheasantraw", 3, 0, 32, true);
-    public static final ItemBetterFood PHEASANT_COOKED = new ItemBetterFood("pheasantcooked", 7, 1.2F, 32, true);
+        
+    public static final ItemBetterFood VENISON_RAW = new ItemBetterFood("venisonraw", 4, 0.0F, 32, true);
+    public static final ItemBetterFood VENISON_COOKED = new ItemBetterFood("venisoncooked", 12, 1.6F, 32, true);
+
+    
+    public static final ItemBetterFood GOAT_CHEESE = new ItemBetterFood("goatcheese", 6, 2.0F, 32, false);
+    
+//    public static final ItemBetterFood WOLF_MEAT_RAW = new ItemBetterFood("wolfraw", 4, 0.0F, 32, true);
+//    public static final ItemBetterFood WOLF_MEAT_COOKED = new ItemBetterFood("wolfcooked", 12, 1.6F, 32, true);
+//    
+//    public static final ItemBetterFood BEAR_MEAT_RAW = new ItemBetterFood("bearraw", 6, 0.0F, 32, true);
+//    public static final ItemBetterFood BEAR_MEAT_COOKED = new ItemBetterFood("bearcooked", 14, 1.6F, 32, true);
+    
+    public static final ItemBetterFood CHEESE = new ItemBetterFood("cheese", 6, 2.0F, 32, false);
+
+    public static final ItemBetterFood PHEASANT_RAW = new ItemBetterFood("pheasantraw", 1, 0.0F, 32, true);
+    public static final ItemBetterFood PHEASANT_COOKED = new ItemBetterFood("pheasantcooked", 8, 1.6F, 32, true);
+    
+    public static final ItemBetterFood TURKEY_LEG_RAW = new ItemBetterFood("turkey_leg_raw", 1, 0.0F, 16, true);
+    public static final ItemBetterFood TURKEY_LEG_COOKED = new ItemBetterFood("turkey_leg_cooked", 8, 1.6F, 16, true);
+
+    public static final ItemBetterFood EEL_MEAT_RAW = new ItemBetterFood("eel_meat_raw", 1, 0.0F, 16, true);
+    public static final ItemBetterFood EEL_MEAT_COOKED = new ItemBetterFood("eel_meat_cooked", 8, 1.6F, 16, true);
+    
+    public static final ItemBetterFood FRIED_EGG = new ItemBetterFood("fried_egg", 6, 1.0F, 16, true);
+
+    public static final ItemBetterFood CRAB_MEAT_RAW = new ItemBetterFood("crab_meat_raw", 4, 1.0F, 16, true);
+    public static final ItemBetterFood CRAB_MEAT_COOKED = new ItemBetterFood("crab_meat_cooked", 6, 1.6F, 16, true);
+    
+    public static final Item GOAT_MILK = new ItemBucketMilk().setUnlocalizedName(Ref.MOD_ID + ".goatmilk").setContainerItem(Items.BUCKET).setRegistryName("goatmilk");
+    
+    public static final ItemHirschgeistSkullWearable HIRSCHGEIST_SKULL_WEARABLE = new ItemHirschgeistSkullWearable();
+    public static final Item ANTLER = new ItemNamedSimple("antler");
     
     public static final Item WOLF_PELT_SNOWY = new ItemNamedSimple("wolf_pelt_snowy");
     public static final Item WOLF_PELT_TIMBER = new ItemNamedSimple("wolf_pelt_timber");
@@ -76,16 +100,16 @@ public class ModItems {
     public static ItemBearCape BEAR_CAPE_BLACK = new ItemBearCape("black", BEAR_SKIN_BLACK);
     public static ItemBearCape BEAR_CAPE_KERMODE = new ItemBearCape("kermode", BEAR_SKIN_KERMODE);
 
-    public static final ItemBetterFood CRAB_MEAT_RAW = new ItemBetterFood("crab_meat_raw", 2, 1, 16, true);
-    public static final ItemBetterFood CRAB_MEAT_COOKED = new ItemBetterFood("crab_meat_cooked", 5, 1.2F, 16, true);
 
-    public static final ItemRecord RECORD_CRAB_RAVE = new ItemRecord("crabrave", ModSoundEvents.CRAB_RAVE) {}; static {
+    public static final ItemRecord RECORD_CRAB_RAVE = new ItemRecord("crabrave", ModSoundEvents.CRAB_RAVE) {}; static
+    {
         RECORD_CRAB_RAVE.setRegistryName(new ResourceLocation(Ref.MOD_ID, "record_crab_rave"));
         RECORD_CRAB_RAVE.setCreativeTab(null);
         //RECORD_CRAB_RAVE.setTranslationKey("record");
     }
 
-    public static final ItemRecord RECORD_WALRUS = new ItemRecord("walrus", ModSoundEvents.WALRUS) {}; static {
+    public static final ItemRecord RECORD_WALRUS = new ItemRecord("walrus", ModSoundEvents.WALRUS) {}; static
+    {
         RECORD_WALRUS.setRegistryName(new ResourceLocation(Ref.MOD_ID, "record_walrus"));
         RECORD_WALRUS.setCreativeTab(null);
         //RECORD_WALRUS.setTranslationKey("record");
@@ -94,21 +118,16 @@ public class ModItems {
     public static final ItemThrowableCustomEgg PHEASANT_EGG = new ItemThrowableCustomEgg("pheasant_egg", player -> new EntityPheasantEgg(player.world, player));
     public static final ItemThrowableCustomEgg TURKEY_EGG = new ItemThrowableCustomEgg("turkey_egg", player -> new EntityTurkeyEgg(player.world, player));
     public static final ItemThrowableCustomEgg GOOSE_EGG = new ItemThrowableCustomEgg("goose_egg", player -> new EntityGooseEgg(player.world, player));
-    public static final ItemThrowableCustomEgg GOLDEN_GOOSE_EGG = new ItemThrowableCustomEgg("golden_goose_egg", player -> new EntityGoldenGooseEgg(player.world, player)) {
+   
+    public static final ItemThrowableCustomEgg GOLDEN_GOOSE_EGG = new ItemThrowableCustomEgg("golden_goose_egg", player -> new EntityGoldenGooseEgg(player.world, player))
+    {
         @SideOnly(Side.CLIENT)
         @Override
-        public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+        public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn)
+        {
             tooltip.add(new TextComponentString("Golden! Maybe you can melt this down for resources?").setStyle(new Style().setBold(true).setColor(TextFormatting.YELLOW)).getFormattedText());
         }
     };
-    
-    public static final ItemBetterFood TURKEY_LEG_RAW = new ItemBetterFood("turkey_leg_raw", 2, 0F, 16, true);
-    public static final ItemBetterFood TURKEY_LEG_COOKED = new ItemBetterFood("turkey_leg_cooked", 4, 1.2F, 16, true);
-
-    public static final ItemBetterFood EEL_MEAT_RAW = new ItemBetterFood("eel_meat_raw", 1, 0F, 32, true);
-    public static final ItemBetterFood EEL_MEAT_COOKED = new ItemBetterFood("eel_meat_cooked", 4, 0.7F, 32, true);
-    
-    public static final ItemBetterFood FRIED_EGG = new ItemBetterFood("fried_egg", 5, 1.5F, 16, true);
     
     public static Map<String, ItemAdvancementIcon> ADVANCEMENT_ICONS = new HashMap<String, ItemAdvancementIcon>();
     

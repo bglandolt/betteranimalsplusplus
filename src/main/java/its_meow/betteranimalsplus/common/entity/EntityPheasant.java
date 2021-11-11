@@ -235,6 +235,33 @@ public class EntityPheasant extends EntityAnimalWithTypes {
 //        
 //        return (EntityAgeable) child.setType(this.getOffspringType(this, (IVariantTypes) ageable));
     }
+    
+    @Override
+    protected void dropFewItems(boolean wasRecentlyHit, int lootingModifier)
+    {
+        int i = this.rand.nextInt(3);
+
+        if (lootingModifier > 0)
+        {
+            i += this.rand.nextInt(lootingModifier + 1);
+        }
+
+        this.dropItem(Items.FEATHER, i);
+        
+        if ( this.isBurning() ) 
+        {
+        	this.dropItem(ModItems.PHEASANT_COOKED, 1);
+        }
+        else
+        {
+        	this.dropItem(ModItems.PHEASANT_RAW, 1);
+        }
+        
+        this.dropItem(ModItems.PHEASANT_EGG, lootingModifier>0?1:rand.nextInt(2));
+
+        
+        //super.dropFewItems(wasRecentlyHit, lootingModifier);
+    }
 
     @Override
     protected IVariantTypes getBaseChild()

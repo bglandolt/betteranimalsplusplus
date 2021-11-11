@@ -508,8 +508,8 @@ public class ModelMoose extends ModelBase {
                     this.neck.rotateAngleX = -(float)(moose.headRam-7) * 0.0166F - 0.1F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
                 		this.head.rotateAngleZ = ((float)(moose.headRam-7) * 0.020571F + 0.144F)*2.0F;
             	}
-            	moose.headRam--;
-            	moose.headDownDuration = -1;
+//            	*moose.headRam--;
+//            	*moose.headDownDuration = -1;
             }
             else if ( moose.headDownDuration >= 0 ) // 120
             {
@@ -530,7 +530,7 @@ public class ModelMoose extends ModelBase {
                     this.head.rotateAngleX = 1.165F;
                     this.neck.rotateAngleX = 0.7F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
             	}
-            	moose.headDownDuration--;
+//            	**moose.headDownDuration--;
             }
             else if ( eatTime > 0 ) // 60
             {
@@ -566,9 +566,11 @@ public class ModelMoose extends ModelBase {
             
             this.body.rotateAngleZ = MathHelper.cos(f * 0.45F) * 0.14F * f1;
             this.chest.rotateAngleZ = MathHelper.cos(f * 0.5F) * 0.12F * f1;
-        	this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
+        	//this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
 
             
+        	this.body.rotateAngleX = MathHelper.sin(limbSwing*0.3331F+(float)Math.PI) * -0.1F * limbSwingAmount - 0.22759093446006054F - (float)(moose.motionY/8.0D);
+        	this.chest.rotateAngleX = MathHelper.sin(limbSwing*0.3331F)*0.1F * limbSwingAmount;
 //            {
 //            	this.neck.rotateAngleX = -0.3490658503988659F + (float) Math.toRadians(60F);
 //                this.head.rotateAngleX = -0.31869712141416456F + (float) Math.toRadians(55F);

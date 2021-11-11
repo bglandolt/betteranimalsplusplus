@@ -22,11 +22,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.World;
 
-public class EntityBearNeutral extends EntityBear implements IVariantTypes
+public class EntityBlackBear extends EntityBrownBear implements IVariantTypes
 {
-    protected static final DataParameter<Integer> TYPE_NUMBER = EntityDataManager.<Integer>createKey(EntityBearNeutral.class, DataSerializers.VARINT);
+    protected static final DataParameter<Integer> TYPE_NUMBER = EntityDataManager.<Integer>createKey(EntityBlackBear.class, DataSerializers.VARINT);
 
-    public EntityBearNeutral(World world)
+    public EntityBlackBear(World world)
     {
         super(world);
         this.setSize(0.95F, 1.4F);

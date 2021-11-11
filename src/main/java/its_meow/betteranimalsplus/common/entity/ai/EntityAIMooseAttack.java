@@ -11,6 +11,7 @@ import com.google.common.base.Predicate;
 
 import its_meow.betteranimalsplus.common.entity.EntityMoose;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
@@ -46,12 +47,12 @@ public class EntityAIMooseAttack extends EntityAITarget
 					return false;
 				}
 				
-				if ( target instanceof EntityMoose )
-				{
-					return false;
-				}
+//				if ( target instanceof EntityMoose )
+//				{
+//					return false;
+//				}
 				
-				if ( target instanceof EntityPlayer || ( target instanceof EntityAnimal && target.height <= 1.0F && !target.isInWater() ) || target instanceof EntityVillager )
+				if ( target instanceof EntityPlayer || target instanceof EntityVillager || ( target instanceof EntityCreature && target.width >= 0.9F ) ) // || ( target instanceof EntityAnimal && target.height <= 1.0F && !target.isInWater() ) || 
 				{
 					return true;
 				}

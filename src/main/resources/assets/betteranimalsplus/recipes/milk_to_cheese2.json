@@ -1,21 +1,21 @@
 {
     "_comment": [
-        "Curd Goat Milk to Goat Cheese with fungus"
+        "Curd Milk to Cheese with fungus"
     ],
     "type": "minecraft:crafting_shapeless",
     "group": "betteranimalsplus:goatcheese",
     "ingredients": [
         {
-            "item": "betteranimalsplus:goatmilk",
+            "item": "minecraft:milk_bucket",
             "data": 0
         },
         {
-            "item": "minecraft:red_mushroom",
+            "item": "minecraft:brown_mushroom",
             "data": 0
         }
     ],
     "result": {
-        "item": "betteranimalsplus:goatcheese",
+        "item": "betteranimalsplus:cheese",
         "data": 0,
         "count": 3
     }

@@ -63,9 +63,9 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     public EntityFeralWolf(World worldIn)
     {
         super(worldIn);
-        this.setSize(0.8F, 0.9F);
+        this.setSize(0.95F, 0.95F);
         this.setTamed(false);
-        this.stepHeight = 1.55F;
+        this.stepHeight = 2.05F;
         this.dismountZotz();
     }
     
@@ -75,7 +75,7 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
         this.aiSit = new EntityAISit(this);
         this.tasks.addTask(1, new EntityAISwimming(this));
         this.tasks.addTask(2, new EntityFeralWolf.AIMeleeAttack());
-        this.tasks.addTask(3, new EntityAIWander(this, 0.6D, 40));
+        this.tasks.addTask(3, new EntityAIWander(this, 0.65D, 40));
         //this.targetTasks.addTask(3, new EntityAIHurtByTarget(this, true, new Class[0]));
         this.targetTasks.addTask(1, new EntityAICallForHelp(this, 16, new Class[0]));
         this.targetTasks.addTask(2, new EntityAIWolfAttack(this));
@@ -84,10 +84,6 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     public int cannotReachTimer = 0;
     public int fleeTimer = 0;
     
-    protected double jumpModifier()
-    {
-    	return 0.36D;
-    }
     
 //    @Override
 //    protected boolean canDespawn()
@@ -95,16 +91,11 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
 //    	return false;
 //    }
     
-    protected double forwardModifier()
-    {
-    	return 0.32D;
-    }
-    
     public class AIMeleeAttack extends PublicEntityAIAttack
     {
         public AIMeleeAttack()
         {
-            super(EntityFeralWolf.this, 1.4D, true); // ttt
+            super(EntityFeralWolf.this, 1.2D); // ttt
         }
         
         @Override
@@ -133,8 +124,8 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
  	                
                     this.attacker.motionX += d0 / f * 0.2D;
                     this.attacker.motionZ += d1 / f * 0.2D;
-                    this.attacker.faceEntity(entity, 20.0F, 20.0F);
- 		    		this.attacker.getLookHelper().setLookPositionWithEntity(entity, 20.0F, 20.0F);
+//                  this.attacker.faceEntity(entity, 30.0F, 30.0F);
+// 		    		this.attacker.getLookHelper().setLookPositionWithEntity(entity, 30.0F, 30.0F);
                      
                     if ( entity.posY - this.attacker.posY <= -1 )
  	                {
@@ -152,8 +143,8 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
  	        }
  	    	else if ( this.attackTick == 7 && dist <= attackRange*2 )
          	{
-                this.attacker.world.setEntityState(this.attacker, (byte) 28);
-
+ 	    		EntityFeralWolf.this.world.setEntityState(EntityFeralWolf.this, (byte) 28);
+                //EntityFeralWolf.this.leaping = 20;
              	double d0 = entity.posX - this.attacker.posX;
                 double d1 = entity.posZ - this.attacker.posZ;
                 double f = 1+MathHelper.sqrt(d0 * d0 + d1 * d1);
@@ -162,27 +153,20 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
              	{
 			        this.attacker.motionX += d0 / f * 1.25D + this.attacker.motionX * forwardModifier();
                     this.attacker.motionZ += d1 / f * 1.25D + this.attacker.motionZ * forwardModifier();
-                    //this.attacker.faceEntity(entity, 20.0F, 20.0F);
-                    AIHelper.faceEntitySmart(this.attacker, entity);
-		    		this.attacker.getLookHelper().setLookPositionWithEntity(entity, 20.0F, 20.0F);
-		    		//EntityFeralWolf.this.latchTimer = 20 + EntityFeralWolf.this.rand.nextInt(7)*5;
              	}
              	else
              	{
 			        this.attacker.motionX += d0 / f * 0.75D + this.attacker.motionX * forwardModifier();
                     this.attacker.motionZ += d1 / f * 0.75D + this.attacker.motionZ * forwardModifier();
-                    //this.attacker.faceEntity(entity, 20.0F, 20.0F);
-                    AIHelper.faceEntitySmart(this.attacker, entity);
-		    		this.attacker.getLookHelper().setLookPositionWithEntity(entity, 20.0F, 20.0F);
              	}
              	
                 if ( entity.posY - this.attacker.posY <= -0.5D )
                 {
-                	this.attacker.motionY -= jumpModifier();
+                	this.attacker.motionY -= jumpModifier(f);
                 }
                 else
                 {
-                	this.attacker.motionY += jumpModifier();
+                	this.attacker.motionY += jumpModifier(f);
                 }
          	}
         }
@@ -190,104 +174,11 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
         @Override
         public void updateTask()
         {
-        	if ( this.attacker.isRiding() || EntityFeralWolf.this.fleeTimer > 0 )
+        	if ( EntityFeralWolf.this.isRiding() || EntityFeralWolf.this.fleeTimer > 0 )
         	{
         		return;
         	}
-        	
-        	EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
-            if ( entitylivingbase == null ) return;
-            
-            double d0 = 1+this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
-            --this.delayCounter;
-
-            if ((this.longMemory || this.attacker.getEntitySenses().canSee(entitylivingbase)) && this.delayCounter <= 0 && (this.targetX == 0.0D && this.targetY == 0.0D && this.targetZ == 0.0D || entitylivingbase.getDistanceSq(this.targetX, this.targetY, this.targetZ) >= 1.0D || this.attacker.getRNG().nextFloat() < 0.05F))
-            {
-                this.targetX = entitylivingbase.posX;
-                this.targetY = entitylivingbase.getEntityBoundingBox().minY;
-                this.targetZ = entitylivingbase.posZ;
-                this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
-
-                if (this.canPenalize)
-                {
-                    this.delayCounter += failedPathFindingPenalty;
-                    if (this.attacker.getNavigator().getPath() != null)
-                    {
-                        net.minecraft.pathfinding.PathPoint finalPathPoint = this.attacker.getNavigator().getPath().getFinalPathPoint();
-                        if (finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
-                            failedPathFindingPenalty = 0;
-                        else
-                            failedPathFindingPenalty += 10;
-                    }
-                    else
-                    {
-                        failedPathFindingPenalty += 10;
-                    }
-                }
-
-                if (d0 > 1024.0D)
-                {
-                    this.delayCounter += 10;
-                }
-                else if (d0 > 256.0D)
-                {
-                    this.delayCounter += 5;
-                }
-                
-                if ( d0 >= 16 )
-                {
-	                if ( !this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget) )
-	                {
-	                    this.delayCounter += 15;
-	                }
-	                
-	                if ( d0 <= 32 )
-	                {
-	                	this.attacker.setSprinting(true);
-	                }
-	                else
-	                {
-	                	this.attacker.setSprinting(false);
-	                }
-                }
-                else
-                {
-                	this.attacker.setSprinting(false);
-                	
-                	if ( !this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget*(1.0D+(d0-16.0D)/20.0D) ) )
-	                {
-	                    this.delayCounter += 15;
-	                }
-                	
-                	Vec3d velocityVector = new Vec3d(this.attacker.posX - entitylivingbase.posX, 0, this.attacker.posZ - entitylivingbase.posZ);
-					double push = (2.0D+d0)*2.0D;
-					this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
-                	this.attacker.velocityChanged = true;
-                }
-
-//                if ( d0 >= 25 )
-//                {
-//	                if ( !this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget) )
-//	                {
-//	                    this.delayCounter += 15;
-//	                }
-//                }
-//                else if ( d0 <= 9 )
-//                {
-//                	this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, 0.0D);
-//                	Vec3d velocityVector = new Vec3d(this.attacker.posX - entitylivingbase.posX, 0, this.attacker.posZ - entitylivingbase.posZ);
-//					double push = (2.0D+d0)*2.0D;
-//					this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
-//                	this.attacker.velocityChanged = true;
-//                }
-//                else
-//                {
-//                	this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget);
-//                }
-            }
-
-            this.attackTick = Math.max(this.attackTick - 1, 0);
-            this.checkAndPerformAttack(entitylivingbase, d0);
+        	super.updateTask();
         }
         
         @Override
@@ -297,9 +188,19 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
         }
     }
     
-    protected double attackReachModifier()
+    public double jumpModifier(double f)
     {
-    	return 7.0D;
+    	return 0.3D + (f*0.02D);
+    }
+    
+    public double forwardModifier()
+    {
+    	return 0.3D;
+    }
+    
+    public double attackReachModifier()
+    {
+    	return 8.0D;
     }
     
     public int leaping = -1;
@@ -311,6 +212,7 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
 		{
 			if ( this.oldCameraMode != -1 ) Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
 			this.oldCameraMode = -1;
+            this.dismountZotz();
 		}
     	else if ( id == 25 )
    		{
@@ -335,8 +237,8 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(2.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.34D);
+        this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.38D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(5.0D);
@@ -346,10 +248,12 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     public void onLivingUpdate()
     {
     	super.onLivingUpdate();
+    	
+    	
         
     	if ( this.world.isRemote ) return;
     	
-    	if ( this.getAttackTarget() != null )
+    	if ( this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive() )
     	{
         	this.cannotReachTimer++;
         	if ( this.cannotReachTimer > 200 && ( Math.abs(this.posY-this.getAttackTarget().posY) > 2 || this.getDistance(this.getAttackTarget()) > 6 ) )
@@ -370,100 +274,92 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
 				{
 					Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, this.getAttackTarget().getPositionVector());
 					
-	                if ( vec3d != null )
-	                {
-	                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0);
-	                }
+	                if ( vec3d != null && this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0) )
+                    {
+
+                    }
 	                else
 	                {
 	                	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, this.getAttackTarget().getPositionVector());
 						
-		                if ( vec3d != null )
+		                if ( vec3d != null && this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0) )
 		                {
-		                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0);
+
 		                }
 		                else
 		                {
 		                	this.fleeTimer -= 20;
 		                }
 	                }
+    				AIHelper.faceMovingDirection(this);
 				}
-				AIHelper.faceMovingDirection(this);
     		}
     		else
     		{
-    			AIHelper.faceEntitySmart(this, this.getAttackTarget());
-	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
+    	    	if ( !this.collidedHorizontally )
+    	    	{
+    	    		AIHelper.faceEntitySmart(this, this.getAttackTarget());
+    	    	}
+    	    	else
+    	    	{
+    	    		if ( this.motionY < 0.3D && this.ticksExisted % 20 == 0 )
+    	    		{
+    	    			this.addVelocity(0, 0.3D, 0);
+    	    			this.velocityChanged = true;
+    	    		}
+    	    	}
+				this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
     		}
+
+    		
+    		
+    		
+    		if ( this.isRiding() && this.getRidingEntity() == this.getAttackTarget() )
+            {
+            	 if ( this.ticksExisted % 4 == 0 )
+        		 {
+            		 if ( this.rand.nextInt(4) != 0 )
+            		 {
+            			 this.playSound(SoundEvents.ENTITY_GENERIC_EAT, 2.0F+this.rand.nextFloat()/10.0F, 0.5F+this.rand.nextFloat()*0.3F);
+            			 if ( rand.nextBoolean() ) this.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1.0F+this.rand.nextFloat()/10.0F, 1.2F+this.rand.nextFloat()*0.3F);
+            		 }
+        		 }
+                
+                if ( this.ticksExisted % 14 == 0 ) // ATTACK
+                {
+                    this.attackEntityAsMob(this.getAttackTarget());
+                    this.getAttackTarget().addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 18, 7, true, false));
+	                this.getAttackTarget().addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 18, 128, true, false));
+                    this.spawnSweepParticles();
+                }
+                
+           	 if ( this.motionY > 0 )
+        		 {
+        			 this.motionY = 0;
+        		 }
+           	 
+           	 if ( this.getAttackTarget().motionY > 0 )
+        		 {
+        			 this.getAttackTarget().motionY = 0;
+        		 }
+           	 
+        		 this.getAttackTarget().motionX = 0;
+       		 this.getAttackTarget().motionZ = 0;
+       		 this.getAttackTarget().velocityChanged = false;
+       		 this.getAttackTarget().lastTickPosX = this.getAttackTarget().posX;
+       		 this.getAttackTarget().lastTickPosY = this.getAttackTarget().posY;
+       		 this.getAttackTarget().lastTickPosZ = this.getAttackTarget().posZ;
+       		 this.getAttackTarget().setSprinting(false);
+       		 this.getAttackTarget().setSneaking(true);
+       		 this.getAttackTarget().resetActiveHand();
+    			 Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
+            }
     	}
     	else
     	{
+			AIHelper.faceMovingDirection(this);
     		this.cannotReachTimer = 0;
     	}
-    	
-//    	super.onLivingUpdate();
-//    	    	
-//    	if ( this.getAttackTarget() != null )
-//    	{
-//    		if ( this.isRiding() )
-//    		{
-//    			this.rotationYaw = -this.getAttackTarget().rotationYaw;
-//	    		this.prevRotationYaw = -this.getAttackTarget().prevRotationYaw;
-//    		}
-//    		else if ( this.fleeTimer > 0 )
-//    		{
-//				AIHelper.faceMovingDirection(this);
-//    		}
-//    		else
-//    		{
-//    			AIHelper.faceEntitySmart(this, this.getAttackTarget());
-//	    		this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 20.0F, 20.0F);
-//	    	}
-//    	}
-    	
-    	if ( !this.world.isRemote && this.getAttackTarget() != null && !this.getAttackTarget().isDead ) // SERVER
-        {
-             if ( this.isRiding() && this.getRidingEntity() == this.getAttackTarget() )
-             {
-             	 if ( this.ticksExisted % 4 == 0 )
-         		 {
-             		 if ( this.rand.nextInt(4) != 0 )
-             		 {
-             			 this.playSound(SoundEvents.ENTITY_GENERIC_EAT, 2.0F+this.rand.nextFloat()/10.0F, 0.5F+this.rand.nextFloat()*0.3F);
-             			 if ( rand.nextBoolean() ) this.playSound(SoundEvents.ENTITY_GENERIC_EAT, 1.0F+this.rand.nextFloat()/10.0F, 1.2F+this.rand.nextFloat()*0.3F);
-             		 }
-         		 }
-                 
-                 if ( this.ticksExisted % 14 == 0 ) // ATTACK
-                 {
-                     this.attackEntityAsMob(this.getAttackTarget());
-                     this.getAttackTarget().addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 18, 7, true, false));
-	                 this.getAttackTarget().addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 18, 128, true, false));
-                     this.spawnSweepParticles();
-                 }
-                 
-            	 if ( this.motionY > 0 )
-         		 {
-         			 this.motionY = 0;
-         		 }
-            	 
-            	 if ( this.getAttackTarget().motionY > 0 )
-         		 {
-         			 this.getAttackTarget().motionY = 0;
-         		 }
-            	 
-         		 this.getAttackTarget().motionX = 0;
-        		 this.getAttackTarget().motionZ = 0;
-        		 this.getAttackTarget().velocityChanged = false;
-        		 this.getAttackTarget().lastTickPosX = this.getAttackTarget().posX;
-        		 this.getAttackTarget().lastTickPosY = this.getAttackTarget().posY;
-        		 this.getAttackTarget().lastTickPosZ = this.getAttackTarget().posZ;
-        		 this.getAttackTarget().setSprinting(false);
-        		 this.getAttackTarget().setSneaking(true);
-        		 this.getAttackTarget().resetActiveHand();
-     			 Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
-             }
-         }
          
          if ( this.latchTimer > 0 )
          {
@@ -479,7 +375,7 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
          if ( this.cannotReachTimer > 0 )
          {
          	this.cannotReachTimer--;
-         	if ( this.cannotReachTimer == 1 && this.getAttackTarget() != null && this.getDistance(this.getAttackTarget()) > 12 )
+         	if ( this.cannotReachTimer <= 1 && this.getAttackTarget() != null && this.getDistance(this.getAttackTarget()) > 12 )
          	{
          		this.setAttackTarget(null);
          	}
@@ -574,8 +470,8 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     {    	
     	this.playSound(SoundEvents.ENTITY_WOLF_GROWL, 1.0F, 0.7F + this.world.rand.nextFloat() * 0.3F );
     	
-//    	this.faceEntity(entityIn, 20.0F, 20.0F);
-//    	this.getLookHelper().setLookPositionWithEntity(entityIn, 20.0F, 20.0F);
+//    	this.faceEntity(entityIn, 30.0F, 30.0F);
+//    	this.getLookHelper().setLookPositionWithEntity(entityIn, 30.0F, 30.0F);
     	
     	this.cannotReachTimer = 0;
 		this.fleeTimer = 0;
@@ -646,11 +542,23 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     @Override
     public void onUpdate()
     {
+    	if ( (this.isRiding() && !this.getRidingEntity().isEntityAlive()) )
+    	{
+    		this.getRidingEntity().setDead();
+    		this.dismountZotz();
+    	}
+    	
+    	if ( !this.isEntityAlive() )
+    	{
+    		this.dismountZotz();
+    	}
         super.onUpdate();
-        if ( (this.isDead && this.isRiding()) || (this.isRiding() && this.getRidingEntity() != null && this.getRidingEntity().isDead) )
-        {
-            this.dismountZotz();
-        }
+        
+//        if ( this.leaping >= 0 )
+//        {
+//            this.leaping--;
+//            //this.attackAnimationTimerAlt = 0;
+//        }
     }
     
     @Override
@@ -667,25 +575,28 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     
     public boolean grabTarget(EntityLivingBase entity)
     {
-    	this.fleeTimer = 0;
-    	
+    	if ( entity.isRiding() || entity.isBeingRidden() || this.isRiding() || this.isBeingRidden() )
+    	{
+    		return false;
+    	}
+    	    	
     	if ( !entity.isPotionApplicable(new PotionEffect(MobEffects.SLOWNESS)) ) // || !entity.isPotionActive(MobEffects.SLOWNESS) )
     	{
     		return false;
     	}
     	
+    	this.fleeTimer = 0;
+    	
     	this.world.setEntityState(this, (byte)27);
     	this.world.setEntityState(this, (byte)25);
     	
     	this.latchSnapshot = this.ticksExisted;
+
+        this.startRiding(entity, true);
         
-        if ( !this.isRiding() )
+        if ( !world.isRemote && entity instanceof EntityPlayerMP)
         {
-            this.startRiding(entity, true);
-            if ( !world.isRemote && entity instanceof EntityPlayerMP)
-            {
-                ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
-            }
+            ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
         }
         
         return true;
@@ -707,10 +618,14 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
                 {
                     ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
                 }
+            	this.world.setEntityState(this, (byte)23);
             }
             
-        	this.world.setEntityState(this, (byte)23);
+        	mount.attackEntityFrom(DamageSource.GENERIC, 0.0F);
     	}
+    	
+    	this.attackEntityFrom(DamageSource.GENERIC, 0.0F);
+    	
     }
     
 //    public boolean grabTarget(EntityLivingBase entity)
@@ -771,12 +686,6 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
 //            
 //    	}
 //    }
-
-    @Override
-    public void dismountRidingEntity()
-    {
-    	super.dismountRidingEntity();
-    }
 
     @Override
     public boolean canRiderInteract()

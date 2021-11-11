@@ -27,9 +27,10 @@ public interface AIHelper
 	    	try
 	    	{
 		    	PathPoint p = in.getNavigator().getPath().getFinalPathPoint();
+		    	PathPoint p2 = in.getNavigator().getPath().getPathPointFromIndex(in.getNavigator().getPath().getCurrentPathIndex());
 
-		        double d0 = (p.x - in.posX) * 2;
-		        double d2 = (p.z - in.posZ) * 2;
+		        double d0 = (p.x - in.posX) + (p2.x - in.posX);
+		        double d2 = (p.z - in.posZ) + (p2.z - in.posZ);
 		        //double d1 = p.y - in.posY;
 		
 		        //double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
@@ -37,10 +38,19 @@ public interface AIHelper
 		        //float f1 = (float)(-(MathHelper.atan2(d1, d3) * (180D / Math.PI)));
 		        //in.rotationPitch = f1;
 		        in.rotationYaw = f;
+		        in.prevRotationYaw = f;
+
 		        return true;
 	    	}
-	    	catch ( Exception e ) {}
+	    	catch ( Exception e )
+	    	{
+	    		in.prevRotationYaw = in.rotationYaw;
+	    	}
         }
+    	else
+    	{
+    		in.prevRotationYaw = in.rotationYaw;
+    	}
     	return false;
     }
 }

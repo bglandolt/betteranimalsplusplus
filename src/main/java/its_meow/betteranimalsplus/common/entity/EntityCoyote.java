@@ -71,22 +71,23 @@ public class EntityCoyote extends EntityFeralWolf
     }
     
     @Override
-    protected double jumpModifier()
+    public double jumpModifier(double f)
     {
-    	return 0.2D;
+    	return 0.16D + (f*0.01D);
     }
     
     @Override
-    protected double attackReachModifier()
-    {
-    	return 5.5D;
-    }
-    
-    @Override
-    protected double forwardModifier()
+    public double forwardModifier()
     {
     	return 0.12D;
     }
+    
+    @Override
+    public double attackReachModifier()
+    {
+    	return 5.5D;
+    }
+
     
     // Time can go over values of 24000, so divide and take the remainder. WRONG, only getWorldTotalTime does
     public boolean isDaytime()

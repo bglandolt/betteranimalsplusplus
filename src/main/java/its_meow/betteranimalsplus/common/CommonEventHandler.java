@@ -3,8 +3,8 @@ package its_meow.betteranimalsplus.common;
 import java.util.List;
 
 import its_meow.betteranimalsplus.Ref;
-import its_meow.betteranimalsplus.common.entity.EntityBear;
 import its_meow.betteranimalsplus.common.entity.EntityBoar;
+import its_meow.betteranimalsplus.common.entity.EntityBrownBear;
 import its_meow.betteranimalsplus.common.entity.EntityCrab;
 import its_meow.betteranimalsplus.common.entity.EntityLamprey;
 import its_meow.betteranimalsplus.common.entity.EntitySquirrel;
@@ -47,7 +47,7 @@ public class CommonEventHandler {
             //boar.world.spawnParticle(EnumParticleTypes.HEART, p.getX(), p.getY(), p.getZ(), 0.0F, 0.05F, 0.0F);
         } else if(e.getSource().getImmediateSource() instanceof EntityPlayerMP) {
             EntityPlayerMP player = (EntityPlayerMP) e.getSource().getImmediateSource();
-            if(e.getEntity() instanceof EntityBear || e.getEntity() instanceof EntityPolarBear) {
+            if(e.getEntity() instanceof EntityBrownBear || e.getEntity() instanceof EntityPolarBear) {
                 if(player.getHeldItemMainhand().isEmpty()) {
                     ModTriggers.PUNCH_BEAR_DEATH.trigger(player);
                 }
