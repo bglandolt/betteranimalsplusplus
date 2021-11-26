@@ -53,6 +53,16 @@ public class EntityTurkey extends EntityAnimalWithTypes {
         this.setSize(1F, this.isChild() ? 0.8F : 1F);
         this.timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
     }
+    
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
 
     @Override
     protected void initEntityAI() {

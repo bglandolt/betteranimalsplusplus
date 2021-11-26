@@ -23,6 +23,18 @@ public abstract class EntityBAPSquid extends EntityBAPCephalopod
 	private float lastAttack = 0;
     private float lastTickHealth = 0;
     private float lastGrab = 0;
+    
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
+    
 //
 //    public EntityBAPSquid(EntityType<? extends WaterMobEntity> type, World world) {
 //        super(type, world);

@@ -30,6 +30,16 @@ public class EntityOctopus extends EntityBAPCephalopod { //implements IVariantTy
     {
         return "octopus";
     }
+    
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
 
 //    public EntityOctopus(World world) {
 //        super(ModEntities.OCTOPUS.entityType, world);

@@ -156,6 +156,14 @@ public class EntityLammergeier extends EntityTameableFlying implements IVariantT
      */
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
+    	
+    
+    	    	if (this.world.isRemote)
+    	        {
+    	            return false;
+    	        }
+    	 
+    	 
         if (this.isEntityInvulnerable(source)) {
             return false;
         } else {

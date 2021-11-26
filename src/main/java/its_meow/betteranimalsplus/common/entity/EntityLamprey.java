@@ -128,6 +128,16 @@ public class EntityLamprey extends EntityWaterMobWithTypes implements IMob {
     
     protected int riding = 0;
     protected int abilityCooldown = 0;
+    
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
 
     @Override
     public boolean attackEntityAsMob(Entity entityIn)

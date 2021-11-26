@@ -46,6 +46,16 @@ public class EntityJellyfish extends EntitySquid implements IVariantTypes {
         }
     }
 
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
     @Override
     public void onCollideWithPlayer(EntityPlayer entity) {
         super.onCollideWithPlayer(entity);

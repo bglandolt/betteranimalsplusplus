@@ -175,6 +175,12 @@ public class EntityFox extends EntityTameableWithTypes {
 
 	@Override
 	public boolean attackEntityAsMob(Entity entityIn) {
+		
+		if (this.world.isRemote)
+        {
+            return false;
+        }
+		
 		boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), ((int) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue()));
 
 		if (flag) {

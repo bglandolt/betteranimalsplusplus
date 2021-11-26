@@ -128,10 +128,26 @@ public abstract class EntityEelBase extends EntityWaterCreatureWithTypes {
     }
 
     @Override
-    public boolean attackEntityAsMob(Entity entityIn) {
+    public boolean attackEntityAsMob(Entity entityIn)
+    {
+//    	if (this.world.isRemote)
+//        {
+//            return false;
+//        }
+    	
         return entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float) this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
     }
 
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
     protected static boolean isHoldingFood(EntityLivingBase entity) {
         return entity.getHeldItemMainhand().getItem() instanceof ItemFood || entity.getHeldItemOffhand().getItem() instanceof ItemFood;
     }

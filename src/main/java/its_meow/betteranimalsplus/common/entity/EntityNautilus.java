@@ -28,6 +28,16 @@ public class EntityNautilus extends EntityWaterMob {
         this.tasks.addTask(0, new EntityAIWanderWaterEntity(this, 0.15D));
     }
     
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
     @Override
     protected void applyEntityAttributes() {
         super.applyEntityAttributes();

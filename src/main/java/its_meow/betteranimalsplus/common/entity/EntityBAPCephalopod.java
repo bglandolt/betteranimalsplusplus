@@ -122,6 +122,17 @@ public abstract class EntityBAPCephalopod extends EntityWaterMobPathing {
         }
     }
 
+    
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
 //    @Override
 //    public boolean attackEntityFrom(DamageSource source, float amount) {
 //        if(super.attackEntityFrom(source, amount)) {

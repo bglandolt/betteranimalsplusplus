@@ -482,7 +482,7 @@ public class ModelMoose extends ModelBase {
         this.rHindLeg01.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.4F * f1 - 0.22759093446006054F;
         this.lHindLeg01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * f1 - 0.22759093446006054F;
 
-        if(entity instanceof EntityMoose)
+        //if(entity instanceof EntityMoose)
         {
             EntityMoose moose = (EntityMoose) entity;
             float eatTime = moose.getEatTime();
@@ -569,8 +569,8 @@ public class ModelMoose extends ModelBase {
         	//this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
 
             
-        	this.body.rotateAngleX = MathHelper.sin(limbSwing*0.3331F+(float)Math.PI) * -0.1F * limbSwingAmount - 0.22759093446006054F - (float)(moose.motionY/8.0D);
-        	this.chest.rotateAngleX = MathHelper.sin(limbSwing*0.3331F)*0.1F * limbSwingAmount;
+        	this.body.rotateAngleX = MathHelper.sin(limbSwing*0.3331F+(float)Math.PI) * -0.1F * limbSwingAmount - (float)(moose.motionY/8.0D); // 0.22759093446006054F
+        	this.chest.rotateAngleX = MathHelper.sin(limbSwing*0.3331F)*0.1F * limbSwingAmount + (float)(moose.motionY/8.0D);
 //            {
 //            	this.neck.rotateAngleX = -0.3490658503988659F + (float) Math.toRadians(60F);
 //                this.head.rotateAngleX = -0.31869712141416456F + (float) Math.toRadians(55F);

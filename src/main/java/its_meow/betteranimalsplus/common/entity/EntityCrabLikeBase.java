@@ -35,6 +35,16 @@ public abstract class EntityCrabLikeBase extends EntityAnimalWithTypes {
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(0.5D);
     }
     
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
     @Override
     public void onUpdate()
     {

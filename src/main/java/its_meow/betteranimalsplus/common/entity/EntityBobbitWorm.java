@@ -308,6 +308,16 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
         }
     }
 
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
     public boolean isPushedByWater() {
         return false;
     }

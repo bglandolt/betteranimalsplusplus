@@ -56,7 +56,7 @@ public class EntityBrownBear extends EntityMob
     protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIBearAttackWithAnimations(this, 1.0D));
+        this.tasks.addTask(2, new EntityAIBearAttackWithAnimations(this, 1.1D)); // XXX
         this.tasks.addTask(3, new EntityAIWander(this, 0.6D, 20));
         //this.tasks.addTask(4, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
         this.targetTasks.addTask(1, new EntityAICallForHelp(this, 16, new Class[0]));
@@ -73,14 +73,12 @@ public class EntityBrownBear extends EntityMob
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50.0D);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.37D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(14.0D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_SPEED);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(1.0D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
     }
-    
-    
     
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
@@ -497,7 +495,7 @@ public class EntityBrownBear extends EntityMob
     	this.latchSnapshot = this.ticksExisted;
 
         this.startRiding(entity, true);
-        if ( !world.isRemote && entity instanceof EntityPlayerMP)
+        if ( !this.world.isRemote && entity instanceof EntityPlayerMP)
         {
             ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
         }
@@ -515,7 +513,7 @@ public class EntityBrownBear extends EntityMob
             this.dismountRidingEntity();
             this.dismountEntity(mount);
 
-            if ( !world.isRemote ) // SERVER
+            if ( !this.world.isRemote ) // SERVER
             {
                 if ( mount instanceof EntityPlayerMP )
                 {
@@ -657,8 +655,9 @@ public class EntityBrownBear extends EntityMob
     }
     
     @Override
-    protected float getWaterSlowDown() {
-        return 0.9F;
+    protected float getWaterSlowDown()
+    {
+        return 0.7F;
     }
     
     protected void doDropHead() {

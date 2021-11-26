@@ -95,11 +95,11 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     {
         public AIMeleeAttack()
         {
-            super(EntityFeralWolf.this, 1.2D); // ttt
+            super(EntityFeralWolf.this, 1.2D); // XXX
         }
         
         @Override
-        protected void checkAndPerformAttack(EntityLivingBase entity, double dist) // aaa
+        protected void checkAndPerformAttack(EntityLivingBase entity, double dist)
         {
         	double attackRange = this.getAttackReachSqr(entity);
         	         	
@@ -238,7 +238,7 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(4.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.38D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(30.0D);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(5.0D);
@@ -249,8 +249,6 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     {
     	super.onLivingUpdate();
     	
-    	
-        
     	if ( this.world.isRemote ) return;
     	
     	if ( this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive() )
@@ -390,6 +388,11 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
     	// AGGRO
     	if ( source.getTrueSource() instanceof EntityLivingBase )    		
     	{
@@ -468,7 +471,6 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     @Override
     public boolean attackEntityAsMob(Entity entityIn)
     {    	
-    	this.playSound(SoundEvents.ENTITY_WOLF_GROWL, 1.0F, 0.7F + this.world.rand.nextFloat() * 0.3F );
     	
 //    	this.faceEntity(entityIn, 30.0F, 30.0F);
 //    	this.getLookHelper().setLookPositionWithEntity(entityIn, 30.0F, 30.0F);
@@ -510,6 +512,8 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     			this.playSound(SoundEvents.BLOCK_CLOTH_PLACE, 2.0F, 0.3F);
     			this.playSound(SoundEvents.ENTITY_ENDERDRAGON_FLAP, 0.6F+this.world.rand.nextFloat()/10.0F, 1.2F+this.world.rand.nextFloat()/5.0F);
             }
+            
+        	this.playAttackSound();
         }
 
         return flag;
@@ -723,7 +727,6 @@ public class EntityFeralWolf extends EntityTameableWithSelectiveTypes implements
     		this.latchTimer = 60 * this.rand.nextInt(3);
     		this.fleeTimer = 0;
     		this.cannotReachTimer = 0;
-    		this.playAttackSound();
     	}
         super.setAttackTarget(entitylivingbaseIn);
     }
@@ -790,7 +793,7 @@ protected void playStepSound(BlockPos pos, Block blockIn)
 
 public void playAttackSound()
 {
-    this.playSound(SoundEvents.ENTITY_WOLF_GROWL, 1.0F, 0.8F+rand.nextFloat()/5.0F);
+    this.playSound(SoundEvents.ENTITY_WOLF_GROWL, 1.0F, 0.7F+rand.nextFloat()*0.6F);
 }
 
 @Override
@@ -1026,8 +1029,9 @@ public float getEyeHeight() {
     }
     
     @Override
-    protected float getWaterSlowDown() {
-        return 0.9F;
+    protected float getWaterSlowDown()
+    {
+        return 0.65F;
     }
     
 

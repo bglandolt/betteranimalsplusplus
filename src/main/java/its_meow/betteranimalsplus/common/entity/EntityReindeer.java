@@ -152,6 +152,8 @@ public class EntityReindeer extends EntityAnimal implements IJumpingMount, IVari
             }
         }
     }
+    
+    
 
     /**
      * Returns true if the mob is currently able to mate with the specified mob.
@@ -258,6 +260,13 @@ public class EntityReindeer extends EntityAnimal implements IJumpingMount, IVari
      */
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
+    	
+
+    	    	if (this.world.isRemote)
+    	        {
+    	            return false;
+    	        }
+    	 
         Entity entity = source.getTrueSource();
         return this.isBeingRidden() && entity != null && this.isRidingOrBeingRiddenBy(entity) ? false : super.attackEntityFrom(source, amount);
     }

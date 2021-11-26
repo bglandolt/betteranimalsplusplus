@@ -85,14 +85,25 @@ public class EntityBadger extends EntityAnimalWithSelectiveTypes implements IMob
 	{
 		super.applyEntityAttributes();
 		this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(8.0D);
-		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.38D);
+		this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
 		this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
 		this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(1.5);
 	}
+	
+    @Override
+    protected float getWaterSlowDown()
+    {
+        return 0.7F;
+    }
 
 	@Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
+		if (this.world.isRemote)
+        {
+            return false;
+        }
+		
 		// AGGRO
     	if ( source.getTrueSource() instanceof EntityLivingBase )    		
     	{
@@ -449,25 +460,30 @@ public class EntityBadger extends EntityAnimalWithSelectiveTypes implements IMob
 					
 	                if ( vec3d != null )
 	                {
-	                	//this.setAttackTarget(null);
-	                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.2D);
+	                	this.setAttackTarget(null);
+	                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
+						AIHelper.faceMovingDirection(this);
 	                }
 	                else
 	                {
-	                	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 12, 6, this.getAttackTarget().getPositionVector());
+	                	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 6, this.getAttackTarget().getPositionVector());
 						
 		                if ( vec3d != null )
 		                {
-		                	//this.setAttackTarget(null);
-		                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.2D);
+		                	this.setAttackTarget(null);
+		                    this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
+							AIHelper.faceMovingDirection(this);
 		                }
 		                else
 		                {
-		                	this.fleeTimer -= 20;
+		                	this.fleeTimer -= 50;
 		                }
 	                }
 				}
-				AIHelper.faceMovingDirection(this);
+				else
+				{
+					AIHelper.faceMovingDirection(this);
+				}
     		}
     		else
     		{

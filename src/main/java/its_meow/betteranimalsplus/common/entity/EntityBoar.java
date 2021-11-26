@@ -66,6 +66,11 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
     	// AGGRO
     	if ( source.getTrueSource() instanceof EntityLivingBase )    		
     	{
@@ -238,7 +243,7 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
         this.tasks.addTask(1, new EntityBoar.AIMeleeAttack());
         if ( this.isChild() )
         {
-            this.tasks.addTask(1, new EntityAIChildFlee(this, 1.0D)); // EntityVillager
+            this.tasks.addTask(1, new EntityAIChildFlee(this, 1.0D));
         }
         this.tasks.addTask(4, new EntityAIMate(this, 0.7D));
         this.tasks.addTask(5, new EntityAIFollowHerd(this, 0.7D));
@@ -538,11 +543,17 @@ public class EntityBoar extends EntityAnimalWithSelectiveTypes implements IMob
 //    	
 //    }
     
+    @Override
+    protected float getWaterSlowDown()
+    {
+        return 0.7F;
+    }
+    
     public class AIMeleeAttack extends EntityAIAttackMelee
     {
         public AIMeleeAttack()
         {
-            super(EntityBoar.this, 1.1D, true);
+            super(EntityBoar.this, 1.1D, true); // XXX
         }
         
         @Override

@@ -17,6 +17,7 @@ import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -56,6 +57,16 @@ public class EntityTarantula extends EntitySpider implements IRangedAttackMob, I
         this.playSound(SoundEvents.BLOCK_CLOTH_PLACE, 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
         this.world.spawnEntity(entityhair);
 
+    }
+    
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
     }
 
     @Override

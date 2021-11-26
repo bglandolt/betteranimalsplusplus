@@ -48,6 +48,13 @@ public class EntityShark extends EntitySharkBase implements IMob {
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
+    	
+    	
+  
+    	    	if (this.world.isRemote)
+    	        {
+    	            return false;
+    	        }
         if(super.attackEntityFrom(source, amount)) {
             if(source.getTrueSource() instanceof EntityPlayer) {
                 EntityPlayer player = (EntityPlayer) source.getTrueSource();

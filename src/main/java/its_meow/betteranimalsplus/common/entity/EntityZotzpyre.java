@@ -631,13 +631,19 @@ public class EntityZotzpyre extends EntityMobWithTypes {
 
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
+    	
+    	    	if (this.world.isRemote)
+    	        {
+    	            return false;
+    	        }
+    	    	
         if ( this.isRiding() && source == DamageSource.IN_WALL )
         {
             return false;
         }
         else
         {
-            if ( !this.world.isRemote && this.isRiding() && amount >= 1 && this.rand.nextInt(3) == 0 )
+            if ( this.isRiding() && amount >= 1 && this.rand.nextInt(3) == 0 )
             {
                 this.dismountZotz();
             }

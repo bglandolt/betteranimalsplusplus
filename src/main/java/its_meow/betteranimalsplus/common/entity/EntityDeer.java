@@ -84,9 +84,20 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
     	this.setRevengeTarget(livingBase);
     }
     
+    @Override
+    protected float getWaterSlowDown()
+    {
+        return 0.7F;
+    }
+    
   @Override
   public boolean attackEntityFrom(DamageSource source, float amount)
   {
+	  if (this.world.isRemote)
+      {
+          return false;
+      }
+	  
 	  if ( source == null ) return false;
 	  
 	  if ( source == DamageSource.FALL )

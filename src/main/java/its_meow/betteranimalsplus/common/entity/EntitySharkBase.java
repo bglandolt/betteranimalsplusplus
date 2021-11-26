@@ -42,6 +42,16 @@ public abstract class EntitySharkBase extends EntityWaterMobPathingWithSelective
         }
     }
     
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
 //  public void updatePassenger(Entity passenger)
 //  {
 //      if(this.isPassenger(passenger))

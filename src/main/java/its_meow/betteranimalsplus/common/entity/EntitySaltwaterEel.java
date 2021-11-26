@@ -2,6 +2,7 @@ package its_meow.betteranimalsplus.common.entity;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
 
 public class EntitySaltwaterEel extends EntityEelBase {
@@ -22,6 +23,16 @@ public class EntitySaltwaterEel extends EntityEelBase {
         this.setSize(1F, 1F);
     }
 
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
     @Override
     protected void initEntityAI() {
         super.initEntityAI();

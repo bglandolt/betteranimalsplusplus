@@ -77,6 +77,33 @@ public class EntityGoose extends EntityAnimalWithTypes {
         this.timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
         this.setPathPriority(PathNodeType.WATER, 0.0F);
     }
+    
+    @Override
+    protected void dropFewItems(boolean wasRecentlyHit, int lootingModifier)
+    {
+        int i = this.rand.nextInt(3);
+
+        if (lootingModifier > 0)
+        {
+            i += this.rand.nextInt(lootingModifier + 1);
+        }
+
+        this.dropItem(Items.FEATHER, i);
+        
+        if ( this.isBurning() ) 
+        {
+        	this.dropItem(Items.CHICKEN, 1);
+        }
+        else
+        {
+        	this.dropItem(Items.COOKED_CHICKEN, 1);
+        }
+        
+        this.dropItem(ModItems.GOOSE_EGG, lootingModifier>0?1:rand.nextInt(2));
+
+        
+        //super.dropFewItems(wasRecentlyHit, lootingModifier);
+    }
 
     @Override
     protected PathNavigate createNavigator(World worldIn) {
@@ -266,6 +293,12 @@ public class EntityGoose extends EntityAnimalWithTypes {
 
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
+    	
+    	if ( this.world.isRemote )
+    	{
+    		return false;
+    	}
+    	
         if(source.getTrueSource() != null && source.getTrueSource() != null && source.getTrueSource() == this.getAttackTarget()) {
             this.lastAttackTime = 0; // allow instant retaliation
         }

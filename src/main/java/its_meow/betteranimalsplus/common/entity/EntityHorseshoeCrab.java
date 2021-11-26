@@ -3,6 +3,7 @@ package its_meow.betteranimalsplus.common.entity;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
@@ -24,6 +25,16 @@ public class EntityHorseshoeCrab extends EntityCrabLikeBase {
         return 3;
     }
 
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
     @Override
     protected IVariantTypes getBaseChild() {
         return new EntityHorseshoeCrab(world);

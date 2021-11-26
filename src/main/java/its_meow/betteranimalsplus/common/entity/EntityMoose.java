@@ -18,6 +18,7 @@ import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
+import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.monster.IMob;
@@ -43,7 +44,7 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     {
         public AIMeleeAttack()
         {
-            super(EntityMoose.this, 1.35D); // ttt
+            super(EntityMoose.this, 1.2D); // XXX
         }
         
         public void resetTask()
@@ -205,6 +206,10 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount)
     {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
     	
     	// AGGRO
     	if ( source.getTrueSource() instanceof EntityLivingBase )    		
@@ -288,14 +293,15 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     public int fleeTimer = 0;
     
     @Override
-    protected void initEntityAI() // TODO =--==--==--=-=-==-=-=
+    protected void initEntityAI()
     {
         super.initEntityAI();
+        this.tasks.addTask(0, new EntityAISwimming(this));
         this.tasks.addTask(1, new EntityAIWander(this, 0.4D));
         this.tasks.addTask(2, new EntityMoose.AIMeleeAttack());
         this.tasks.addTask(3, new EntityAILookIdle(this));
         this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false, (Class<?>) null));
-        this.targetTasks.addTask(2, new EntityAIMooseAttack(this));
+        this.targetTasks.addTask(1, new EntityAIMooseAttack(this));
     }
 
     @Override
@@ -387,9 +393,11 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
          }
          
     }
+
     @Override
-    protected float getWaterSlowDown() {
-        return 0.9F;
+    protected float getWaterSlowDown()
+    {
+        return 0.7F;
     }
 
     @Override

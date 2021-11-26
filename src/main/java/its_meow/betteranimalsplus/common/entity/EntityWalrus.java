@@ -62,6 +62,16 @@ public class EntityWalrus extends EntityAnimal {
         this.stepHeight = 1.05F;
     }
 
+    public boolean attackEntityFrom(DamageSource source, float amount)
+    {
+    	if (this.world.isRemote)
+        {
+            return false;
+        }
+    	
+        return super.attackEntityFrom(source, amount);
+    }
+    
 //    @Override
 //    public boolean processInteract(EntityPlayer player, EnumHand hand) {
 //        ItemStack stack = player.getHeldItem(hand);
