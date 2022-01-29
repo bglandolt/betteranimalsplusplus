@@ -1,6 +1,8 @@
 package its_meow.betteranimalsplus.client.model;
 
 import its_meow.betteranimalsplus.common.entity.EntityBoar;
+import its_meow.betteranimalsplus.common.entity.EntityBoar;
+import its_meow.betteranimalsplus.common.entity.EntityBoar;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
@@ -160,7 +162,7 @@ public class ModelBoar extends ModelBase {
         this.rTusk01 = new ModelRenderer(this, 0, 1);
         this.rTusk01.mirror = true;
         this.rTusk01.setRotationPoint(-1.3F, -0.5F, -2.8F);
-        this.rTusk01.addBox(-0.5F, -0.8F, -0.5F, 1, 1, 1, 0.0F);
+        this.rTusk01.addBox(-0.5F, -1.5F, -0.5F, 1, 2, 1, 0.0F); //         this.rTusk01.addBox(-0.5F, -0.8F, -0.5F, 1, 1, 1, 0.0F);
         this.setRotateAngle(this.rTusk01, 0.24434609527920614F, 0.0F, -0.6981317007977318F);
         this.rArm01 = new ModelRenderer(this, 65, 0);
         this.rArm01.mirror = true;
@@ -212,7 +214,7 @@ public class ModelBoar extends ModelBase {
         this.lForeHoof.addBox(-1.0F, 0.0F, -1.8F, 2, 2, 3, 0.0F);
         this.lTusk01 = new ModelRenderer(this, 0, 1);
         this.lTusk01.setRotationPoint(1.3F, -0.5F, -2.8F);
-        this.lTusk01.addBox(-0.5F, -0.8F, -0.5F, 1, 1, 1, 0.0F);
+        this.lTusk01.addBox(-0.5F, -1.0F, -0.5F, 1, 2, 1, 0.0F);
         this.setRotateAngle(this.lTusk01, 0.24434609527920614F, 0.0F, 0.6981317007977318F);
         this.rTusk03 = new ModelRenderer(this, 0, 0);
         this.rTusk03.mirror = true;
@@ -328,8 +330,6 @@ public class ModelBoar extends ModelBase {
         this.body.render(f5);
     }
     
-    private int ii = -1;
-
     @Override
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entityIn) {
         float f = limbSwing;
@@ -344,46 +344,94 @@ public class ModelBoar extends ModelBase {
         {
         	EntityBoar boar = (EntityBoar)entityIn;
         	
-        	if ( boar.headRam == 20 )
-        	{
-        		this.ii = (boar.world.rand.nextBoolean()?1:-1);
-        	}
-        	
-        	if ( boar.headRam >= 0 ) // 20
-            {
-            	if ( boar.headRam > 7 )
-            	{
-            		this.head.rotateAngleX = (-(float)(20-boar.headRam) * 0.04F + 1.165F) * 0.6F + this.headDownAmount;
-                    this.neck.rotateAngleX = (-(float)(20-boar.headRam) * 0.04F + 0.7F) * 0.6F + ModelBetterAnimals.getHeadPitch((EntityLiving) entityIn) * 0.017453292F;
-	                	this.head.rotateAngleZ = ((float)(8-boar.headRam) * 0.012F + 0.144F)*1.2F*this.ii;
-            	}
-            	else
-            	{
-            		this.head.rotateAngleX = (-(float)(boar.headRam-7) * 0.0266F - 0.16F + 0.525F) * 0.6F + this.headDownAmount;
-                    this.neck.rotateAngleX = (-(float)(boar.headRam-7) * 0.0166F - 0.1F) * 0.75F + ModelBetterAnimals.getHeadPitch((EntityLiving) entityIn) * 0.017453292F;
-                		this.head.rotateAngleZ = ((float)(boar.headRam-7) * 0.020571F + 0.144F)*1.2F;
-            	}
-            	boar.headRam--;
-            }
-        	else
-        	{
-	            this.neck.rotateAngleX = ModelBetterAnimals.getHeadPitch((EntityLiving) entityIn) * 0.017453292F; // head up & down
-	            this.neck.rotateAngleY = ModelBetterAnimals.getHeadYaw((EntityLiving) entityIn) * 0.017453292F;
-        	}
-        }
-        
-        this.ass.rotateAngleZ = MathHelper.cos(f * 0.5F) * 0.16F * f1;
-        this.body.rotateAngleZ = MathHelper.cos(f * 0.6F) * 0.14F * f1;
-    	this.body.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
+        	float defaultHead = 0.5F;
+            float defaultNeck = ModelBetterAnimals.getHeadPitch(boar) * 0.017453292F - 0.07F + MathHelper.sin(limbSwing * 0.3F) * 0.06F;
+            // float sway = MathHelper.sin(limbSwing * 0.3F) * 0.06F + 0.03F;
 
-        
-        this.head.rotateAngleX = MathHelper.cos(f * 0.7F) * 0.12F * f1 + this.headDownAmount;
+            EntityBoar.doAnimationTick(boar);
+            
+            if ( EntityBoar.getHeadRam(boar) > 0 ) // 20
+            {
+            	if ( EntityBoar.getHeadRam(boar) >= 8 ) // Head starts down. 20 to 4, raise head up!
+            	{
+            		this.head.rotateAngleX = -(float)(20-EntityBoar.getHeadRam(boar)) * 0.04F + defaultHead + 0.5F;
+                    this.neck.rotateAngleX = -(float)(20-EntityBoar.getHeadRam(boar)) * 0.04F + defaultNeck + 0.5F;
+	                this.head.rotateAngleZ =  (EntityBoar.getHeadDirection(boar) * (float)(20-EntityBoar.getHeadRam(boar)) * 0.025F) * 1.25F;
+            	}
+            	else if ( EntityBoar.getHeadRam(boar) >= 4 )// Head is up, and goes up!
+            	{
+            		this.head.rotateAngleX = -(float)(8-EntityBoar.getHeadRam(boar)) * 0.04F + defaultHead;
+                    this.neck.rotateAngleX = -(float)(8-EntityBoar.getHeadRam(boar)) * 0.04F + defaultNeck;
+                	this.head.rotateAngleZ =  (EntityBoar.getHeadDirection(boar) * (float)(EntityBoar.getHeadRam(boar)-8) * 0.0375F + (0.3F * EntityBoar.getHeadDirection(boar))) * 1.25F;
+            	}
+            	else // Head is up, and goes down to normal...
+            	{
+            		this.head.rotateAngleX = -(float)(EntityBoar.getHeadRam(boar)-4) * 0.04F + defaultHead - 0.16F;
+                    this.neck.rotateAngleX = -(float)(EntityBoar.getHeadRam(boar)-4) * 0.04F + defaultNeck - 0.16F;
+                	this.head.rotateAngleZ =  (EntityBoar.getHeadDirection(boar) * (float)(EntityBoar.getHeadRam(boar)-8) * 0.0375F + (0.3F * EntityBoar.getHeadDirection(boar))) * 1.25F;
+            	}
+            }
+            else if ( EntityBoar.getHeadDown(boar) > 0 )
+            {
+            	if ( EntityBoar.getHeadDown(boar) >= 90 ) // Head start up. 120 to 90 head going down.
+            	{
+            		this.head.rotateAngleX = (float)(120-EntityBoar.getHeadDown(boar)) * 0.0167F + defaultHead;
+            		this.neck.rotateAngleX = (float)(120-EntityBoar.getHeadDown(boar)) * 0.0167F + defaultNeck;
+            	}
+            	else if ( EntityBoar.getHeadDown(boar) <= 30 ) // Head start down. 30 to 0 head going up.
+            	{
+            		this.head.rotateAngleX = -(float)(30-EntityBoar.getHeadDown(boar)) * 0.0167F + defaultHead + 0.5F;
+                    this.neck.rotateAngleX = -(float)(30-EntityBoar.getHeadDown(boar)) * 0.0167F + defaultNeck + 0.5F;
+            	}
+            	else // 90 - 30 head is down
+            	{
+                    this.head.rotateAngleX = defaultHead + 0.5F;
+                    this.neck.rotateAngleX = defaultNeck + 0.5F;
+            	}
+//            	**EntityBoar.getHeadDown(boar)--;
+            }
+//            else if ( boar.getEatTime() > 0 ) // 60
+//            {
+//            	if ( boar.getEatTime() > 40 )
+//            	{
+//            		this.head.rotateAngleX = -(float)(boar.getEatTime()-40) * 0.032F + 1.165F;
+//            		this.neck.rotateAngleX = -(float)(boar.getEatTime()-40) * 0.035F + defaultHead;
+//            	}
+//            	else if ( boar.getEatTime() < 30 )
+//            	{
+//            		this.head.rotateAngleX = -(float)(30-boar.getEatTime()) * 0.0213F + 1.165F;
+//                    this.neck.rotateAngleX = -(float)(30-boar.getEatTime()) * 0.0233F + 0.7F + defaultNeck;
+//            	}
+//            	else
+//            	{
+//            		this.head.rotateAngleX = defaultHead;
+//                    this.neck.rotateAngleX = defaultNeck;
+//                    this.lowerJaw.rotateAngleX = (float) Math.toRadians((boar.getEatTime() % 20F)) + 0.1F;
+//            	}
+//            }
+            else
+            {
+                this.head.rotateAngleZ = 0.0F;
+                this.head.rotateAngleX = 0.0F;
+                this.neck.rotateAngleX = 0.0F;
+                
+                this.head.rotateAngleX = defaultHead;
+                this.neck.rotateAngleX = defaultNeck;
+
+                this.ass.rotateAngleY = ModelBetterAnimals.getHeadYaw(boar) * 0.017453292F * 0.5F;
+                this.lowerJaw.rotateAngleX = 0F;
+            }
+            
+            this.body.rotateAngleZ = -MathHelper.cos(limbSwing * 0.3F) * 0.08F * f1;
+            this.ass.rotateAngleZ = MathHelper.sin(limbSwing*0.35F+(float)Math.PI) * 0.05F * f1;
+            
+        	this.body.rotateAngleX = MathHelper.sin(limbSwing*0.35F+(float)Math.PI) * 0.1F * limbSwingAmount - (float)(boar.motionY/8.0D); // 0.22759093446006054F
+        	this.ass.rotateAngleX = MathHelper.cos(limbSwing*0.35F) * 0.1F * limbSwingAmount - (float)(boar.motionY/8.0D);
+        }
 
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entityIn);
     }
     
-    private float headDownAmount = 0.5F;
-
     /**
      * This is a helper function from Tabula to set the rotation of model parts
      */

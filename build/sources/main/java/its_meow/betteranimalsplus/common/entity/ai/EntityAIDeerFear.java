@@ -9,8 +9,10 @@ import com.google.common.base.Predicate;
 
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
@@ -44,33 +46,42 @@ public class EntityAIDeerFear extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-//    	if ( this.entity.world.rand.nextInt(10) != 0 )
-//    	{
-//    		return false;
-//    	}
+    	if ( this.entity.ticksExisted % 15 != 0 )
+    	{
+    		return false;
+    	}
     	
     	if ( this.entity.getRevengeTarget() != null )
 		{
 			this.closestLivingEntity = this.entity.getRevengeTarget();
-			Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 16, 7, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+			Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 16, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
 
-            if (vec3d == null)
+            if ( vec3d != null )
             {
-
-            }
-            else if (this.closestLivingEntity.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.closestLivingEntity.getDistanceSq(this.entity))
-            {
-            	
+            	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                return this.path != null;
             }
             else
             {
-                this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
-                return this.path != null;
+            	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 8, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+            	if ( vec3d != null )
+                {
+                	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                    return this.path != null;
+                }
+            	else
+            	{
+            		vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.entity, 8, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+                	if ( vec3d != null )
+                    {
+                    	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                        return this.path != null;
+                    }
+            	}
             }
-			return true;
 		}
     	
-    	List<EntityPlayer> list = this.entity.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.entity.getPosition()).grow(20, 6, 20), new Predicate<EntityPlayer>()
+    	List<EntityPlayer> list = this.entity.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.entity.getPosition()).grow(16, 6, 16), new Predicate<EntityPlayer>()
 	    {
     		public boolean apply(@Nullable EntityPlayer entity)
 	    	{
@@ -85,28 +96,89 @@ public class EntityAIDeerFear extends EntityAIBase
         		continue;
         	}
         	
-            this.closestLivingEntity = player;
-            this.entity.setRevengeTarget(player);
+        	if ( this.entity.getDistance(player) < (player.isSneaking()?6.0D:10.0D) + 8.0D * (abs(player.motionX) + abs(player.motionY) + abs(player.motionZ) ) )
+        	{
+                this.closestLivingEntity = player;
 
-            Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 16, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+                Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 16, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
 
-            if (vec3d == null)
-            {
-                continue;
-            }
-            else if (this.closestLivingEntity.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.closestLivingEntity.getDistanceSq(this.entity))
-            {
-            	continue;
-            }
-            else
-            {
-                this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
-                return this.path != null;
-            }
+                if ( vec3d != null )
+                {
+                	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                    return this.path != null;
+                }
+                else
+                {
+                	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 8, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+                	if ( vec3d != null )
+                    {
+                    	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                        return this.path != null;
+                    }
+                	else
+                	{
+                		vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.entity, 8, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+                    	if ( vec3d != null )
+                        {
+                        	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+                            return this.path != null;
+                        }
+                	}
+                }
+        	}
         }
+    	
+    	List<EntityAnimal> animals = this.entity.world.getEntitiesWithinAABB(EntityAnimal.class, new AxisAlignedBB(this.entity.getPosition()).grow(12, 4, 12), new Predicate<EntityAnimal>()
+	    {
+    		public boolean apply(@Nullable EntityAnimal entity)
+	    	{
+				return true;
+			}
+		});
+        
+        for ( EntityAnimal animal : animals )
+        {
+        	if ( animal.getAttackTarget() == this.entity )
+        	{
+	            this.closestLivingEntity = animal;
+	            
+	        	Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 16, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+	
+	            if ( vec3d != null )
+	            {
+	            	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+	                return this.path != null;
+	            }
+	            else
+	            {
+	            	vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.entity, 8, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+	            	if ( vec3d != null )
+	                {
+	                	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+	                    return this.path != null;
+	                }
+	            	else
+	            	{
+	            		vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this.entity, 8, 4, new Vec3d(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+	                	if ( vec3d != null )
+	                    {
+	                    	this.path = this.navigation.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
+	                        return this.path != null;
+	                    }
+	            	}
+	            }
+        	}
+        }
+        
+        this.closestLivingEntity = null;
         return false;
     }
 
+    public static double abs(double value)
+    {
+        return value >= 0.0D ? value : -value;
+    }
+    
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
@@ -138,7 +210,7 @@ public class EntityAIDeerFear extends EntityAIBase
     {
 		this.entity.setRevengeTarget(this.closestLivingEntity);
 
-        if (this.entity.getDistanceSq(this.closestLivingEntity) < 49.0D)
+        if ( this.closestLivingEntity != null && this.entity.getDistanceSq(this.closestLivingEntity ) < 49.0D)
         {
             this.entity.getNavigator().setSpeed(this.nearSpeed);
         }

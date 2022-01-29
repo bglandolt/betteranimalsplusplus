@@ -375,132 +375,93 @@ public class ModelBrownBear extends ModelBetterAnimals
     }
 
     @Override
-    public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5)
+    public void render(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor)
     { 
-        this.hind.render(f5);
+        this.hind.render(scaleFactor);
     }  
 
     @Override
     public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity)
     {
         float f = limbSwing;
-        float f1 = limbSwingAmount/2.6662F;
+        float f1 = limbSwingAmount/2.8F;
         
-        //if (entityIn instanceof EntityLiving)
-
-        
-        // attackAnimationTimer = 60;
-        //if ( entity instanceof EntityBear ) // cos range: -1 to 1  // cos(0) = 1 // cos(0.5) = 0.87  // cos(1.57) = 0 // cos(1) = 0.54  // cos(2) = -0.41   // cos pi = -1
+        // if ( entity instanceof EntityBrownBear ) // cos range: -1 to 1  // cos(0) = 1 // cos(0.5) = 0.87  // cos(1.57) = 0 // cos(1) = 0.54  // cos(2) = -0.41   // cos pi = -1
         {
         	EntityBrownBear bear = (EntityBrownBear)entity;
         	
-        	
-        	
-        	//System.out.println(bear.getEntityId() + "   "  + bear.ticksExisted + "   "  + (int)ageInTicks );
-        	
-        	
-//        	if ( bear.ticksExisted != (int)ageInTicks )
-//        	{
-//        		return;
-//        	}
-        	
-            if ( bear.isRiding() )
-	        {
-	        	this.hind.offsetZ = 1.1F + MathHelper.cos(bear.ticksExisted * 0.2F) * 0.04F;
-	        	this.lowerJaw.rotateAngleX = (float) MathHelper.clamp(MathHelper.cos(bear.ticksExisted * 0.6F) * 0.4F + 0.35F, 0.0D, 0.6D);
-	            this.neck.rotateAngleX = 0.8F - MathHelper.cos(bear.ticksExisted * 0.2F) * 0.06F;
-	            this.neck.rotateAngleY = 0.0F;
-	            this.neck.rotateAngleZ = 0.0F;
-	        }
-	        else
-	        {
-	            this.hind.offsetZ = 0.0F;
-	        }
+            EntityBrownBear.doAnimationTick(bear);
             
-        	if ( bear.attackAnimationTimer > 0 )
-	        {
-	        	float rz = ( 0.5F - MathHelper.abs((bear.attackAnimationTimer-10)/20.0F) ) * 2.0F;
+        	if ( EntityBrownBear.getAttackAnimationTimer(bear) > 0 )
+	        {        		
+	        	float rz = ( 0.5F - MathHelper.abs((EntityBrownBear.getAttackAnimationTimer(bear)-10)/20.0F) ) * 2.0F;
 	        	
 	        	this.lowerJaw.rotateAngleX = (float) MathHelper.clamp(rz, 0.0D, 0.6D);
-	        	
-	            this.hind.rotateAngleX = -rz/8.0F;
+	            this.hind.rotateAngleX = -rz/8.0F + MathHelper.sin(limbSwing * 0.35F + (float)Math.PI) * 0.1F * limbSwingAmount - (float)(bear.motionY/8.0D) - 0.1F;
+	            this.body.rotateAngleX = 0;
 	            this.body.rotateAngleZ = -rz/4.0F;
-	            
 	            this.neck.rotateAngleY = rz/2.2F;
 	            this.neck.rotateAngleZ = -this.neck.rotateAngleY;
-	            
 	            this.lArm01.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.375F * f1 + 0.11203784098300857F - rz/1.2F;
 	            this.lArm01.rotateAngleY = rz/2.2F;
 	            this.lArm01.rotateAngleZ = -rz/2.2F-0.3222F;
 		        this.lArm02.rotateAngleZ = rz/2.2F+0.2722F;
-	            this.rArm01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.375F * f1 + 0.11203784098300857F + rz/4.0F;
-	            this.lForepaw.rotateAngleX = rz/2.2F;
-
-	            
+	            this.rArm01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.3F * f1 + 0.11203784098300857F + rz/3.8F;
+	            this.lLeg01.rotateAngleX = 0;
+	            this.rLeg01.rotateAngleX = 0;
+	            this.lForepaw.rotateAngleX = rz/1.8F;	  
+	            this.hind.offsetZ = 0;
+	            this.hind.offsetY = 0;
 	        }
-        	else if ( bear.attackAnimationTimerStanding > 0 )
-	        {
-	        	float rz = ( 0.5F - MathHelper.abs((bear.attackAnimationTimerStanding-15)/30.0F) ) * 2.0F; // 0 1 0
+        	else if ( EntityBrownBear.getAttackAnimationTimerStanding(bear) > 0 )
+	        {        		
+	        	float rz = ( 0.5F - MathHelper.abs((EntityBrownBear.getAttackAnimationTimerStanding(bear)-15)/30.0F) ) * 2.0F; // 0 1 0
 
 	        	this.lowerJaw.rotateAngleX = (float) MathHelper.clamp(rz, 0.0D, 0.6D);
-	        	
-	            this.neck.rotateAngleX = rz/1.6F;
-	            
-	            this.hind.rotateAngleX = -rz*1.3F; //1.2
-	            this.body.rotateAngleX = rz/1.6F; //1.6
+	            this.neck.rotateAngleX = rz/1.5F;
+	            this.hind.rotateAngleX = -rz*1.3F + MathHelper.sin(limbSwing * 0.35F + (float)Math.PI) * 0.1F * limbSwingAmount - (float)(bear.motionY/8.0D) - 0.1F;
+	            this.body.rotateAngleX = rz/1.6F;
 	            this.body.rotateAngleZ = rz/4.0F;
-	            
 	            this.lForepaw.rotateAngleX = rz;
-	            this.lForepaw.rotateAngleZ = rz/2.0F;
+	            this.lForepaw.rotateAngleZ = rz/2.2F;
 	            this.lForepaw.rotateAngleY = -this.lForepaw.rotateAngleZ;
-	            
-	            this.lArm01.rotateAngleX = MathHelper.cos(f * 0.6662F) * f1 * 0.2F + 0.11203784098300857F - rz/1.8F; // this.lArm01.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.375F * f1 + 0.11203784098300857F - rz/2.2F;
+	            this.lArm01.rotateAngleX = MathHelper.cos(f * 0.6662F) * f1 * 0.2F + 0.112F - rz/1.8F; // this.lArm01.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.375F * f1 + 0.11203784098300857F - rz/2.2F;
 	            this.lArm01.rotateAngleY = rz/2.0F;
-	            this.lArm01.rotateAngleZ = -rz/1.2F-0.3222F; // 1.6
-	            
+	            this.lArm01.rotateAngleZ = -rz/1.4F-0.3222F; // 1.6
 		        this.lArm02.rotateAngleZ = rz/2.2F+0.2722F;
-	            
 	            this.rForepaw.rotateAngleX = rz;
 	            this.rForepaw.rotateAngleY = rz/2.2F;
 	            this.rForepaw.rotateAngleZ = -this.rForepaw.rotateAngleY;
-	            
-	            this.rArm01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * f1 * 0.2F + 0.11203784098300857F - rz/1.6F;
-	            this.rArm01.rotateAngleY = -rz/2.0F;
-	            this.rArm01.rotateAngleZ = rz/1.2F+0.3222F; // 1.6
-	            
-		        this.rArm02.rotateAngleZ = -rz/2.2F-0.2722F;
-	            
+	            this.rArm01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * f1 * 0.2F + 0.112F - rz/1.6F;
+	            this.rArm01.rotateAngleY = -rz/1.8F;
+	            this.rArm01.rotateAngleZ = rz+0.3222F; // 1.6
+		        this.rArm02.rotateAngleZ = -rz/2.0F-0.2722F;
 	            this.lLeg01.rotateAngleX = rz;
 	            this.rLeg01.rotateAngleX = this.lLeg01.rotateAngleX;
 	            this.hind.offsetZ = -rz/2.2F;
 	            this.hind.offsetY = this.hind.offsetZ;
-
 	            this.lLeg01.rotateAngleZ = -rz/2.2F-0.2F;
 	            this.rLeg01.rotateAngleZ = rz/2.2F+0.2F;
 	        }
         	else
         	{
 	            this.body.rotateAngleX = 0;
-	            
+	            this.body.rotateAngleZ = 0;
 	            this.lForepaw.rotateAngleX = 0;
 	            this.lForepaw.rotateAngleZ = 0;
 	            this.rForepaw.rotateAngleX = 0;
 	            this.rForepaw.rotateAngleZ = 0;
-	            
 	            this.rForepaw.rotateAngleY = 0;
-	            
 	            this.rArm01.rotateAngleY = 0;		            
 		        this.rArm02.rotateAngleZ = -0.2722F;
 		        this.lArm01.rotateAngleY = 0;
 		        this.lArm02.rotateAngleZ = 0.2722F;
-	            
 	            this.lLeg01.rotateAngleX = 0;
 	            this.rLeg01.rotateAngleX = 0;
-	            //this.hind.offsetZ = 0;
 	            this.hind.offsetY = 0;
-
 	            this.lLeg01.rotateAngleZ = 0;
 	            this.rLeg01.rotateAngleZ = 0;
+	            this.neck.rotateAngleZ = 0.0F;
 	            
 	            if ( !bear.isRiding() )
 	            {
@@ -508,7 +469,7 @@ public class ModelBrownBear extends ModelBetterAnimals
 		            this.neck.rotateAngleY = ModelBetterAnimals.getHeadYaw(bear) * 0.017453292F;
 		            if ( bear.warningSoundTicks > 0 )
 		        	{
-			        	this.lowerJaw.rotateAngleX = MathHelper.cos((15.0F-bear.warningSoundTicks--)/15.0F) * 1.2F - 0.54030230586F;
+			        	this.lowerJaw.rotateAngleX = MathHelper.cos((15.0F-bear.warningSoundTicks)/15.0F) * 1.2F - 0.54F;
 		        	}
 		            else
 		            {
@@ -519,15 +480,19 @@ public class ModelBrownBear extends ModelBetterAnimals
 	        	// OTHER
 	        	
 	        	
-	            this.hind.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.45F) * 0.19F * f1;
-	            this.hind.rotateAngleX = MathHelper.sin(limbSwing*0.3331F+(float)Math.PI) * -0.1F * limbSwingAmount + 0.06F - (float)(bear.motionY/8.0D);
-	            this.body.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.55F) * 0.18F * f1;
-	            this.body.rotateAngleX = 0.0F;
-	        	this.chest.rotateAngleX = MathHelper.sin(limbSwing*0.3331F)*0.1F * limbSwingAmount - 0.06F;
+	            this.hind.rotateAngleZ = -MathHelper.cos(ageInTicks * 0.3F) * 0.08F * f1;
+	            this.chest.rotateAngleZ = -MathHelper.sin(limbSwing*0.35F+(float)Math.PI) * 0.05F * f1;
+
+	            //MathHelper.cos(f * 0.3F) * f1 * 0.1F
+	            //MathHelper.sin(f * 0.3F) * f1 * 0.1F
+	            	this.hind.rotateAngleX = MathHelper.sin(limbSwing * 0.35F + (float)Math.PI) * 0.1F * limbSwingAmount - (float)(bear.motionY/8.0D) - 0.05F;
+			        this.chest.rotateAngleX = MathHelper.cos(limbSwing * 0.35F) * 0.1F * limbSwingAmount - (float)(bear.motionY/8.0D);
 	        	
-	        	//this.torso.rotateAngleX = MathHelper.sin(limbSwing*0.4333F+(float)Math.PI) * -0.1F * limbSwingAmount - 0.22759093446006054F - (float)(wolf.motionY/8.0D);
-            	//this.chest.rotateAngleX = MathHelper.sin(limbSwing*0.4333F)*0.1F * limbSwingAmount;
-	            
+			        
+			        
+			        
+			    
+		        this.body.rotateAngleX = 0.0F;
 	            // L ARM
 	            this.lForepaw.rotateAngleX = -MathHelper.cos(f * 0.6662F) * 0.5F * f1;
 	            this.rForepaw.rotateAngleX = -MathHelper.cos(f * 0.6662F + (float) Math.PI) * 0.5F * f1;
@@ -562,6 +527,19 @@ public class ModelBrownBear extends ModelBetterAnimals
 	            this.lArm02.rotateAngleZ = 0.2722F;
 		        this.rArm02.rotateAngleZ = -0.2722F;
         	}
+        	
+            if ( bear.isRiding() )
+	        {
+	        	this.hind.offsetZ = 1.1F + MathHelper.cos(bear.ticksExisted * 0.2F) * 0.04F;
+	        	this.lowerJaw.rotateAngleX = (float) MathHelper.clamp(MathHelper.cos(bear.ticksExisted * 0.6F) * 0.4F + 0.35F, 0.0D, 0.6D);
+	            this.neck.rotateAngleX = 0.8F - MathHelper.cos(bear.ticksExisted * 0.2F) * 0.06F;
+	            this.neck.rotateAngleY = 0.0F;
+	            this.neck.rotateAngleZ = 0.0F;
+	        }
+	        else
+	        {
+	            this.hind.offsetZ = 0.0F;
+	        }
         }
     }
 

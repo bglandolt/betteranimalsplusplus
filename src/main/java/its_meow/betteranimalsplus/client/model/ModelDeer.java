@@ -11,7 +11,8 @@ import net.minecraft.util.math.MathHelper;
  * deer_2 - cybercat5555
  * Created using Tabula 7.0.1
  */
-public class ModelDeer extends ModelBase {
+public class ModelDeer extends ModelBase
+{
     public ModelRenderer body;
     public ModelRenderer ass;
     public ModelRenderer chest;
@@ -216,17 +217,17 @@ public class ModelDeer extends ModelBase {
         this.rHindLeg03.setRotationPoint(-0.1F, 5.8F, 0.3F);
         this.rHindLeg03.addBox(-1.0F, -0.3F, -1.0F, 2, 7, 2, 0.0F);
         this.setRotateAngle(rHindLeg03, -0.4886921905584123F, 0.0F, 0.0F);
-        this.lForeHoof = new ModelRenderer(this, 32, 20);
+        this.lForeHoof= new ModelRenderer(this, 32, 20);
         this.lForeHoof.setRotationPoint(-0.0F, 7.3F, 0.4F);
         this.lForeHoof.addBox(-1.5F, 0.0F, -2.4F, 3, 2, 3, 0.0F);
-        this.lHindHoof = new ModelRenderer(this, 32, 20);
+        this.lHindHoof= new ModelRenderer(this, 32, 20);
         this.lHindHoof.setRotationPoint(-0.0F, 6.2F, 0.39F);
         this.lHindHoof.addBox(-1.5F, 0.0F, -2.4F, 3, 2, 3, 0.0F);
         this.mane02 = new ModelRenderer(this, 0, 56);
         this.mane02.setRotationPoint(0.0F, 1.7F, -2.2F);
         this.mane02.addBox(-2.5F, 0.0F, 0.0F, 5, 1, 7, 0.0F);
         this.setRotateAngle(mane02, -0.5410520681182421F, 0.0F, 0.0F);
-        this.rForeHoof = new ModelRenderer(this, 32, 20);
+        this.rForeHoof= new ModelRenderer(this, 32, 20);
         this.rForeHoof.mirror = true;
         this.rForeHoof.setRotationPoint(-0.0F, 7.3F, 0.4F);
         this.rForeHoof.addBox(-1.5F, 0.0F, -2.4F, 3, 2, 3, 0.0F);
@@ -409,61 +410,106 @@ public class ModelDeer extends ModelBase {
     public void render(Entity entity, float f, float f1, float f2, float f3, float f4, float f5) { 
         this.body.render(f5);
     }
-    
+        
     @Override
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity) {
-        float f = limbSwing;
-        float f1 = limbSwingAmount/2.0F;
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity)
+    {
+        // float limbSwing= limbSwing;
+        
+        float f1 = limbSwingAmount/2.2F;
+        float f2 = f1;
 
-        this.lForeleg01.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.4F * f1 + 0.136659280431156F;
-        this.rForeleg01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * f1 + 0.136659280431156F;
-        this.rHindLeg01.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.4F * f1 - 0.22759093446006054F;
-        this.lHindLeg01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * f1 - 0.22759093446006054F;
+        EntityDeer deer = (EntityDeer) entity;
+        float eatTime = deer.getEatTime();
+        
+        this.chest.rotateAngleY = ModelBetterAnimals.getHeadYaw((EntityLiving) deer) * 0.017453292F * 0.5F;
 
-        if (entity instanceof EntityLiving)
+        if ( eatTime > 0 )
         {
-            this.chest.rotateAngleY = ModelBetterAnimals.getHeadYaw((EntityLiving) entity) * 0.017453292F * 0.5F;
-        }
-
-        if(entity instanceof EntityDeer)
-        {
-            EntityDeer deer = (EntityDeer) entity;
-            float eatTime = deer.getEatTime();
-            if(eatTime > 0)
-            {
-                this.chest.rotateAngleX = (float) Math.toRadians(55F) - 0.6829473363053812F;
-                this.neck.rotateAngleX = (float) Math.toRadians(60F) - 0.31869712141416456F;
-                this.head.rotateAngleX = -0.31869712141416456F - (float) Math.toRadians(45F);
-                this.lowerJaw.rotateAngleX = (float) Math.toRadians((eatTime % 20F)) + 0.1F;
-            }
-            else
-            {
-            	if ( entity.onGround ) this.body.rotateAngleX = MathHelper.sin(limbSwingAmount)/12.0F; // this.chest.rotateAngleX = ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 13;
-                else this.body.rotateAngleX = MathHelper.sin(-MathHelper.clamp((float)entity.motionY, -0.3F, 0.3F)* 1.3F) - 0.2F;
-            	this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/6.0F - 0.58F;
-                this.neck.rotateAngleX = headPitch * 0.017453292F - 0.31869712141416456F;
-                this.head.rotateAngleX = -0.31869712141416456F;
-                this.lowerJaw.rotateAngleX = 0F;
-            }
-            if ( deer.underAttack-- > 0)
-            {
-                this.tail.rotateAngleX = 3.0F;
-            }
-            else
-            {
-                this.tail.rotateAngleX = 0.3F;
-            }
-            this.body.rotateAngleZ = MathHelper.cos(f * 0.6662F) * 0.15F * f1;
+            this.chest.rotateAngleX = 0.278F;
+            this.neck.rotateAngleX = 0.729F;
+            this.head.rotateAngleX = -1.1F;
+            this.lowerJaw.rotateAngleX = (float) Math.toRadians((eatTime % 20F)) + 0.1F;
         }
         
-        this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.6F) * 0.1F * limbSwingAmount;
-        this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.65F) * 0.08F * limbSwingAmount;
+    	EntityDeer.doAnimationTick(deer);
+    	
+//    	float cos_0 = MathHelper.cos(limbSwing* 0.3F) * f1;
+//    	float cos_1 = MathHelper.cos(limbSwing* 0.3F) * f1;
+
+    	if ( EntityDeer.getUpTimer(deer) > 0 )
+        {
+    		//
+    		// ~_._~
+    		//   \\CHEST/BODY-
+    		//     //    \\
+    		//
+    		// + = makes parts go down
+    		// - = makes parts go up
+    		//
+    		
+        	this.body.rotateAngleX = MathHelper.cos(limbSwing* 0.3F + (float)Math.PI) * f1 * 0.1F - MathHelper.sin(EntityDeer.getUpTimer(deer)/8.0F)/3.0F;
+        	this.chest.rotateAngleX = MathHelper.sin(limbSwing* 0.3F) * f1 * 0.1F - MathHelper.sin(EntityDeer.getUpTimer(deer)/8.0F)/6.0F - 0.5F;
+        	this.neck.rotateAngleX = headPitch * 0.017453292F - 0.31869712141416456F + MathHelper.sin(EntityDeer.getUpTimer(deer)/8.0F)/1.5F;
+
+        	float ls = (6.0F/(EntityDeer.getUpTimer(deer)+6.0F));
+        	float ut = (EntityDeer.getUpTimer(deer)/10.0F);
+        	
+        	if ( ut > 0.8F )
+        	{
+        		ut = 0.8F;
+        	}
+        	
+        	this.lForeleg01.rotateAngleX = - ut + ls * (MathHelper.sin(limbSwing* 0.3F) * 1.4F * f1) - 0.14F;
+            this.rForeleg01.rotateAngleX = - ut + ls * (MathHelper.sin(limbSwing* 0.3F + 1.6F ) * 1.4F * f1) - 0.14F;
+            this.lForeleg03.rotateAngleX = ut*2 + ls * MathHelper.clamp(MathHelper.cos(limbSwing* 0.3F)*f2, -0.1F, 1.0F) + 0.1F;
+            this.rForeleg03.rotateAngleX = ut*2 + ls * MathHelper.clamp(MathHelper.cos(limbSwing* 0.3F + 1.6F)*f2, -0.1F, 1.0F) + 0.1F;
+            
+            this.rHindLeg01.rotateAngleX = ut + ls * MathHelper.cos(limbSwing* 0.3F) * 1.4F * f1;
+            this.lHindLeg01.rotateAngleX = ut + ls * MathHelper.cos(limbSwing* 0.3F + 1.6F) * 1.4F * f1;
+            this.rHindLeg03.rotateAngleX = ls * - MathHelper.sin(limbSwing* 0.3F ) * f2 - 1.0F;
+            this.lHindLeg03.rotateAngleX = ls * - MathHelper.sin(limbSwing* 0.3F + 1.6F) * f2 - 1.0F;
+        }
+        else
+    	{
+            this.neck.rotateAngleX = headPitch * 0.017453292F - 0.31869712141416456F;
+
+    		this.body.rotateAngleX = MathHelper.cos(limbSwing* 0.3F + (float)Math.PI) * f1 * 0.1F;
+        	this.chest.rotateAngleX = MathHelper.sin(limbSwing* 0.3F) * f1 * 0.1F - 0.5F;
+
+        	this.lForeleg01.rotateAngleX = MathHelper.sin(limbSwing* 0.3F) * 1.4F * f1 - 0.14F;
+            this.rForeleg01.rotateAngleX = MathHelper.sin(limbSwing* 0.3F + 1.6F ) * 1.4F * f1 - 0.14F;
+            this.lForeleg03.rotateAngleX = MathHelper.clamp(MathHelper.cos(limbSwing* 0.3F)*f2, -0.1F, 1.0F) + 0.1F;
+            this.rForeleg03.rotateAngleX = MathHelper.clamp(MathHelper.cos(limbSwing* 0.3F + 1.6F)*f2, -0.1F, 1.0F) + 0.1F;
+            
+            this.rHindLeg01.rotateAngleX = MathHelper.cos(limbSwing* 0.3F) * 1.4F * f1;
+            this.lHindLeg01.rotateAngleX = MathHelper.cos(limbSwing* 0.3F + 1.6F) * 1.4F * f1;
+            this.rHindLeg03.rotateAngleX = - MathHelper.sin(limbSwing* 0.3F ) * f2 - 1.0F;
+            this.lHindLeg03.rotateAngleX = - MathHelper.sin(limbSwing* 0.3F + 1.6F) * f2 - 1.0F;
+    	}
+    	
+        this.head.rotateAngleX = -0.31869712141416456F;
+        this.lowerJaw.rotateAngleX = 0.0F;
+        
+        if ( EntityDeer.getUnderAttackTimer(deer) > 0)
+        {
+            this.tail.rotateAngleX = 3.0F;
+        }
+        else
+        {
+            this.tail.rotateAngleX = 0.3F;
+        }
+        
+        this.body.rotateAngleZ = MathHelper.cos(limbSwing* 0.6662F) * 0.15F * f1;
+        
+        this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.4F) * 0.05F * limbSwingAmount;
+        this.chest.rotateAngleZ = MathHelper.cos(limbSwing * 0.8F) * 0.05F * limbSwingAmount - 0.05F;
 
         super.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scaleFactor, entity);
     }
 
     /**
-     * This is a helper function from Tabula to set the rotation of model parts
+     * This is a helper function from Tabula to set the rotation olimbSwingmodel parts
      */
     public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
         modelRenderer.rotateAngleX = x;

@@ -367,19 +367,20 @@ public class ModelZotzpyre extends ModelBase {
             {
             	// FLY
             	this.setRotateAngle(lLeg01, 1.3962634015954636F, 0.08726646259971647F, 0.40142572795869574F);
+                this.setRotateAngle(rLeg01, 1.3962634015954636F, -0.08726646259971647F, -0.40142572795869574F);
+
                 this.setRotateAngle(lWing03, 0.0F, -0.9599310885968813F, 0.0F);
                 this.setRotateAngle(lWing02, 0.0F, 0.5235987755982988F, 0.0F);
-                this.setRotateAngle(rLeg01, 1.3962634015954636F, -0.08726646259971647F, -0.40142572795869574F);
                 this.setRotateAngle(rWing03, 0.0F, 0.9599310885968813F, 0.0F);
                 this.setRotateAngle(rWing02, 0.0F, -0.5235987755982988F, 0.0F);
 
+
+                this.setRotateAngle(rWingMembrane02, 0.0F, 0.0F, 0.0F);
+                this.setRotateAngle(lWingMembrane02, 0.0F, 0.0F, 0.0F);
+                
                 //
                 this.setRotateAngle(tail01, 0.0F, 0.0F, 0.0F);
                 this.setRotateAngle(tail02, 0.0F, 0.0F, 0.0F);
-                this.setRotateAngle(rWingMembrane02, 0.0F, 0.0F, 0.0F);
-                this.setRotateAngle(lWingMembrane02, 0.0F, 0.0F, 0.0F);
-                this.setRotateAngle(lWing01, 0.0F, 0.0F, 0.0F);
-                this.setRotateAngle(rWing01, 0.0F, 0.0F, 0.0F);
                 
                 if ( zotz.isRiding() )
                 {
@@ -404,7 +405,7 @@ public class ModelZotzpyre extends ModelBase {
                 else
                 {
                 	// whole wing, z = flap V
-                	this.lWing01.rotateAngleZ = MathHelper.cos(limbSwing) * limbSwingAmount * 0.4F - 0.13962634015954636F; // was 0.8F
+                	this.lWing01.rotateAngleZ = MathHelper.cos(limbSwing) * limbSwingAmount * 0.4F - (float)MathHelper.clamp(zotz.motionY, -0.3, 0.3); // 0.13962634015954636F;
                     this.rWing01.rotateAngleZ = -this.lWing01.rotateAngleZ;
                     
                     // whole wing, x = twist --
@@ -453,8 +454,8 @@ public class ModelZotzpyre extends ModelBase {
                 this.setRotateAngle(lWing01, -0.13962634015954636F, -0.5759586531581287F, 0.40142572795869574F);
                 this.setRotateAngle(lWing03, 0.0F, -1.9547687622336491F, 0.0F);
                 this.setRotateAngle(rLeg01, 0.0F, -0.45378560551852565F, 0.03490658503988659F);
-                this.lLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount * 0.6F;
-                this.rLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * limbSwingAmount * 0.6F;
+                this.lLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * limbSwingAmount * 0.7F;
+                this.rLeg01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount * 0.7F;
                 this.lWing01.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * limbSwingAmount * 0.4F - 0.13962634015954636F;
                 this.rWing01.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * limbSwingAmount * 0.4F - 0.13962634015954636F;
                 
@@ -483,7 +484,8 @@ public class ModelZotzpyre extends ModelBase {
     /**
      * This is a helper function from Tabula to set the rotation of model parts
      */
-    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+    public void setRotateAngle(ModelRenderer modelRenderer, float x, float y, float z)
+    {
         modelRenderer.rotateAngleX = x;
         modelRenderer.rotateAngleY = y;
         modelRenderer.rotateAngleZ = z;

@@ -41,21 +41,28 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
     private float lastGrab = 0;
     private Vec3d targetPosition;
 
-    public EntityBobbitWorm(World world) {
+    public EntityBobbitWorm(World world)
+    {
         super(world);
         this.setSize(0.9F, 0.9F);
         this.setPathPriority(PathNodeType.WATER, 10.0F);
     }
 
-    public int grabTargetAnimation = 0;
+    private int grabTargetTimer = 0;
+    private float grabTargetAnimation = 0;
     
+    public static float getGrabTargetAnimation( EntityBobbitWorm worm )
+    {
+    	return worm.grabTargetAnimation;
+    }
+
     @Override
     @SideOnly(Side.CLIENT)
     public void handleStatusUpdate(byte id)
     {
 		if (id == 28)
 		{
-			this.grabTargetAnimation = 30;
+			this.grabTargetAnimation = 60;
 		}
 		else
 		{
@@ -153,12 +160,21 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
     public boolean shouldDismountInWater(Entity entity) {
         return false;
     }
+    
+    public static void doAnimationTick( EntityBobbitWorm worm )
+    {
+        if ( worm.grabTargetAnimation > 0 )
+        {
+        	worm.grabTargetAnimation -= 0.75F;
+        }
+    }
 
     @Override
-    public void onUpdate()
+    public void onLivingUpdate()
     {
-        super.onUpdate();
-        if (!this.inWater)
+        super.onLivingUpdate();
+        
+        if ( !this.inWater )
         {
             this.motionX *= 0.2F;
             this.motionZ *= 0.2F;
@@ -168,9 +184,9 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
             }
             this.motionY *= 0.98;
         }
-        else if (!world.isRemote)
+        else if ( !world.isRemote )
         {
-            if(this.targetPosition != null)
+            if ( this.targetPosition != null )
             {
                 this.motionX = (this.targetPosition.x - this.posX) * 0.05F;
                 this.motionY = (this.targetPosition.y - this.posY) * 0.05F;
@@ -184,13 +200,19 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
             }
         }
         
-        if ( world.isRemote )
+        if (this. world.isRemote )
         {
             this.motionX *= 0.2F;
             this.motionZ *= 0.2F;
             this.motionY *= 0.2F;
+            return;
         }
         
+    	if ( this.grabTargetTimer > 0 )
+    	{
+    		this.grabTargetTimer--;
+    	}
+    
         boolean goodPos = this.isGoodBurrowingPosition(this.getPosition());
         
         if (this.targetPosition == null && !goodPos)
@@ -212,17 +234,12 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
             this.setAttackState(this.getAttackState() - 1);
         }
         
-        if ( this.grabTargetAnimation > 0 )
-        {
-        	this.grabTargetAnimation--;
-        }
-        
-        if ( this.getAttackTarget() != null && !this.getAttackTarget().isDead && !this.isDead )
+        if ( this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive() && this.isEntityAlive() )
         {
 	    	AIHelper.faceEntitySmart(this, this.getAttackTarget());
 	    	this.getLookHelper().setLookPositionWithEntity(this.getAttackTarget(), 30.0F, 30.0F);
 	    	
-	        if (!this.world.isRemote)
+	        // if ( !this.world.isRemote )
 	        {
 	            if(this.getPassengers().contains(this.getAttackTarget()))
 	            {
@@ -237,14 +254,14 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
 	                    this.lastAttack = this.ticksExisted;
 	                }
 	            }
-	            else if ( lastGrab + 60.0F < this.ticksExisted && this.getDistanceSq(this.getAttackTarget()) <= (this.grabTargetAnimation>0?6:5) )
+	            else if ( lastGrab + 60.0F < this.ticksExisted && this.getDistanceSq(this.getAttackTarget()) <= (this.grabTargetTimer>0?6:5) )
 	            {            	
-	            	if ( this.grabTargetAnimation > 10 && this.grabTargetAnimation <= 15 )
+	            	if ( this.grabTargetTimer > 10 && this.grabTargetTimer <= 15 )
 	            	{
 		                if (!this.getAttackTarget().getIsInvulnerable() && this.getAttackTarget().width < 2.5 && this.getAttackTarget().height < 2.5)
 		                {
 		                    this.getAttackTarget().startRiding(this, false);
-		                    this.grabTargetAnimation = 10;
+		                    this.grabTargetTimer = 10;
 		                }
 		                else if (!this.getAttackTarget().getIsInvulnerable())
 		                {
@@ -252,10 +269,10 @@ public class EntityBobbitWorm extends EntityAnimalWithTypes {
 		                }
 		                lastGrab = this.ticksExisted;
 	            	}
-	            	else if ( this.grabTargetAnimation <= 0 )
+	            	else if ( this.grabTargetTimer <= 0 )
 	            	{
 	            		this.world.setEntityState(this, (byte)28);
-	                 	this.grabTargetAnimation = 30;
+	                 	this.grabTargetTimer = 30;
 	                    this.playSound(SoundEvents.ENTITY_HOSTILE_SPLASH, 1.0F, 0.8F + rand.nextFloat() / 8.0F );
 	            	}
 	            }

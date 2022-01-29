@@ -10,7 +10,6 @@ import its_meow.betteranimalsplus.init.ModEntities;
 import its_meow.betteranimalsplus.init.ModLootTables;
 import its_meow.betteranimalsplus.util.HeadTypes;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -47,7 +46,7 @@ public class EntityBrownBear extends EntityMob
     public EntityBrownBear(World worldIn)
     {
         super(worldIn);
-        this.setSize(1.4F, 1.8F); // was 1.2
+        this.setSize(1.4F, 1.95F); // was 1.2
         this.stepHeight = 2.05F;
         this.dismountZotz();
     }
@@ -56,9 +55,8 @@ public class EntityBrownBear extends EntityMob
     protected void initEntityAI()
     {
         this.tasks.addTask(1, new EntityAISwimming(this));
-        this.tasks.addTask(2, new EntityAIBearAttackWithAnimations(this, 1.1D)); // XXX
-        this.tasks.addTask(3, new EntityAIWander(this, 0.6D, 20));
-        //this.tasks.addTask(4, new EntityAIWatchClosest(this, EntityPlayer.class, 10.0F));
+        this.tasks.addTask(2, new EntityAIBearAttackWithAnimations(this, 1.0D));
+        this.tasks.addTask(3, new EntityAIWander(this, 0.5D, 20));
         this.targetTasks.addTask(1, new EntityAICallForHelp(this, 16, new Class[0]));
         this.targetTasks.addTask(2, new EntityAIBearAttack(this));
     }
@@ -73,8 +71,8 @@ public class EntityBrownBear extends EntityMob
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(50.0D);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
-        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(14.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D); // XXX 35/h
+        this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(12.0D);
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_SPEED);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_SPEED).setBaseValue(1.0D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
@@ -133,13 +131,18 @@ public class EntityBrownBear extends EntityMob
 
     	this.cannotReachTimer = 0;
 		this.fleeTimer = 0;
-    	// this.setSprinting(false);
-				
-        boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue());
+		
+		if ( this.knockBackAttack ) 
+		{
+			AIHelper.spawnSweepHit( this, entityIn );
+		}
+		
+		float damage = (float)this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).getAttributeValue();
+        boolean flag = entityIn.attackEntityFrom(DamageSource.causeMobDamage(this), this.knockBackAttack?damage*2.0F:damage);
 
         if (flag)
         {
-        	if ( this.latchTimer <= 0 && this.getDistanceSq(this.getAttackTarget()) <= 4.0D && this.grabTarget(this.getAttackTarget()) ) // attackReachModifier
+        	if ( this.latchTimer <= 0 &&      ( (entityIn.motionX*entityIn.motionX+entityIn.motionZ*entityIn.motionZ) < 0.5D || this.getDistanceSq(this.getAttackTarget()) <= 3.0D )      && this.grabTarget(this.getAttackTarget()) ) // attackReachModifier
             {
             	this.getAttackTarget().addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 44, 7, true, false));
                 this.getAttackTarget().addPotionEffect(new PotionEffect(MobEffects.JUMP_BOOST, 44, 128, true, false));
@@ -150,90 +153,111 @@ public class EntityBrownBear extends EntityMob
         	else
         	{
             	this.getAttackTarget().addPotionEffect(new PotionEffect(MobEffects.SLOWNESS, 18, 0, true, false));
+                
+            	if ( !this.world.isRemote && entityIn instanceof EntityLivingBase )
+                {
+        	        try
+        			{
+        	        	if ( this.knockBackAttack )
+        	        	{
+        	        		Vec3d pos = this.getPositionVector();
+        			        Vec3d targetPos = entityIn.getPositionVector();
+        			        entityIn.motionX /= 2.0D;
+        			        entityIn.motionZ /= 2.0D;
+        			        ((EntityLivingBase) entityIn).knockBack(entityIn, 1.0F, pos.x - targetPos.x, pos.z - targetPos.z);
+        	                entityIn.motionY /= 2.0D;
+        	                entityIn.velocityChanged = true;
+        	        	}
+        	        	else
+        	        	{
+        	        		Vec3d pos = this.getPositionVector();
+        	                Vec3d targetPos = entityIn.getPositionVector();
+        	                entityIn.motionX /= 2.0D;
+        	                entityIn.motionZ /= 2.0D;
+        	                ((EntityLivingBase) entityIn).knockBack(entityIn, 0.0F, pos.x - targetPos.x, pos.z - targetPos.z);
+        	                entityIn.motionY /= 2.0D;
+        	                entityIn.velocityChanged = true;
+        	        	}
+        	        }
+        	        catch ( Exception e )
+        	        {
+        	        	
+        	        }
+                }
         	}
-        	
-            if ( !this.world.isRemote && entityIn instanceof EntityLivingBase )
-            {
-    	        try
-    			{
-    	        	if ( this.knockBackAttack )
-    	        	{
-    	        		Vec3d pos = this.getPositionVector();
-    			        Vec3d targetPos = entityIn.getPositionVector();
-    			        entityIn.motionX /= 2.0D;
-    			        entityIn.motionZ /= 2.0D;
-    			        ((EntityLivingBase) entityIn).knockBack(entityIn, 1.0F, pos.x - targetPos.x, pos.z - targetPos.z);
-    	                entityIn.motionY /= 2.0D;
-    	                entityIn.velocityChanged = true;
-    	        	}
-    	        	else
-    	        	{
-    	        		Vec3d pos = this.getPositionVector();
-    	                Vec3d targetPos = entityIn.getPositionVector();
-    	                entityIn.motionX /= 2.0D;
-    	                entityIn.motionZ /= 2.0D;
-    	                ((EntityLivingBase) entityIn).knockBack(entityIn, 0.0F, pos.x - targetPos.x, pos.z - targetPos.z);
-    	                entityIn.motionY /= 2.0D;
-    	                entityIn.velocityChanged = true;
-    	        	}
-    	        }
-    	        catch ( Exception e )
-    	        {
-    	        	
-    	        }
-            }
             
             this.applyEnchantments(this, entityIn);
         }
         
-		this.knockBackAttack = false;
-		
-		
+		this.knockBackAttack = false;		
         
         return flag;
     }
     
     public boolean knockBackAttack = false;
+    public float attackAnimationTimer = 0;
+    public float attackAnimationTimerStanding = 0;
     
+    public static void doAnimationTick( EntityBrownBear bear )
+    {
+        if (bear.warningSoundTicks > 0)
+        {
+            --bear.warningSoundTicks;
+        }
+        
+        if (bear.attackAnimationTimer > 0)
+        {
+          bear.attackAnimationTimer -= 0.5F;
+            
+          if ( bear.attackAnimationTimer > 10 && bear.attackAnimationTimer < 20 )
+          {
+        	  bear.attackAnimationTimer -= 0.25F;
+          }
+            
+          bear.attackAnimationTimerStanding = 0;
+        }
+        else if ( bear.attackAnimationTimerStanding > 0 )
+        {
+            bear.attackAnimationTimerStanding -= 0.6F;
+            
+        	if ( bear.attackAnimationTimerStanding < 16 )
+        	{
+        		bear.attackAnimationTimerStanding  -= 0.3F;
+        		
+        		if ( bear.attackAnimationTimerStanding < 8 )
+            	{
+        			bear.attackAnimationTimerStanding -= 0.3F;
+            	}
+        	}
+        	
+        	bear.attackAnimationTimer = 0;
+        }
+    }
     
+    public static float getAttackAnimationTimer( EntityBrownBear bear )
+    {
+    	return bear.attackAnimationTimer;
+    }
     
-
-    //public int attackAnimationTimerAlt;
-    public int attackAnimationTimer;
-    public int attackAnimationTimerStanding;
+    public static float getAttackAnimationTimerStanding( EntityBrownBear bear )
+    {
+    	return bear.attackAnimationTimerStanding;
+    }
 
     @SideOnly(Side.CLIENT)
    	public void handleStatusUpdate(byte id)
     {
-//    	if (id == 22)
-//   		{
-//   			this.attackAnimationTimerAlt = 20;
-//   			this.knockBackAttack = false;
-//   		}
-    	if ( id == 23 )
-		{
-			if ( this.oldCameraMode != -1 ) Minecraft.getMinecraft().gameSettings.thirdPersonView = this.oldCameraMode;
-			this.oldCameraMode = -1;
-            this.dismountZotz();
-		}
-    	else if ( id == 25 )
+    	if (id == 25)
    		{
-    		this.oldCameraMode = Minecraft.getMinecraft().gameSettings.thirdPersonView;
-			Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
-		}
+   			this.attackAnimationTimerStanding = 0;
+   		}
     	else if (id == 26)
    		{
    			this.attackAnimationTimer = 20;
-   			this.knockBackAttack = false;
    		}
-   		else if (id == 27)
+    	else if (id == 28)
    		{
-   			this.latchSnapshot = this.ticksExisted;
-   		}
-   		else if (id == 28)
-   		{
-   			this.attackAnimationTimerStanding = 30;
-   			this.knockBackAttack = true;
+   			this.attackAnimationTimerStanding = 35;
    		}
    		else if (id == 29)
    		{
@@ -247,11 +271,8 @@ public class EntityBrownBear extends EntityMob
     
     @Override
     public void onLivingUpdate()
-    {
-        
-    	super.onLivingUpdate();
-    	
-    	if ( (this.isRiding() && !this.getRidingEntity().isEntityAlive()) )
+    {    	
+      	if ( (this.isRiding() && !this.getRidingEntity().isEntityAlive()) )
     	{
     		this.getRidingEntity().setDead();
     		this.dismountZotz();
@@ -262,11 +283,43 @@ public class EntityBrownBear extends EntityMob
     		this.dismountZotz();
     	}
     	
-    	if ( this.world.isRemote ) return;
+    	super.onLivingUpdate();
     	
-    	
-    	
-    	
+    	if ( this.world.isRemote )
+    	{
+//            if (this.warningSoundTicks > 0)
+//            {
+//                --this.warningSoundTicks;
+//            }
+//            
+//            if (this.attackAnimationTimer > 0)
+//            {
+//                --this.attackAnimationTimer;
+//                
+//                if ( this.attackAnimationTimer > 10 && this.attackAnimationTimer < 20 )
+//            	{
+//            		this.attackAnimationTimer--;
+//            	}
+//                
+//                this.attackAnimationTimerStanding = 0;
+//            }
+//            else if (this.attackAnimationTimerStanding > 0)
+//            {
+//                --this.attackAnimationTimerStanding;
+//                
+//            	if ( this.attackAnimationTimerStanding < 15 )
+//            	{
+//            		this.attackAnimationTimerStanding--;
+//            		if ( this.attackAnimationTimerStanding < 7 )
+//                	{
+//                		this.attackAnimationTimerStanding--;
+//                	}
+//            	}
+//            	
+//            	this.attackAnimationTimer = 0;
+//            }
+    		return;
+    	}
     	
     	if ( this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive() )
     	{
@@ -367,7 +420,6 @@ public class EntityBrownBear extends EntityMob
 	       		this.getAttackTarget().setSprinting(false);
 	       		this.getAttackTarget().setSneaking(true);
 	       		this.getAttackTarget().resetActiveHand();
-	       	    this.world.setEntityState(this, (byte)25);
             }
     	}
     	else
@@ -405,74 +457,18 @@ public class EntityBrownBear extends EntityMob
          
     }
     
-    
-    @Override
-    public void onUpdate()
-    {
-    	if ( (this.isRiding() && !this.getRidingEntity().isEntityAlive()) )
-    	{
-    		this.getRidingEntity().setDead();
-    		this.dismountZotz();
-    	}
-    	
-    	if ( !this.isEntityAlive() )
-    	{
-    		this.dismountZotz();
-    	}
-        super.onUpdate();
-        if (this.warningSoundTicks > 0)
-        {
-            --this.warningSoundTicks;
-        }
-        
-        if (this.attackAnimationTimer > 0)
-        {
-            --this.attackAnimationTimer;
-            if ( this.attackAnimationTimer > 10 && this.attackAnimationTimer < 20 )
-        	{
-        		this.attackAnimationTimer--;
-        	}
-            this.attackAnimationTimerStanding = 0;
-            //this.attackAnimationTimerAlt = 0;
-        }
-        else if (this.attackAnimationTimerStanding > 0)
-        {
-            --this.attackAnimationTimerStanding;
-        	if ( this.attackAnimationTimerStanding < 15 )
-        	{
-        		this.attackAnimationTimerStanding--;
-        	}
-        	this.attackAnimationTimer = 0;
-            //this.attackAnimationTimerAlt = 0;
-        }
-//        else if (this.attackAnimationTimerAlt > 0)
-//        {
-//            --this.attackAnimationTimerAlt;
-//            if ( this.attackAnimationTimerAlt > 10 )
-//        	{
-//        		this.attackAnimationTimerAlt--;
-//        	}
-//            this.attackAnimationTimerStanding = 0;
-//            this.attackAnimationTimer = 0;
-//        }
-        
-    }
-    
     @Override
     public boolean shouldDismountInWater(Entity rider)
     {
         return false;
     }
-
-    //@SideOnly(Side.CLIENT)
-    public int oldCameraMode = -1;
     
     public int latchTimer = 0;
     public int latchSnapshot = 0;
     
     public boolean grabTarget(EntityLivingBase entity)
     {
-    	if ( entity.isRiding() || entity.isBeingRidden() || this.isRiding() || this.isBeingRidden() )
+    	if ( entity.isRiding() || entity.isBeingRidden() || this.isRiding() || this.isBeingRidden() || !this.isEntityAlive() || !entity.isEntityAlive() )
     	{
     		return false;
     	}
@@ -488,17 +484,16 @@ public class EntityBrownBear extends EntityMob
     	}
     	
     	this.fleeTimer = 0;
-    	
-    	this.world.setEntityState(this, (byte)27);
-    	this.world.setEntityState(this, (byte)25);
-    	
     	this.latchSnapshot = this.ticksExisted;
 
         this.startRiding(entity, true);
-        if ( !this.world.isRemote && entity instanceof EntityPlayerMP)
+        
+        if ( entity instanceof EntityPlayerMP)
         {
             ((EntityPlayerMP) entity).connection.sendPacket(new SPacketSetPassengers(entity));
         }
+        
+		this.world.setEntityState(this, (byte) 25);
     
         return true;
     }
@@ -519,15 +514,13 @@ public class EntityBrownBear extends EntityMob
                 {
                     ((EntityPlayerMP) mount).connection.sendPacket(new SPacketSetPassengers(mount));
                 }
-            	this.world.setEntityState(this, (byte)23);
             }
             
         	mount.attackEntityFrom(DamageSource.GENERIC, 0.0F);
     	}
     	
+    	this.attackEntityFrom(DamageSource.GENERIC, 0.0F);
     	this.velocityChanged = true;
-
-    	// this.attackEntityFrom(DamageSource.GENERIC, 0.0F);
 
     }
 

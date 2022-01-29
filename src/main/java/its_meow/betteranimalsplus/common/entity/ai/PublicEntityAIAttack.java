@@ -97,50 +97,53 @@ public class PublicEntityAIAttack extends EntityAIBase
      */
     public void updateTask()
     {
-//    	if ( this.attacker.isRiding() || this.attacker.fleeTimer > 0 )
-//    	{
-//    		return;
-//    	}
-    	
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
         
-        if ( entitylivingbase == null ) return;
+        if ( entitylivingbase == null )
+        {
+        	return;
+        }
         
-        double d0 = 1+this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
-
-    	this.attacker.setSprinting(false);
+        double d0 = this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
     	
-    	if ( d0 > 16 )
+    	if ( d0 > 10 )
     	{
         	if ( this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget) )
             {
+        		
             }
     	}
     	else
     	{
-        	if ( this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget*(1.0D+(d0-16.0D)/20.0D) ) )
+        	if ( this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget*(d0/40.0D+0.75D) ) )
             {
+        		
             }
+        	Vec3d velocityVector = new Vec3d(this.attacker.posX-entitylivingbase.posX, 0,this.attacker.posZ-entitylivingbase.posZ);
+    		d0 -= this.attacker.width;
+        	double push = (8.0D+(d0*d0));
+    		this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
+        	this.attacker.velocityChanged = true;
     	}
     	
-    	if ( this.attacker.isSprinting() || d0 > this.getAttackReachSqr(entitylivingbase)/2.0D )
-    	{
-    		// PUSH TO
-    		Vec3d velocityVector = new Vec3d(entitylivingbase.posX-this.attacker.posX, 0,entitylivingbase.posZ-this.attacker.posZ);
-    		double push = (2.0D+d0)*2.0D;
-    		this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
-        	this.attacker.velocityChanged = true;
-    	}
-    	else
-    	{
-    		// PUSH AWAY
-    		Vec3d velocityVector = new Vec3d(this.attacker.posX-entitylivingbase.posX, 0,this.attacker.posZ-entitylivingbase.posZ);
-    		double push = (2.0D+d0)*2.0D;
-    		this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
-        	this.attacker.velocityChanged = true;
-    	}
+//    	if ( this.attacker.isSprinting() || d0 > this.getAttackReachSqr(entitylivingbase) )
+//    	{
+//    		// PUSH TO
+//    		Vec3d velocityVector = new Vec3d(entitylivingbase.posX-this.attacker.posX, 0,entitylivingbase.posZ-this.attacker.posZ);
+//    		double push = (8.0D+d0);
+//    		this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
+//        	this.attacker.velocityChanged = true;
+//    	}
+//    	else
+//    	{
+//    		// PUSH AWAY
+//    		Vec3d velocityVector = new Vec3d(this.attacker.posX-entitylivingbase.posX, 0,this.attacker.posZ-entitylivingbase.posZ);
+//    		double push = (8.0D+d0);
+//    		this.attacker.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
+//        	this.attacker.velocityChanged = true;
+//    	}
 
-        this.attackTick = Math.max(this.attackTick - 1, 0);
+        this.attackTick = Math.max(this.attackTick-1, 0);
         this.checkAndPerformAttack(entitylivingbase, d0);
     }
 

@@ -44,7 +44,7 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     {
         public AIMeleeAttack()
         {
-            super(EntityMoose.this, 1.2D); // XXX
+            super(EntityMoose.this, 1.0D); // XXX
         }
         
         public void resetTask()
@@ -57,62 +57,65 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
         {
         	double attackRange = this.getAttackReachSqr(entity);
 
-            if ( this.attackTick <= 5 && dist <= attackRange )
+            if ( this.attackTick <= 6 )
             {
             	if ( this.attackTick <= 0 )
-            	{
-    		        this.attackTick = 30;
-    		        this.attacker.attackEntityAsMob(entity);
-    	        	this.attacker.playSound(SoundEvents.BLOCK_CLOTH_PLACE, 2.0F, 0.4F);
-    	    		this.attacker.playSound(SoundEvents.BLOCK_SAND_FALL, 1.0F, 0.7F);
-    	    		this.attacker.world.setEntityState(this.attacker, (byte) 28);
-//	    	    		if ( EntityMoose.this.headDownDuration <= 0 )
-//	    				{
-//	    	    			EntityMoose.this.headDownDuration = 120;
-//	    				}
-//	    				else if ( EntityMoose.this.headDownDuration < 30 )
-//	    				{
-//	    					EntityMoose.this.headDownDuration = 120 - EntityMoose.this.headDownDuration;
-//	    				}
-//	    				else
-//	    				{
-//	    					EntityMoose.this.headDownDuration = 90;
-//	    				}
+            	{        
+            		if ( dist <= attackRange )
+            		{
+	    		        this.attacker.attackEntityAsMob(entity);
+	    	        	this.attacker.playSound(SoundEvents.BLOCK_CLOTH_PLACE, 2.0F, 0.4F);
+	    	    		this.attacker.playSound(SoundEvents.BLOCK_SAND_FALL, 1.0F, 0.7F);
+	    	    		this.attacker.motionX /= 4.0D;
+                		this.attacker.motionZ /= 4.0D;
+                		this.attacker.velocityChanged = true;
+        	    		this.attacker.world.setEntityState(this.attacker, (byte) 28); // HEAD DOWN
+            		}
+            		else if ( dist <= attackRange * 2.0D )
+             	    {
+            			EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 28); // HEAD DOWN
+                    }
+            		else
+            		{
+        		        EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 29); // HEAD RESET
+            		}
+        			this.attackTick = 36;
+                	this.attacker.setSprinting(false);
             	}
-            	else if ( this.attackTick == 5 )
+            	else if ( this.attackTick == 6 )
             	{
-            		EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 27);
-        			// EntityMoose.this.headRam = 20;
-            		EntityMoose.this.getNavigator().clearPath();
+            		if ( dist <= attackRange * 2.0D )
+            		{
+                		EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 27); // HEAD RAM
+                		this.attacker.motionX *= 1.4D;
+                		this.attacker.motionZ *= 1.4D;
+                		this.attacker.velocityChanged = true;
+            		}
+            	}
+            	else if ( this.attackTick == 3 )
+            	{
+            		if ( dist <= attackRange * 2.0D )
+            		{
+                		// EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 27); // HEAD RAM
+                		this.attacker.motionX *= 1.4D;
+                		this.attacker.motionZ *= 1.4D;
+                		this.attacker.velocityChanged = true;
+            		}
             	}
     	    }
-            else if ( dist <= attackRange * 2.0D )
+            else if ( dist <= attackRange * 4.0D )
     	    {
             	if ( this.attackTick % 10 == 0 )
             	{
-    		        if ( this.attackTick <= 0 )
-    		        {
-    		        	this.attackTick = 10;
-    		        }
-    		        
-    		        EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 28);
-//	    		        if ( EntityMoose.this.headDownDuration <= 0 )
-//	    				{
-//	    	    			EntityMoose.this.headDownDuration = 120;
-//	    				}
-//	    				else if ( EntityMoose.this.headDownDuration < 30 )
-//	    				{
-//	    					EntityMoose.this.headDownDuration = 120 - EntityMoose.this.headDownDuration;
-//	    				}
-//	    				else
-//	    				{
-//	    					EntityMoose.this.headDownDuration = 90;
-//	    				}
+                	this.attacker.setSprinting(true);
+    		        EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 28); // HEAD DOWN
     	    	}
-            } 
+            }
             else
             {
-            	this.attackTick = 30;
+            	this.attackTick = 36;
+            	this.attacker.setSprinting(false);
+		        EntityMoose.this.world.setEntityState(EntityMoose.this, (byte) 29); // HEAD RESET
             }
         }
 
@@ -129,7 +132,7 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
         @Override
         protected double getAttackReachSqr(EntityLivingBase attackTarget)
         {
-            return attackReachModifier() + attackTarget.width;
+            return attackReachModifier() + attackTarget.width * 2.0D;
         }
     }
     
@@ -137,27 +140,11 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     {
     	return 14.0D;
     }
-    
-    @Override
-    public void onUpdate()
-    {
-        super.onUpdate();
         
-        if (this.headRam >= 0)
-        {
-        	this.headRam--;
-        	this.headDownDuration = -1;
-        }
-        else if (this.headDownDuration >= 0)
-        {
-        	this.headDownDuration--;
-        }
-    }
-    
     public EntityMoose(World worldIn)
     {
         super(worldIn, 5);
-        this.setSize(1.4F, 1.9F);
+        this.setSize(1.4F, 1.95F);
         this.stepHeight = 2.05F;
     }
     
@@ -297,7 +284,7 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     {
         super.initEntityAI();
         this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(1, new EntityAIWander(this, 0.4D));
+        this.tasks.addTask(1, new EntityAIWander(this, 0.5D));
         this.tasks.addTask(2, new EntityMoose.AIMeleeAttack());
         this.tasks.addTask(3, new EntityAILookIdle(this));
         this.targetTasks.addTask(0, new EntityAIHurtByTarget(this, false, (Class<?>) null));
@@ -310,19 +297,64 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(6.0D);
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(60.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.36D); // XXX 35/h
         this.getAttributeMap().registerAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(32.0D);
         this.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(9.0D);
         this.getEntityAttribute(SharedMonsterAttributes.KNOCKBACK_RESISTANCE).setBaseValue(1.0D);
     }
     
+    public float headRam = 0;
+    public float headDownDuration = 0;
+    public int headDirection = -1;
+    
+    public static void doAnimationTick( EntityMoose moose )
+    {
+        if ( moose.headRam > 0 )
+        {
+        	if ( moose.headRam >= 20 )
+        	{
+        		moose.headDirection = (moose.world.rand.nextBoolean()?1:-1);
+        	}
+        	
+        	if ( (moose.headRam -= 0.4F) > 10 )
+        	{
+        		moose.headRam -= 0.7F;
+        	}
+        	
+        	moose.headDownDuration = 0;
+        }
+        else if ( moose.headDownDuration > 0 )
+        {
+        	moose.headRam = 0;
+        	moose.headDownDuration -= 1.0F;
+        }
+    }
+    
+    public static float getHeadDown( EntityMoose moose )
+    {
+    	return moose.headDownDuration;
+    }
+    
+    public static float getHeadRam( EntityMoose moose )
+    {
+    	return moose.headRam;
+    }
+    
+    public static int getHeadDirection( EntityMoose moose )
+    {
+    	return moose.headDirection;
+    }
+
     @Override
     public void onLivingUpdate()
     {
     	super.onLivingUpdate();
     	
-    	if ( this.world.isRemote ) return;
+    	if ( this.world.isRemote )
+    	{
+    		return;
+    	}
     	
     	if ( this.getAttackTarget() != null && this.getAttackTarget().isEntityAlive() )
     	{
@@ -397,7 +429,7 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     @Override
     protected float getWaterSlowDown()
     {
-        return 0.7F;
+        return 0.95F;
     }
 
     @Override
@@ -417,6 +449,11 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     @SideOnly(Side.CLIENT)
 	public void handleStatusUpdate(byte id)
     {
+    	if ( id == 10 )
+    	{
+    		this.handleStatusUpdate((byte)28);
+    		super.handleStatusUpdate(id);
+    	}
 		if (id == 27) // head ram
 		{
 			this.headRam = 20;
@@ -430,11 +467,22 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
 			}
 			else if ( this.headDownDuration < 30 )
 			{
-				this.headDownDuration = 120 - this.headDownDuration;
+				this.headDownDuration = 90 + this.headDownDuration;
 			}
 			else
 			{
 				this.headDownDuration = 90;
+			}
+		}
+		else if (id == 29) // head reset
+		{
+			if ( this.headDownDuration > 90 )
+			{
+				this.headDownDuration = this.headDownDuration - 90;
+			}
+			else if ( this.headDownDuration > 30 )
+			{
+				this.headDownDuration = 30;
 			}
 		}
 		else
@@ -442,9 +490,6 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
 			super.handleStatusUpdate(id);
 		}
 	}
-    
-    public int headRam = -1;
-    public int headDownDuration = -1;
 
     @Override
     public void onDeath(DamageSource cause)
@@ -499,9 +544,16 @@ public class EntityMoose extends EntityAnimalEatsGrassWithTypes implements IMob
     }
     
     @Override
-    public boolean canBreatheUnderwater() {
-        return true;
+    public boolean canBreatheUnderwater()
+    {
+        return false;
     }
+    
+//    @Override
+//    public boolean canBePushed()
+//    {
+//        return true;
+//    }
 
     @Override
     protected ResourceLocation getLootTable() {

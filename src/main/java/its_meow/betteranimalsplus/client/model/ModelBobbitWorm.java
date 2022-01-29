@@ -369,6 +369,8 @@ public class ModelBobbitWorm extends ModelBase
             EntityBobbitWorm worm = (EntityBobbitWorm) entity;
             int attack = worm.getAttackState();
             
+            EntityBobbitWorm.doAnimationTick(worm);
+            
             float add = entity.getUniqueID().hashCode() * 0.001F;
             if(attack > 0) {
                 float angle = ((30 - attack) % 60) * 0.04F + 0.3839724354387525F;
@@ -420,17 +422,17 @@ public class ModelBobbitWorm extends ModelBase
             this.rAntenna01.rotateAngleX = MathHelper.cos(ageInTicks * (mul + 0.03F) + add) / div;
             
             
-            if ( worm.grabTargetAnimation > 0 )
+            if ( EntityBobbitWorm.getGrabTargetAnimation(worm) > 0 )
             {
-            	if ( worm.grabTargetAnimation > 15 )
+            	if ( EntityBobbitWorm.getGrabTargetAnimation(worm) > 15 )
             	{
-            		int n = 30-worm.grabTargetAnimation;
+            		float n = 30-EntityBobbitWorm.getGrabTargetAnimation(worm);
                 	this.body.offsetY = 0.3F - (n)/(3.0F + n/3.0F);
                     this.body.offsetZ = this.body.offsetY - 0.3F;
             	}
             	else
             	{
-            		int n = worm.grabTargetAnimation;
+            		float n = EntityBobbitWorm.getGrabTargetAnimation(worm);
                 	this.body.offsetY = 0.3F - (n)/(3.0F + n/3.0F);
                     this.body.offsetZ = this.body.offsetY - 0.3F;
             	}

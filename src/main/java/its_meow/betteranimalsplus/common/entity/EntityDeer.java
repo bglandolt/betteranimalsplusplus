@@ -6,8 +6,10 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
 
+import its_meow.betteranimalsplus.common.entity.ai.AIHelper;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAIDeerFear;
 import its_meow.betteranimalsplus.common.entity.ai.EntityAIFollowHerd;
+import its_meow.betteranimalsplus.config.BetterAnimalsPlusConfig;
 import its_meow.betteranimalsplus.init.ModLootTables;
 import its_meow.betteranimalsplus.util.HeadTypes;
 import net.minecraft.block.Block;
@@ -15,13 +17,20 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMate;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAIWander;
+import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -32,12 +41,14 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
+public class EntityDeer extends EntityAnimalEatsGrassWithTypes
+{
 
-    public EntityDeer(World worldIn) {
+    public EntityDeer(World worldIn)
+    {
         super(worldIn, 5);
-        this.setSize(0.7F, 0.9F);
-        this.stepHeight = 1.55F;
+        this.setSize(0.7F, 1.9F);
+        this.stepHeight = 2.05F;
     }
 
 //    @Override
@@ -62,32 +73,50 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
     @SideOnly(Side.CLIENT)
    	public void handleStatusUpdate(byte id)
     {
-   		if (id == 28)
+    	if (id == 27)
+   		{
+   			this.underAttack = 0;
+   		}
+    	else if (id == 28)
    		{
    			this.underAttack = 300;
+   			this.eatTimer = 0;
    		}
+    	
    		super.handleStatusUpdate(id);
    	}
+    
     public int underAttack = 0;
     
-    @Override
-    public void setRevengeTarget(EntityLivingBase livingBase)
-    {
-        this.world.setEntityState(this, (byte) 28);
-    	super.setRevengeTarget(livingBase);
-    	//this.setAttackTarget(null);
-    }
+//    @Override
+//    public void setAttackTarget(EntityLivingBase livingBase)
+//    {
+//        this.world.setEntityState(this, (byte) 28);
+//    	super.setAttackTarget(livingBase);
+//    	//this.setAttackTarget(null);
+//    }
 
     @Override
     public void setAttackTarget(EntityLivingBase livingBase)
     {
-    	this.setRevengeTarget(livingBase);
+        if ( livingBase == null )
+        {
+    		this.underAttack = 0;
+        	this.world.setEntityState(this, (byte) 27);
+        }
+        else
+        {
+    		this.underAttack = 300;
+        	this.world.setEntityState(this, (byte) 28);
+        }
+        
+        super.setAttackTarget(livingBase);
     }
     
     @Override
     protected float getWaterSlowDown()
     {
-        return 0.7F;
+        return 0.95F;
     }
     
   @Override
@@ -117,57 +146,70 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
 	  
 	  if ( source.getTrueSource() instanceof EntityLivingBase )
 	  {
-  		  EntityLivingBase player = (EntityLivingBase) source.getTrueSource();
+		  this.setAttackTarget((EntityLivingBase)source.getTrueSource());
 
-  		  this.setRevengeTarget(player);
-	  	
-		  Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 7, new Vec3d(player.posX,player.posY,player.posZ));
-	
-	      if ( vec3d != null )
-	      {
-	    	  this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.7D);
-	      }
-	      
-	      List<EntityDeer> guards = this.world.getEntitiesWithinAABB(EntityDeer.class, new AxisAlignedBB(this.getPosition()).grow(16, 12, 16), new Predicate<EntityDeer>()
-	      {
-	    	  public boolean apply(@Nullable EntityDeer entity)
-	    	  {
-					return true;
-			  }
-		  });
-			
-		  for (EntityDeer guard: guards)
-		  {
-			  guard.setRevengeTarget(player);
-			  vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 7, new Vec3d(player.posX,player.posY,player.posZ));
-				
-		      if ( vec3d != null )
-		      {
-		    	  this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.7D);
-		      }
-		  }
-	      
+//  	  EntityLivingBase player = (EntityLivingBase) source.getTrueSource();
+//
+//  	  this.setAttackTarget(player);
+//	  	
+//		  Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 7, new Vec3d(player.posX,player.posY,player.posZ));
+//	
+//	      if ( vec3d != null )
+//	      {
+//	    	  this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
+//	      }
+//	      
+//	      List<EntityDeer> guards = this.world.getEntitiesWithinAABB(EntityDeer.class, new AxisAlignedBB(this.getPosition()).grow(16, 12, 16), new Predicate<EntityDeer>()
+//	      {
+//	    	  public boolean apply(@Nullable EntityDeer entity)
+//	    	  {
+//					return true;
+//			  }
+//		  });
+//			
+//		  for (EntityDeer guard: guards)
+//		  {
+//			  guard.setAttackTarget(player);
+//			  vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this, 16, 7, new Vec3d(player.posX,player.posY,player.posZ));
+//				
+//		      if ( vec3d != null )
+//		      {
+//		    	  this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 1.0D);
+//		      }
+//		  }
 	  }
 	  return super.attackEntityFrom(source, amount);
   }
     
     @Override
-    public int getMaxSpawnedInChunk() {
+    public int getMaxSpawnedInChunk()
+    {
         return 4;
     }
 
     @Override
-    protected void playStepSound(BlockPos pos, Block blockIn) {
+    protected void playStepSound(BlockPos pos, Block blockIn)
+    {
         this.playSound(SoundEvents.ENTITY_SHEEP_STEP, 0.15F, 1.0F);
     }
 
     @Override
-    protected void initEntityAI() {
+    protected void initEntityAI()
+    {
         super.initEntityAI();
         this.tasks.addTask(0, new EntityAISwimming(this));
-        this.tasks.addTask(1, new EntityAIDeerFear(this, 0.6D, 0.7D));
-        this.tasks.addTask(2, new EntityAIMate(this, 0.4D));
-        this.tasks.addTask(3, new EntityAIFollowHerd(this, 0.4D, 4, 16, 80));
+        this.tasks.addTask(2, new EntityAIMate(this, 0.6D)
+        {
+            public boolean shouldExecute()
+            {
+            	if ( getAttackTarget() != null )
+            	{
+            		return false;
+            	}
+            	return super.shouldExecute();
+            }
+        });
+        this.tasks.addTask(3, new EntityAIFollowHerd(this, 0.6D, 4, 16, 80));
         //this.tasks.addTask(2, new EntityAIPanic(this, 0.65D));
 //        Set<Item> temptItems = new HashSet<Item>();
 //        temptItems.add(Items.APPLE);
@@ -177,14 +219,37 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
 //        temptItems.add(Items.GOLDEN_CARROT);
 //        this.tasks.addTask(3, new EntityAITempt(this, 0.5D, false, temptItems));
         // Eat Grass at Priority 5
-        this.tasks.addTask(5, new EntityAIWander(this, 0.4D));
+        this.tasks.addTask(6, new EntityAIWanderAvoidWater(this, 1.0D, 1)
+        {
+            public boolean shouldExecute()
+            {
+            	if ( getAttackTarget() != null )
+            	{
+            		return false;
+            	}
+            	return super.shouldExecute();
+            }
+        });
+        this.tasks.addTask(7, new EntityAILookIdle(this)
+        {
+        	@Override
+        	public boolean shouldExecute()
+            {
+        		if ( getAttackTarget() != null )
+        		{
+        			return false;
+        		}
+                return getRNG().nextFloat() < 0.04F;
+            }
+        });
     }
 
     @Override
-    protected void applyEntityAttributes() {
+    protected void applyEntityAttributes()
+    {
         super.applyEntityAttributes();
-        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(16.0D);
-        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(0.75D);
+        this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(BetterAnimalsPlusConfig.deerHealth);
+        this.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).setBaseValue(BetterAnimalsPlusConfig.deerSpeed);
     }
 
     @Override
@@ -281,88 +346,205 @@ public class EntityDeer extends EntityAnimalEatsGrassWithTypes {
 //        return r;
     }
     
-    @Override
-    public void onUpdate()
+    private int readyToJumpTimer;
+    public float upTimer = 0.0F;
+    
+    public static float getUpTimer( EntityDeer deer )
     {
-        super.onUpdate();
-
-        if (!this.world.isRemote)
-        {
-
-            if (this.onGround && --this.readyToJumpTimer <= 0)
-            {
-                if (getMyMovementSpeed(this) > 0.17F)
-                {
-                    float velX = (float) (0.6F * Math.cos(((this.rotationYaw - 90F) % 360F) / 60.0F));
-                    float velZ = (float) (0.6F * Math.sin(((this.rotationYaw - 90F) % 360F) / 60.0F)); // 57.29578F
-                    this.motionX -= velX;
-                    this.motionZ -= velZ;
-                    this.motionY = 0.36D + this.rand.nextDouble() / 50.0D;
-                    this.readyToJumpTimer = this.rand.nextInt(15) + 10;
-                    this.getNavigator().clearPath();
-                }
-            }
-        }
+    	return deer.upTimer;
     }
     
-    private int readyToJumpTimer;
-
-//    public float pitchRotationOffset()
-//    {
-//        if (!this.onGround && getMyMovementSpeed(this) > 0.08F) {
-//            if (this.motionY > 0.5D) {
-//                return 25F;
-//            }
-//            if (this.motionY < -0.5D) {
-//                return -25F;
-//            }
-//            return (float) (this.motionY * 70D);
-//        }
-//        return 0F;
-//    }
-    
-    private void faceAwayEntity(Entity entityIn)
+    public static float getUnderAttackTimer( EntityDeer deer )
     {
-    	if ( this.getDistance(entityIn) <= 5 )
-    	{
-
-    	}
-    	else
-    	{
-	        double d0 = this.posX - entityIn.posX;
-	        double d2 = this.posZ - entityIn.posZ;
-	        double d1;
-	
-	        if (entityIn instanceof EntityLivingBase)
-	        {
-	            EntityLivingBase entitylivingbase = (EntityLivingBase)entityIn;
-	            d1 = entitylivingbase.posY + (double)entitylivingbase.getEyeHeight() - (this.posY + (double)this.getEyeHeight());
-	        }
-	        else
-	        {
-	            d1 = (entityIn.getEntityBoundingBox().minY + entityIn.getEntityBoundingBox().maxY) / 2.0D - (this.posY + (double)this.getEyeHeight());
-	        }
-	
-	        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
-	        float f = (float)(MathHelper.atan2(d2, d0) * (180D / Math.PI)) - 90.0F;
-	        float f1 = (float)(-(MathHelper.atan2(d1, d3) * (180D / Math.PI)));
-	        this.rotationPitch = f1;
-	        this.rotationYaw = f;
-    	}
+    	return deer.underAttack;
+    }
+    
+    public static void doAnimationTick( EntityDeer deer )
+    {
+		if ( deer.onGround || deer.isInWater() )
+		{
+			if ( deer.upTimer > 0 )
+			{
+    			deer.upTimer -= 1.0F;
+    			
+	    		if ( deer.upTimer <= 0 )
+	    		{
+	    			deer.upTimer = 0.0F;
+	    		}
+			}
+		}
+		else
+	    {
+			deer.upTimer += 0.5F;
+			
+			if ( deer.upTimer >= 25 )
+			{
+				deer.upTimer = 25;
+			}
+	    }
     }
     
     @Override
     public void onLivingUpdate()
     {
-    	if ( this.getRevengeTarget() != null && !this.onGround )
+    	super.onLivingUpdate();    
+    	
+    	if ( this.world.isRemote ) return;
+    	
+    	float ms = getMyMovementSpeed(this);
+    	
+        if ( this.onGround && this.readyToJumpTimer-- <= 0 )
+        {
+            if ( ms > 0.17F )
+            {
+                float velX = 0.6F * MathHelper.cos(((this.rotationYaw - 90.0F) % 360.0F) / 60.0F);
+                float velZ = 0.6F * MathHelper.sin(((this.rotationYaw - 90.0F) % 360.0F) / 60.0F);
+                this.motionX -= velX;
+                this.motionZ -= velZ;
+                this.motionY = 0.34D;
+                this.readyToJumpTimer = this.rand.nextInt(12) + 12;
+                this.onGround = false;
+                this.velocityChanged = true;
+                this.getNavigator().clearPath();
+            }
+        }
+    	
+    	List<EntityArrow> arrows = this.world.getEntitiesWithinAABB(EntityArrow.class, new AxisAlignedBB(this.getPosition()).grow(8, 8, 8), new Predicate<EntityArrow>()
+		{
+			public boolean apply(@Nullable EntityArrow entity)
+			{
+				if ( entity.lastTickPosX == 0 )
+				{
+					return true;
+				}
+				return false;
+			}
+		});
+    			
+		for ( EntityArrow a : arrows )
+		{
+			if ( a.shootingEntity instanceof EntityLivingBase )
+			{
+				this.setAttackTarget((EntityLivingBase)a.shootingEntity);
+			}
+		}
+		
+		if ( this.underAttack > 0 )
+		{
+			this.underAttack--;
+			
+			if ( this.underAttack <= 0 )
+			{
+				this.setAttackTarget(null);
+			}
+		}
+    	
+		if ( this.ticksExisted % 20 == 0 )
     	{
-    		this.faceAwayEntity(this.getRevengeTarget());
+	        this.getHostiles();
+
+			if ( this.getAttackTarget() != null )
+			{
+			    EntityLivingBase closestLivingEntity = this.getAttackTarget();
+			    double dist = this.getDistance(closestLivingEntity);
+				double speed = 1.0D;
+				
+				if ( dist < 9 )
+				{
+					speed = 1.25;
+	            	this.underAttack = 300;
+				}
+				
+				Vec3d away = new Vec3d(this.posX+(this.posX-closestLivingEntity.posX)*2.0D, closestLivingEntity.posY, this.posZ+(this.posZ-closestLivingEntity.posZ)*2.0D);
+				
+	            Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockTowards(this, 8, 4, away);
+	
+	            if ( vec3d != null && this.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, speed) )
+	            {
+	            	// this.world.setBlockState(new BlockPos(vec3d.x, vec3d.y, vec3d.z), Blocks.GOLD_BLOCK.getDefaultState());
+	            }
+	            else
+	            {
+	            	this.getNavigator().clearPath();
+	            }
+			}
     	}
-    	super.onLivingUpdate();
-    	if ( this.getRevengeTarget() != null && !this.onGround )
-    	{
-    		this.faceAwayEntity(this.getRevengeTarget());
-    	}
+		
+		if ( this.getAttackTarget() != null )
+		{
+			EntityLivingBase closestLivingEntity = this.getAttackTarget();
+		    double dist = this.getDistance(closestLivingEntity);
+	    	
+	        if ( this.onGround && ( this.getNavigator().noPath() ) )
+	        {
+				Vec3d velocityVector = new Vec3d(this.posX-closestLivingEntity.posX, 0,this.posZ-closestLivingEntity.posZ);
+	     		double push = 8.0D+dist*dist/2.0D;
+	     		this.addVelocity((velocityVector.x)/push, 0.0D, (velocityVector.z)/push);
+	         	this.velocityChanged = true;
+	        }
+	        else if ( dist > 4 && ms > 0.05F )
+	        {
+		        AIHelper.faceAwayEntity(this, this.getAttackTarget());
+	        }
+		}
+    }
+    
+    public void getHostiles()
+    {
+    	List<EntityPlayer> list = this.world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(this.getPosition()).grow(18, 6, 18), new Predicate<EntityPlayer>()
+	    {
+    		public boolean apply(@Nullable EntityPlayer entity)
+	    	{
+				return true;
+			}
+		});
+        
+        for ( EntityPlayer player : list )
+        {
+        	if ( !this.canEntityBeSeen(player) )
+        	{
+        		continue;
+        	}
+        	
+        	if ( this.getDistance(player) < (player.isSneaking()?6.0D:12.0D) + 8.0D * ( abs(player.motionX) + abs(player.motionY) + abs(player.motionZ) ) )
+        	{
+        		this.setAttackTarget(player);
+            	return;
+        	}
+        }
+        
+    	List<EntityAnimal> animals = this.world.getEntitiesWithinAABB(EntityAnimal.class, new AxisAlignedBB(this.getPosition()).grow(12, 4, 12), new Predicate<EntityAnimal>()
+	    {
+    		public boolean apply(@Nullable EntityAnimal entity)
+	    	{
+    			return true;
+			}
+		});
+        
+        for ( EntityAnimal animal : animals )
+        {
+        	if ( animal.height > 0.7 || animal.getAttackTarget() instanceof EntityDeer )
+			{
+        		if ( !this.canEntityBeSeen(animal) )
+            	{
+            		continue;
+            	}
+        		
+            	this.setAttackTarget(animal);
+            	return;
+			}
+        	
+			if ( animal instanceof EntityDeer && animal.getAttackTarget() != null )
+			{
+            	this.setAttackTarget(animal);
+				return;
+			}
+        }
+    }
+    
+    public static double abs(double value)
+    {
+        return value >= 0.0D ? value : -value;
     }
     
     public static float getMyMovementSpeed(Entity entity)

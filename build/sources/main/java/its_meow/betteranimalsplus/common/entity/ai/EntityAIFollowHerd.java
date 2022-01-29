@@ -41,7 +41,7 @@ public class EntityAIFollowHerd extends EntityAIBase {
     public boolean shouldExecute()
     {
 
-        if (this.theAnimal.getRNG().nextInt(this.executionChance) != 0)
+        if ( this.theAnimal.getRNG().nextInt(this.executionChance) != 0 || this.theAnimal.getRevengeTarget() != null )
         {
             return false;
         }

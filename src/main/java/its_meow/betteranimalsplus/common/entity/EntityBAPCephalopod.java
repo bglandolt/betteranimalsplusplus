@@ -77,16 +77,14 @@ public abstract class EntityBAPCephalopod extends EntityWaterMobPathing {
                 this.motionX = (this.randomMotionVecX * this.randomMotionSpeed);
                 this.motionY = (this.randomMotionVecY * this.randomMotionSpeed);
                 this.motionZ = (this.randomMotionVecZ * this.randomMotionSpeed);
+                Vec3d vec3d = this.getForward(); // getMotion()
+                float f1 = (float)(this.motionX*this.motionX+this.motionZ+this.motionZ);// MathHelper.sqrt(horizontalMag(vec3d));
+                
+                this.renderYawOffset += (-(MathHelper.atan2(vec3d.x, vec3d.z)) * (180F / Math.PI) - this.renderYawOffset) * 0.1F;
+                this.rotationYaw = this.renderYawOffset;
+                this.squidYaw = (this.squidYaw + Math.PI * this.rotateSpeed * 1.5D);
+                this.squidPitch += (-(MathHelper.atan2(f1, vec3d.y)) * (180F / Math.PI) - this.squidPitch) * 0.1F;
             }
-            
-            Vec3d vec3d = this.getForward(); // getMotion()
-            
-            float f1 = (float)(this.motionX*this.motionX+this.motionZ+this.motionZ);// MathHelper.sqrt(horizontalMag(vec3d));
-            
-            this.renderYawOffset += (-(MathHelper.atan2(vec3d.x, vec3d.z)) * (180F / Math.PI) - this.renderYawOffset) * 0.1F;
-            this.rotationYaw = this.renderYawOffset;
-            this.squidYaw = (this.squidYaw + Math.PI * this.rotateSpeed * 1.5D);
-            this.squidPitch += (-(MathHelper.atan2(f1, vec3d.y)) * (180F / Math.PI) - this.squidPitch) * 0.1F;
         }
         else
         {

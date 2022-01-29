@@ -1,0 +1,97 @@
+#####Spanish Translation by Nathaniel Freeman (Dyedefra)#####
+
+#Creative Tabs
+itemGroup.Better Animals+=Mejores Animales
+
+#Items
+item.betteranimalsplus.venisonraw.name=Venado Crudo
+item.betteranimalsplus.venisoncooked.name=Venado Cocinado
+item.betteranimalsplus.hirschgeistskullwearable.name=Casco de Cráneo de Hirschgeist
+item.betteranimalsplus.antler.name=Cornamenta
+item.betteranimalsplus.goatmilk.name=Leche de Cabra
+item.betteranimalsplus.goatcheese.name=Queso de Cabra
+item.betteranimalsplus.pheasantraw.name=Faisán Crudo
+item.betteranimalsplus.pheasantcooked.name=Faisán Cocinado
+item.betteranimalsplus.wolf_cape_classic.name=Capa de Lobo (Clásica)
+item.betteranimalsplus.wolf_cape_timber.name=Capa de Lobo (Ocre)
+item.betteranimalsplus.wolf_cape_black.name=Capa de Lobo (Negra)
+item.record.crabrave.desc=Fiesta del Cangrejo
+item.betteranimalsplus.crab_meat_raw.name=Carne de Cangrejo Cruda
+item.betteranimalsplus.crab_meat_cooked.name=Carne de Cangrejo Cocinada
+item.betteranimalsplus.wolf_pelt_snowy.name=Piel de Lobo Nevado
+item.betteranimalsplus.wolf_pelt_timber.name=Piel de Lobo Ocre
+item.betteranimalsplus.wolf_pelt_black.name=Piel de Lobo Negro
+item.betteranimalsplus.bear_cape_brown.name=Capa de Oso (Pardo)
+item.betteranimalsplus.bear_cape_black.name=Capa de Oso (Negro)
+item.betteranimalsplus.bear_cape_kermode.name=Capa de Oso (Espíritu)
+item.betteranimalsplus.bear_skin_brown.name=Piel de Oso Pardo
+item.betteranimalsplus.bear_skin_black.name=Piel de Oso Negro
+item.betteranimalsplus.bear_skin_kermode.name=Piel de Oso Espíritu
+item.betteranimalsplus.pheasant_egg.name=Huevo de Faisán
+item.betteranimalsplus.turkey_egg.name=Huevo de Pavo
+item.betteranimalsplus.turkey_leg_raw.name=Pata de Pavo Cruda
+item.betteranimalsplus.turkey_leg_cooked.name=Pata de Pavo Cocinada
+item.betteranimalsplus.fried_egg.name=Huevo Frito
+item.betteranimalsplus.goose_egg.name=Huevo de Ganso
+item.betteranimalsplus.golden_goose_egg.name=Huevo dorado de Ganso
+item.betteranimalsplus.wolf_cape_arctic.name=Capa de Lobo (Artica)
+item.betteranimalsplus.wolf_cape_brown.name=Capa de Lobo (Pardo)
+item.betteranimalsplus.wolf_cape_red.name=Capa de Lobo (Roja)
+item.betteranimalsplus.wolf_pelt_arctic.name=Piel de Lobo Artico
+item.betteranimalsplus.wolf_pelt_brown.name=Piel de Lobo Pardo
+item.betteranimalsplus.wolf_pelt_red.name=Piel de Lobo Rojo
+item.betteranimalsplus.blubber.name=Grasa de ballena
+item.betteranimalsplus.eel_meat_raw.name=Carne de anguila cruda
+item.betteranimalsplus.eel_meat_cooked.name=Carne de anguila cocinada
+item.record.walrus.desc=Yo soy la Morsa
+
+#Blocks
+tile.betteranimalsplus.trillium.name=Trilio
+tile.betteranimalsplus.hirschgeistskull.name=Cráneo del Hirschgeist
+tile.betteranimalsplus.handoffate.name=Mano Del Destino
+tile.betteranimalsplus.wolfhead.name=Cabeza de Lobo
+tile.betteranimalsplus.deerhead.name=Cabeza de Ciervo
+tile.betteranimalsplus.reindeerhead.name=Cabeza de Reno
+tile.betteranimalsplus.foxhead.name=Cabeza de Zorro
+tile.betteranimalsplus.boarhead.name=Cabeza de Jabalí
+tile.betteranimalsplus.bearhead.name=Cabeza de Oso
+tile.betteranimalsplus.moosehead.name=Cabeza de Alce
+tile.betteranimalsplus.coyotehead.name=Cabeza de Coyote
+tile.betteranimalsplus.turkey_raw.name=Pavo Crudo
+tile.betteranimalsplus.turkey_cooked.name=Pavo Cocinado
+tile.betteranimalsplus.turkey_eaten_raw.name=Pavo medio comido Crudo
+tile.betteranimalsplus.turkey_eaten_cooked.name=Pavo medio comido Cocinado
+
+#Entities
+entity.betteranimalsplus.brownbear.name=Oso Pardo
+entity.betteranimalsplus.blackbear.name=Oso Negro
+entity.betteranimalsplus.deer.name=Ciervo
+entity.betteranimalsplus.lammergeier.name=Quebrantahuesos
+entity.betteranimalsplus.feralwolf.name=Lobo Salvaje
+entity.betteranimalsplus.coyote.name=Coyote
+entity.betteranimalsplus.fox.name=Zorro
+entity.betteranimalsplus.tarantula.name=Tarántula
+entity.betteranimalsplus.hirschgeist.name=Hirschgeist
+entity.betteranimalsplus.goat.name=Cabra
+entity.betteranimalsplus.jellyfish.name=Medusa
+entity.betteranimalsplus.pheasant.name=Faisán
+entity.betteranimalsplus.reindeer.name=Reno
+entity.betteranimalsplus.boar.name=Jabalí
+entity.betteranimalsplus.squirrel.name=Ardilla
+entity.betteranimalsplus.songbird.name=Pájaro Cantor
+entity.betteranimalsplus.badger.name=Tejón
+entity.betteranimalsplus.lamprey.name=Lamprea
+entity.betteranimalsplus.nautilus.name=Nautilo
+entity.betteranimalsplus.crab.name=Cangrejo
+entity.betteranimalsplus.horseshoecrab.name=Cangrejo de Herradura
+entity.betteranimalsplus.shark.name=Tiburón
+entity.betteranimalsplus.moose.name=Alce
+entity.betteranimalsplus.turkey.name=Pavo
+entity.betteranimalsplus.zotzpyre.name=Murcielago Vampiro
+entity.betteranimalsplus.bobbit_worm.name=Gusano de Arrecife Gigante
+entity.betteranimalsplus.goose.name=Ganso
+entity.betteranimalsplus.eel_freshwater.name=Anguila de agua dulce
+entity.betteranimalsplus.eel_saltwater.name=Anguila de agua salada
+entity.betteranimalsplus.whale.name=Ballena
+entity.betteranimalsplus.walrus.name=Morsa
+

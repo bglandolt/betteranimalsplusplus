@@ -10,11 +10,14 @@ import javax.annotation.Nullable;
 import com.google.common.base.Predicate;
 
 import its_meow.betteranimalsplus.common.entity.EntityBadger;
+import its_meow.betteranimalsplus.common.entity.EntityPheasant;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.entity.passive.EntityAnimal;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.Vec3d;
@@ -56,6 +59,16 @@ public class EntityAIBadgerAttack extends EntityAITarget
 					return true;
 				}
 				
+				if ( taskOwner.isHungry )
+				{
+					return false;
+				}
+				
+				if ( target instanceof EntityChicken || target instanceof EntityPheasant || (target instanceof EntityAnimal && (((EntityAnimal)target).isChild()) || target.width < 0.6D) )
+				{
+					return true;
+				}
+								
 				return false;
 			}
 		};
@@ -66,10 +79,15 @@ public class EntityAIBadgerAttack extends EntityAITarget
 	@Override
 	public boolean shouldExecute()
 	{
-		if ( !this.taskOwner.isChild() && this.taskOwner.getAttackTarget() != null && rand.nextInt(20) != 0 )
-        {
+//		if ( this.taskOwner.isChild() )
+//      {
+//			return false;
+//	    }
+		
+		if ( this.taskOwner.getAttackTarget() != null && rand.nextInt(20) != 0 )
+		{
 			return false;
-	    }
+		}
 				
 		List<EntityLivingBase> list = this.taskOwner.world.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(this.taskOwner.getPosition()).grow(12, 4, 12), this.targetEntitySelector);
 	
@@ -85,7 +103,7 @@ public class EntityAIBadgerAttack extends EntityAITarget
 			{
 				if ( npc instanceof EntityPlayer )
 				{
-					if ( this.taskOwner.getDistance(npc) <= 5 )
+					if ( this.taskOwner.getDistance(npc) < 5 )
 					{
 						this.targetEntity = npc;
 						return true;
@@ -94,13 +112,33 @@ public class EntityAIBadgerAttack extends EntityAITarget
 					{
 						if ( !this.taskOwner.hasPath() )
 						{
-							Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.taskOwner, 8, 4, new Vec3d(npc.posX, npc.posY, npc.posZ));
+							Vec3d vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.taskOwner, 10, 6, new Vec3d(npc.posX, npc.posY, npc.posZ));
 	
 				            if ( vec3d != null )
 				            {
 				            	if ( npc.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) >= npc.getDistanceSq(this.taskOwner) )
 				            	{
-				            		this.taskOwner.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.7D);
+				            		if ( this.taskOwner.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.8D) )
+				            		{
+				            			
+				            		}
+				            		else
+				            		{
+				            			vec3d = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.taskOwner, 10, 6, new Vec3d(npc.posX, npc.posY, npc.posZ));
+				            			
+							            if ( vec3d != null )
+							            {
+							            	if ( this.taskOwner.getNavigator().tryMoveToXYZ(vec3d.x, vec3d.y, vec3d.z, 0.8D) )
+							            	{
+							            		
+							            	}
+							            	else
+							            	{
+							            		this.targetEntity = npc;
+												return true;
+							            	}
+							            }
+				            		}
 				            	}
 				            }
 						}

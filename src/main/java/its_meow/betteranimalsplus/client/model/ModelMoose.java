@@ -467,114 +467,117 @@ public class ModelMoose extends ModelBase {
         this.body.render(f5);
     }
     
-    private int ii = -1;
-
     @Override
-    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity) {
-        float f = limbSwing;
-        float f1 = limbSwingAmount/2.0F;
-
+    public void setRotationAngles(float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scaleFactor, Entity entity)
+    {
+        float f1 = limbSwingAmount/2.2F;
+        float f2 = f1;
         
         //this.chest.rotateAngleX = MathHelper.cos(limbSwing * 0.8665F) * 0.6F * limbSwingAmount  - 0.22759093446006054F;
         //this.torso.rotateAngleX = MathHelper.sin(limbSwing * 0.8665F + (float) Math.PI) * 0.1F * limbSwingAmount - 0.22759093446006054F;
-        this.lForeleg01.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.4F * f1 + 0.19198621771937624F;
-        this.rForeleg01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * f1 + 0.19198621771937624F;
-        this.rHindLeg01.rotateAngleX = MathHelper.cos(f * 0.6662F) * 1.4F * f1 - 0.22759093446006054F;
-        this.lHindLeg01.rotateAngleX = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * f1 - 0.22759093446006054F;
 
-        //if(entity instanceof EntityMoose)
+        // PREV MOOSE
+//        this.lForeleg01.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.3F * f1 + 0.19198621771937624F;
+//        this.rForeleg01.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.3F * f1 + 0.19198621771937624F;
+//        this.rHindLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.3F * f1 - 0.22759093446006054F;
+//        this.lHindLeg01.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float) Math.PI) * 1.3F * f1 - 0.22759093446006054F;
+
+        this.lForeleg01.rotateAngleX = MathHelper.sin(limbSwing* 0.3F) * 1.4F * f1 - 0.14F;
+        this.rForeleg01.rotateAngleX = MathHelper.sin(limbSwing* 0.3F + 1.6F ) * 1.4F * f1 - 0.14F;
+        this.lForeleg03.rotateAngleX = MathHelper.clamp(MathHelper.cos(limbSwing* 0.3F)*f2, -0.1F, 1.0F) + 0.1F;
+        this.rForeleg03.rotateAngleX = MathHelper.clamp(MathHelper.cos(limbSwing* 0.3F + 1.6F)*f2, -0.1F, 1.0F) + 0.1F;
+        
+        this.rHindLeg01.rotateAngleX = MathHelper.cos(limbSwing* 0.3F) * 1.4F * f1 + 0.25F;
+        this.lHindLeg01.rotateAngleX = MathHelper.cos(limbSwing* 0.3F + 1.6F) * 1.4F * f1 + 0.25F;
+        this.rHindLeg03.rotateAngleX = - MathHelper.sin(limbSwing* 0.3F ) * f2 - 1.0F;
+        this.lHindLeg03.rotateAngleX = - MathHelper.sin(limbSwing* 0.3F + 1.6F) * f2 - 1.0F;
+        
+        // if ( entity instanceof EntityMoose )
         {
             EntityMoose moose = (EntityMoose) entity;
-            float eatTime = moose.getEatTime();
             
-            if ( moose.headRam >= 0 ) // 20
+            float defaultHead = 0.5F;
+            float defaultNeck = ModelBetterAnimals.getHeadPitch(moose) * 0.017453292F - 0.07F + MathHelper.sin(limbSwing * 0.3F) * 0.06F;
+            // float sway = MathHelper.sin(limbSwing * 0.3F) * 0.06F + 0.03F;
+
+            EntityMoose.doAnimationTick(moose);
+            
+            if ( EntityMoose.getHeadRam(moose) > 0 ) // 20
             {
-//            	this.head.rotateAngleX = -(float)(20-moose.headRam) * 0.032F + 0.64F;
-//              this.neck.rotateAngleX = -(float)(20-moose.headRam) * 0.035F + 0.7F;
-            	if ( moose.headRam == 20 )
+            	if ( EntityMoose.getHeadRam(moose) >= 8 ) // Head starts down. 20 to 4, raise head up!
             	{
-            		this.ii = (moose.world.rand.nextBoolean()?1:-1);
+            		this.head.rotateAngleX = -(float)(20-EntityMoose.getHeadRam(moose)) * 0.04F + defaultHead + 0.5F;
+                    this.neck.rotateAngleX = -(float)(20-EntityMoose.getHeadRam(moose)) * 0.04F + defaultNeck + 0.5F;
+	                this.head.rotateAngleZ =  (EntityMoose.getHeadDirection(moose) * (float)(20-EntityMoose.getHeadRam(moose)) * 0.025F) * 1.25F;
             	}
-            	
-            	if ( moose.headRam > 7 )
+            	else if ( EntityMoose.getHeadRam(moose) >= 4 )// Head is up, and goes up!
             	{
-            		this.head.rotateAngleX = -(float)(20-moose.headRam) * 0.04F + 1.165F;
-                    this.neck.rotateAngleX = -(float)(20-moose.headRam) * 0.04F + 0.7F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
-	                	this.head.rotateAngleZ = ((float)(8-moose.headRam) * 0.012F + 0.144F)*2.0F*this.ii;
+            		this.head.rotateAngleX = -(float)(8-EntityMoose.getHeadRam(moose)) * 0.04F + defaultHead;
+                    this.neck.rotateAngleX = -(float)(8-EntityMoose.getHeadRam(moose)) * 0.04F + defaultNeck;
+                	this.head.rotateAngleZ =  (EntityMoose.getHeadDirection(moose) * (float)(EntityMoose.getHeadRam(moose)-8) * 0.0375F + (0.3F * EntityMoose.getHeadDirection(moose))) * 1.25F;
             	}
-            	else
+            	else // Head is up, and goes down to normal...
             	{
-            		this.head.rotateAngleX = -(float)(moose.headRam-7) * 0.0266F - 0.16F + 0.525F;
-                    this.neck.rotateAngleX = -(float)(moose.headRam-7) * 0.0166F - 0.1F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
-                		this.head.rotateAngleZ = ((float)(moose.headRam-7) * 0.020571F + 0.144F)*2.0F;
+            		this.head.rotateAngleX = -(float)(EntityMoose.getHeadRam(moose)-4) * 0.04F + defaultHead - 0.16F;
+                    this.neck.rotateAngleX = -(float)(EntityMoose.getHeadRam(moose)-4) * 0.04F + defaultNeck - 0.16F;
+                	this.head.rotateAngleZ =  (EntityMoose.getHeadDirection(moose) * (float)(EntityMoose.getHeadRam(moose)-8) * 0.0375F + (0.3F * EntityMoose.getHeadDirection(moose))) * 1.25F;
             	}
-//            	*moose.headRam--;
-//            	*moose.headDownDuration = -1;
             }
-            else if ( moose.headDownDuration >= 0 ) // 120
+            else if ( EntityMoose.getHeadDown(moose) > 0 )
             {
-            	if ( moose.headDownDuration > 100 )
+            	if ( EntityMoose.getHeadDown(moose) >= 90 ) // Head start up. 120 to 90 head going down.
             	{
-//            		this.head.rotateAngleX = -(float)(moose.headDownDuration-90) * 0.0213F + 0.64F;
-//                    this.neck.rotateAngleX = -(float)(moose.headDownDuration-90) * 0.0233F + 0.7F;
-            		this.head.rotateAngleX = -(float)(moose.headDownDuration-100) * 0.032F + 1.165F;
-            		this.neck.rotateAngleX = -(float)(moose.headDownDuration-100) * 0.035F + 0.7F +  ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
+            		this.head.rotateAngleX = (float)(120-EntityMoose.getHeadDown(moose)) * 0.0167F + defaultHead;
+            		this.neck.rotateAngleX = (float)(120-EntityMoose.getHeadDown(moose)) * 0.0167F + defaultNeck;
             	}
-            	else if ( moose.headDownDuration < 30 )
+            	else if ( EntityMoose.getHeadDown(moose) <= 30 ) // Head start down. 30 to 0 head going up.
             	{
-            		this.head.rotateAngleX = -(float)(30-moose.headDownDuration) * 0.0213F + 1.165F;
-                    this.neck.rotateAngleX = -(float)(30-moose.headDownDuration) * 0.0233F + 0.7F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
+            		this.head.rotateAngleX = -(float)(30-EntityMoose.getHeadDown(moose)) * 0.0167F + defaultHead + 0.5F;
+                    this.neck.rotateAngleX = -(float)(30-EntityMoose.getHeadDown(moose)) * 0.0167F + defaultNeck + 0.5F;
             	}
-            	else
+            	else // 90 - 30 head is down
             	{
-                    this.head.rotateAngleX = 1.165F;
-                    this.neck.rotateAngleX = 0.7F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
+                    this.head.rotateAngleX = defaultHead + 0.5F;
+                    this.neck.rotateAngleX = defaultNeck + 0.5F;
             	}
-//            	**moose.headDownDuration--;
             }
-            else if ( eatTime > 0 ) // 60
+            else if ( moose.getEatTime() > 0 ) // 60
             {
-            	if ( eatTime > 40 )
-            	{
-            		this.head.rotateAngleX = -(float)(eatTime-40) * 0.032F + 1.165F;
-            		this.neck.rotateAngleX = -(float)(eatTime-40) * 0.035F + 0.7F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
-            	}
-            	else if ( eatTime < 30 )
-            	{
-            		this.head.rotateAngleX = -(float)(30-eatTime) * 0.0213F + 1.165F;
-                    this.neck.rotateAngleX = -(float)(30-eatTime) * 0.0233F + 0.7F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
-            	}
-            	else
-            	{
-            		this.head.rotateAngleX = 1.165F; // 0.64F + 0.525F
-                    this.neck.rotateAngleX = 0.7F + ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
-                    this.lowerJaw.rotateAngleX = (float) Math.toRadians((eatTime % 20F)) + 0.1F;
-            	}
+//            	if ( moose.getEatTime() > 40 )
+//            	{
+//            		this.head.rotateAngleX = -(float)(moose.getEatTime()-40) * 0.032F + 1.165F;
+//            		this.neck.rotateAngleX = -(float)(moose.getEatTime()-40) * 0.035F + defaultHead;
+//            	}
+//            	else if ( moose.getEatTime() < 30 )
+//            	{
+//            		this.head.rotateAngleX = -(float)(30-moose.getEatTime()) * 0.0213F + 1.165F;
+//                  this.neck.rotateAngleX = -(float)(30-moose.getEatTime()) * 0.0233F + 0.7F + defaultNeck;
+//            	}
+//            	else
+//            	{
+//            	  this.head.rotateAngleX = defaultHead;
+//                  this.neck.rotateAngleX = defaultNeck;
+                this.lowerJaw.rotateAngleX = (float) Math.toRadians((moose.getEatTime() % 20F)) + 0.1F;
+//            	}
             }
             else
             {
                 this.head.rotateAngleZ = 0.0F;
                 this.head.rotateAngleX = 0.0F;
                 this.neck.rotateAngleX = 0.0F;
-                this.head.rotateAngleX = 0.525F;
-                this.neck.rotateAngleX = ModelBetterAnimals.getHeadPitch((EntityLiving) entity) * 0.017453292F - 0.08726646259971647F;
-                //System.out.println(this.neck.rotateAngleX);
+                
+                this.head.rotateAngleX = defaultHead;
+                this.neck.rotateAngleX = defaultNeck;
 
-                this.chest.rotateAngleY = ModelBetterAnimals.getHeadYaw((EntityLiving) entity) * 0.017453292F * 0.5F;
+                this.chest.rotateAngleY = ModelBetterAnimals.getHeadYaw(moose) * 0.017453292F * 0.5F;
                 this.lowerJaw.rotateAngleX = 0F;
             }
             
-            this.body.rotateAngleZ = MathHelper.cos(f * 0.45F) * 0.14F * f1;
-            this.chest.rotateAngleZ = MathHelper.cos(f * 0.5F) * 0.12F * f1;
-        	//this.chest.rotateAngleX = MathHelper.sin(limbSwingAmount)/16.0F;
-
+            this.body.rotateAngleZ = MathHelper.cos(limbSwing * 0.3F) * 0.08F * f1;
+            this.chest.rotateAngleZ = MathHelper.sin(limbSwing*0.35F+(float)Math.PI) * 0.05F * f1;
             
-        	this.body.rotateAngleX = MathHelper.sin(limbSwing*0.3331F+(float)Math.PI) * -0.1F * limbSwingAmount - (float)(moose.motionY/8.0D); // 0.22759093446006054F
-        	this.chest.rotateAngleX = MathHelper.sin(limbSwing*0.3331F)*0.1F * limbSwingAmount + (float)(moose.motionY/8.0D);
-//            {
-//            	this.neck.rotateAngleX = -0.3490658503988659F + (float) Math.toRadians(60F);
-//                this.head.rotateAngleX = -0.31869712141416456F + (float) Math.toRadians(55F);
-//            }
+        	this.body.rotateAngleX = MathHelper.sin(limbSwing*0.35F+(float)Math.PI) * 0.1F * limbSwingAmount - (float)(moose.motionY/8.0D); // 0.22759093446006054F
+        	this.chest.rotateAngleX = MathHelper.cos(limbSwing*0.35F) * 0.1F * limbSwingAmount - (float)(moose.motionY/8.0D);
         }
     }
     

@@ -42,39 +42,41 @@ public class EntityAIBearAttackWithAnimations extends EntityAIBase
 
 	        if ( dist <= attackRange && this.attackTick <= 0 )
 	        {
-		        this.attackTick = 30;
-		        this.attacker.attackEntityAsMob(entity);
-                // AIHelper.faceEntitySmart(this.attacker, entity);
+		        this.attackTick = 40;
 			    this.attacker.playSound(SoundEvents.ENTITY_GENERIC_BIG_FALL, 0.7F, 0.7F);
                 this.attacker.motionX /= 2.0D;
-			    this.attacker.motionY /= 2.0D;
 			    this.attacker.motionZ /= 2.0D;
+			    this.attacker.motionY /= 2.0D;
+		        this.attacker.attackEntityAsMob(entity);
+			    this.attacker.velocityChanged = true;
 		    }
 		    else if ( dist <= attackRange * 2.0D )
 		    {
 		        if ( this.attackTick <= 0 )
 		        {
-		        	this.attackTick = 25;
+	    			this.attacker.knockBackAttack = false;
+		        	this.attackTick = 40;
 		        }
-		        else if ( this.attackTick > 8 && this.attackTick < 12 )
+		        else if ( this.attackTick > 5 && this.attackTick <= 15 )
 		        {
 		        	this.attacker.setSprinting(true);
-		        	if ( this.attackTick == 10 )
+		        	
+		        	if ( this.attackTick == 15 )
 			        {
-		        		//if ( this.attacker.attackAnimationTimerStanding < 1 && this.attacker.attackAnimationTimer < 1 )
+		        		if ( this.attacker.world.rand.nextInt(3) == 0 || entity.height <= 0.7 )
 		        		{
-			        		if ( this.attacker.world.rand.nextBoolean() || entity.height < 0.8 )
-			        		{
-			        			this.attacker.world.setEntityState(this.attacker, (byte) 26);
-			        			//this.attacker.attackAnimationTimer = 20;
-			        			this.attacker.knockBackAttack = false;
-			        		}
-			        		else
-			        		{
-			        			this.attacker.world.setEntityState(this.attacker, (byte) 28);
-			        			//this.attacker.attackAnimationTimerStanding = 30;
-			        			this.attacker.knockBackAttack = true;
-			        		}
+		        			this.attacker.world.setEntityState(this.attacker, (byte) 26);
+		        			this.attacker.knockBackAttack = false;
+		        			this.attackTick = 5;
+		        		}
+		        		else
+		        		{
+		        			this.attacker.motionX /= 2.0D;
+		    			    this.attacker.motionZ /= 2.0D;
+		    			    this.attacker.velocityChanged = true;
+		    			    
+		        			this.attacker.world.setEntityState(this.attacker, (byte) 28);
+		        			this.attacker.knockBackAttack = true;
 		        		}
 				        this.attacker.playWarningSound();
 			        }
@@ -83,11 +85,19 @@ public class EntityAIBearAttackWithAnimations extends EntityAIBase
 		        {
 		        	this.attacker.setSprinting(false);
 		        }
-	        } 
+		    }
 	        else
 	        {
-	        	this.attackTick = 30;
+    			this.attacker.knockBackAttack = false;
+	        	this.attackTick = 40;
 	        	this.attacker.setSprinting(false);
+	        }
+	        
+	        if ( this.attacker.knockBackAttack && this.attackTick < 15 )
+	        {
+	        	this.attacker.motionX /= 2.0D;
+			    this.attacker.motionZ /= 2.0D;
+			    this.attacker.velocityChanged = true;
 	        }
         }
 

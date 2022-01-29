@@ -87,7 +87,7 @@ public class EntityAIBoarAttack extends EntityAITarget
 			{
 				if ( npc instanceof EntityPlayer )
 				{
-					if ( this.taskOwner.getDistance(npc) <= 6 )
+					if ( this.taskOwner.getDistance(npc) < 5 )
 					{
 						this.targetEntity = npc;
 						return true;

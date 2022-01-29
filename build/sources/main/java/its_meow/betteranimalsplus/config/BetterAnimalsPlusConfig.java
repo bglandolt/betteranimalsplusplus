@@ -46,6 +46,20 @@ public class BetterAnimalsPlusConfig {
     public static boolean coyotesHostileDaytime = false;
     public static boolean biomeBasedVariants = true;
     public static boolean goatVanillaMilk = false;
+    
+    public static float deerSpeed = 0.38F;
+    public static float deerHealth = 16.0F;
+    
+    public static float zotzpyreSpeed = 0.37F;
+    public static float zotzpyreHealth = 20.0F;
+    public static float zotzpyreAttackDamage = 3.0F;
+    
+    public static float badgerSpeed = 0.36F;
+    public static float badgerHealth = 8.0F;
+    public static float badgerAttackDamage = 1.5F;
+    
+    public static float squirrelSpeed = 0.36F;
+    public static float squirrelHealth = 0.5F;
 
     public static HashMap<EntityContainer, EntityConfigurationSection> sections = new HashMap<EntityContainer, EntityConfigurationSection>();
 
@@ -72,6 +86,21 @@ public class BetterAnimalsPlusConfig {
         biomeBasedVariants = cfg.getBoolean("biomeBasedVariants", "misc", true, "Setting to true enables biome based variant spawning. This will make some entities choose variants based on the biome they spawn in. However, it will also affect eggs, possibly reducing the amount of visible content.");
         goatVanillaMilk = cfg.getBoolean("goatVanillaMilk", "its_meow.betteranimalsplus.common.entity.entitygoat", false, "Enabling this will cause goats to give out vanilla milk instead of goat milk.");
         EntityGoose.pickupBlockList = cfg.getStringList("goosePickupBlacklist", "its_meow.betteranimalsplus.common.entity.entitygoose", new String[] {"betteranimalsplus:goose_egg", "betteranimalsplus:golden_goose_egg"}, "List of blacklisted item IDs that cannot be picked up. Accepts oredictionary by prefixing them with 'ore:'.");
+        
+        deerSpeed = cfg.getFloat("deerSpeed", "Deer", 0.38F, 0.0F, 1.0F, "Deer speed");
+        deerHealth = cfg.getFloat("deerHealth", "Deer", 16.0F, 0.5F, 5120.0F, "Deer health");
+
+        badgerSpeed = cfg.getFloat("badgerSpeed", "Badger", 0.36F, 0.0F, 1.0F, "Badger speed");
+        badgerHealth = cfg.getFloat("badgerHealth", "Badger", 8.0F, 0.5F, 5120.0F, "Badger health");
+        badgerAttackDamage = cfg.getFloat("badgerAttackDamage", "Badger", 1.5F, 0.0F, 5120.0F, "Badger attack damage");
+
+        zotzpyreSpeed = cfg.getFloat("zotzpyreSpeed", "Zotzpyre", 0.37F, 0.0F, 1.0F, "Zotzpyre speed");
+        zotzpyreHealth = cfg.getFloat("zotzpyreHealth", "Zotzpyre", 20.0F, 0.5F, 5120.0F, "Zotzpyre health");
+        zotzpyreAttackDamage = cfg.getFloat("zotzpyreAttackDamage", "Zotzpyre", 3.0F, 0.0F, 5120.0F, "Zotzpyre attack damage");
+        
+        squirrelSpeed = cfg.getFloat("squirrelSpeed", "Squirrel", 0.36F, 0.0F, 1.0F, "Squirrel speed");
+        squirrelHealth = cfg.getFloat("squirrelHealth", "Squirrel", 0.5F, 0.5F, 5120.0F, "Squirrel health");
+        
         for(EntityContainer container : ModEntities.entityList) {
             container.populateBiomes();
             String[] biomeStrings = new String[container.spawnBiomes.length];

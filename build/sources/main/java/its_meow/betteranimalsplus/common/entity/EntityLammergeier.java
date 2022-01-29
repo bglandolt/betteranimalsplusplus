@@ -59,7 +59,7 @@ import net.minecraft.world.World;
 public class EntityLammergeier extends EntityTameableFlying implements IVariantTypes {
     
     protected static final DataParameter<Integer> TYPE_NUMBER = EntityDataManager.<Integer>createKey(EntityLammergeier.class, DataSerializers.VARINT);
-    protected static final DataParameter<Byte> FLYING = EntityDataManager.<Byte>createKey(EntityLammergeier.class, DataSerializers.BYTE);
+    protected static final DataParameter<Boolean> FLYING = EntityDataManager.<Boolean>createKey(EntityLammergeier.class, DataSerializers.BOOLEAN);
     protected static final DataParameter<Float> DATA_HEALTH_ID = EntityDataManager.<Float>createKey(EntityLammergeier.class, DataSerializers.FLOAT);
 
     public boolean landedLast = false;
@@ -126,7 +126,7 @@ public class EntityLammergeier extends EntityTameableFlying implements IVariantT
     @Override
     protected void entityInit() {
         super.entityInit();
-        this.dataManager.register(FLYING, Byte.valueOf((byte) 0));
+        this.dataManager.register(FLYING, Boolean.valueOf(false));
         this.dataManager.register(TYPE_NUMBER, Integer.valueOf(0));
         this.dataManager.register(DATA_HEALTH_ID, Float.valueOf(this.getHealth()));
     }
@@ -156,6 +156,14 @@ public class EntityLammergeier extends EntityTameableFlying implements IVariantT
      */
     @Override
     public boolean attackEntityFrom(DamageSource source, float amount) {
+    	
+    
+    	    	if (this.world.isRemote)
+    	        {
+    	            return false;
+    	        }
+    	 
+    	 
         if (this.isEntityInvulnerable(source)) {
             return false;
         } else {
@@ -382,18 +390,14 @@ public class EntityLammergeier extends EntityTameableFlying implements IVariantT
         this.getEntityAttribute(SharedMonsterAttributes.FLYING_SPEED).setBaseValue(4.0D);
     }
 
-    public boolean getFlying() {
-        return (this.dataManager.get(FLYING).byteValue() & 1) != 0;
+    public boolean getFlying()
+    {
+        return (this.dataManager.get(FLYING).booleanValue());
     }
 
-    public void setFlying(boolean isFlying) {
-        byte b0 = this.dataManager.get(FLYING).byteValue();
-
-        if (isFlying) {
-            this.dataManager.set(FLYING, Byte.valueOf((byte) (b0 | 1)));
-        } else {
-            this.dataManager.set(FLYING, Byte.valueOf((byte) (b0 & -2)));
-        }
+    public void setFlying(boolean isFlying)
+    {
+        this.dataManager.set(FLYING, isFlying);
         this.setNoGravity(isFlying);
     }
 
@@ -455,20 +459,22 @@ public class EntityLammergeier extends EntityTameableFlying implements IVariantT
      * (abstract) Protected helper method to write subclass entity data to NBT.
      */
     @Override
-    public void writeEntityToNBT(NBTTagCompound compound) {
+    public void writeEntityToNBT(NBTTagCompound compound)
+    {
         super.writeEntityToNBT(compound);
+        compound.setBoolean("LammerFlying", this.getFlying());
         this.writeType(compound);
-        compound.setByte("LammerFlying", this.dataManager.get(FLYING).byteValue());
     }
 
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
     @Override
-    public void readEntityFromNBT(NBTTagCompound compound) {
+    public void readEntityFromNBT(NBTTagCompound compound)
+    {
         super.readEntityFromNBT(compound);
         this.readType(compound);
-        this.dataManager.set(FLYING, Byte.valueOf(compound.getByte("LammerFlying")));
+        this.dataManager.set(FLYING, compound.getBoolean("LammerFlying")); // EntityVillager
     }
 
     @Override

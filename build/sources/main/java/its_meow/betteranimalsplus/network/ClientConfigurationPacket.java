@@ -21,13 +21,15 @@ public class ClientConfigurationPacket implements IMessage, IMessageHandler<Clie
     public boolean coyoteHostileDaytime = false;
     public Map<String, String[]> tameItems = new HashMap<String, String[]>();
 
-    public ClientConfigurationPacket(boolean coyoteHostileDaytime, Map<String, String[]> tameItems) {
+    public ClientConfigurationPacket(boolean coyoteHostileDaytime, Map<String, String[]> tameItems)
+    {
         this.coyoteHostileDaytime = coyoteHostileDaytime;
         this.tameItems = tameItems;
     }
 
     @Override
-    public void toBytes(ByteBuf buf) {
+    public void toBytes(ByteBuf buf)
+    {
         buf.writeBoolean(this.coyoteHostileDaytime);
         buf.writeInt(tameItems.size());
         for(String key : tameItems.keySet()) {

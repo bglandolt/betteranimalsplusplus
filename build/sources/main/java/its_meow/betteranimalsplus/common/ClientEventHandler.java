@@ -1,7 +1,9 @@
 package its_meow.betteranimalsplus.common;
 
-import its_meow.betteranimalsplus.common.entity.EntityBear;
+import its_meow.betteranimalsplus.common.entity.EntityBrownBear;
 import its_meow.betteranimalsplus.common.entity.EntityFeralWolf;
+import its_meow.betteranimalsplus.common.entity.EntityZotzpyre;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.EntityViewRenderEvent.CameraSetup;
@@ -12,7 +14,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 // https://github.com/CreativeMD/PlayerRevive/blob/1.12/src/main/java/com/creativemd/playerrevive/client/ReviveEventClient.java
 
-//@SideOnly(Side.CLIENT)
 public class ClientEventHandler
 {
 //	@SuppressWarnings("deprecation")
@@ -60,20 +61,45 @@ public class ClientEventHandler
 //		
 //	}
 	
+	
+	
+	
+	
+	
+	//@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public void mountEvent(EntityMountEvent event)
 	{
-		if ( ( event.getEntityMounting() instanceof EntityFeralWolf || event.getEntityMounting() instanceof EntityBear ) && event.getEntityBeingMounted() instanceof EntityPlayer )
+		if ( !event.getWorldObj().isRemote )
 		{
-			//EntityPlayer player = (EntityPlayer) event.getEntityBeingMounted();
-			if ( event.getWorldObj().isRemote ) this.cameraRiding = true;
+			return;
+		}
+		
+		if ( event.getEntityBeingMounted() instanceof EntityPlayer )
+		{
+			if ( event.isDismounting() )
+			{
+				Minecraft.getMinecraft().gameSettings.thirdPersonView = this.prevCamera;
+			}
+			else
+			{
+				if ( event.getEntityMounting() instanceof EntityFeralWolf || event.getEntityMounting() instanceof EntityBrownBear )
+				{
+					this.cameraRiding = true;
+				}
+				else if ( event.getEntityMounting() instanceof EntityZotzpyre )
+				{
+					if ( Minecraft.getMinecraft().player == event.getEntityBeingMounted() )
+					{
+						this.prevCamera = Minecraft.getMinecraft().gameSettings.thirdPersonView;
+						Minecraft.getMinecraft().gameSettings.thirdPersonView = 1;
+					}
+				}
+			}
 		}
 	}
 	
-//	@SideOnly(Side.CLIENT)
-//	protected Entity attackTarget = null;
-	
-	@SideOnly(Side.CLIENT)
+	protected int prevCamera = 0;
 	protected boolean cameraRiding = false;
 	
 	@SideOnly(Side.CLIENT)
@@ -82,14 +108,10 @@ public class ClientEventHandler
     {
     	if ( this.cameraRiding && event.getEntity() instanceof EntityPlayer && event.getEntity().isBeingRidden() )
 		{
-    		// x = x------|
-			GlStateManager.translate(0, 0, -3.0); // -1.5 !!!
-			
 			EntityPlayer player = (EntityPlayer) event.getEntity();
 
-            // System.out.println(player);
-            // System.out.println(this.attackTarget);
-
+			GlStateManager.translate(0, 0, -3.0); // -1.5 !!!
+			
 			player.renderOffsetX = 0;
 			player.renderOffsetY = 0;
 			player.renderOffsetZ = 0;
@@ -105,10 +127,9 @@ public class ClientEventHandler
 			player.prevRotationYawHead = 0;
 			player.motionX = 0;
 			player.motionZ = 0;
-			event.setYaw(20); // 20 !!!
+			event.setYaw(20);
 			event.setPitch(-90);
 			event.setRoll(0);
-			//Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
 		}
     	else
     	{
